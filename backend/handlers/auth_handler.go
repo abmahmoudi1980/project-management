@@ -168,6 +168,15 @@ func (h *AuthHandler) GetCurrentUser(c *fiber.Ctx) error {
 
 // Logout handles user logout
 func (h *AuthHandler) Logout(c *fiber.Ctx) error {
+	// Get refresh token from cookie
+	refreshToken := c.Cookies("refresh_token")
+
+	// Revoke session in database if refresh token exists
+	if refreshToken != "" {
+		// Note: We don't fail logout if revocation fails (best effort)
+		_ = h.authService.RevokeSession(c.Context(), refreshToken)
+	}
+
 	// Clear cookies
 	c.Cookie(&fiber.Cookie{
 		Name:     "access_token",
@@ -193,6 +202,86 @@ func (h *AuthHandler) Logout(c *fiber.Ctx) error {
 		"success": true,
 		"data": fiber.Map{
 			"message": "با موفقیت خارج شدید",
+		},
+	})
+}
+
+// ForgotPassword handles password reset request
+func (h *AuthHandler) ForgotPassword(c *fiber.Ctx) error {
+	var req struct {
+		Email string `json:"email"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "درخواست نامعتبر است",
+				"code":    "INVALID_REQUEST",
+			},
+		})
+	}
+
+	// Call service (always returns success to prevent email enumeration)
+	err := h.authService.RequestPasswordReset(c.Context(), req.Email)
+	if err != nil {
+		// Log error but don't expose to user
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "خطا در ارسال ایمیل بازیابی",
+				"code":    "SERVER_ERROR",
+			},
+		})
+	}
+
+	// Always return success (security best practice)
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"message": "اگر ایمیل شما در سیستم ثبت باشد، لینک بازیابی ارسال می‌شود",
+		},
+	})
+}
+
+// ResetPassword handles password reset with token
+func (h *AuthHandler) ResetPassword(c *fiber.Ctx) error {
+	var req struct {
+		Token       string `json:"token"`
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "درخواست نامعتبر است",
+				"code":    "INVALID_REQUEST",
+			},
+		})
+	}
+
+	// Validate token and reset password
+	err := h.authService.ResetPassword(c.Context(), req.Token, req.NewPassword)
+	if err != nil {
+		statusCode := fiber.StatusBadRequest
+		if err == services.ErrInvalidToken {
+			statusCode = fiber.StatusUnauthorized
+		}
+
+		return c.Status(statusCode).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": err.Error(),
+				"code":    "PASSWORD_RESET_FAILED",
+			},
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"message": "رمز عبور شما با موفقیت تغییر یافت",
 		},
 	})
 }

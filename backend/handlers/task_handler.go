@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"project-management/middleware"
 	"project-management/models"
 	"project-management/services"
 
@@ -22,7 +23,14 @@ func (h *TaskHandler) GetTasksByProject(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid project id"})
 	}
 
-	tasks, err := h.service.GetTasksByProjectID(c.Context(), projectID)
+	// Get user from context (set by RequireAuth middleware)
+	userContext, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	// Get tasks filtered by user role and project ownership
+	tasks, err := h.service.GetTasksByUser(c.Context(), userContext.UserID, userContext.Role, projectID)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "project not found"})
 	}

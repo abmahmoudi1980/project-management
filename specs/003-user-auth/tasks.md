@@ -169,10 +169,10 @@ Each user story is independently testable and can be delivered as an increment.
 ### Role-Based Access Control
 
 - [X] T060 [US2] In routes.go: Wrap all existing routes (projects, tasks, timelogs) with RequireAuth middleware
-- [ ] T061 [US2] Update backend/services/project_service.go: Add GetProjectsByUser(userID, role) method (admins see all, users see own)
-- [ ] T062 [US2] Update backend/handlers/project_handler.go: In GetProjects, call GetProjectsByUser with user from context
-- [ ] T063 [US2] Update backend/services/task_service.go: Add GetTasksByUser(userID, role) method (filter by project ownership)
-- [ ] T064 [US2] Update backend/handlers/task_handler.go: In GetTasks, call GetTasksByUser with user from context
+- [X] T061 [US2] Update backend/services/project_service.go: Add GetProjectsByUser(userID, role) method (admins see all, users see own)
+- [X] T062 [US2] Update backend/handlers/project_handler.go: In GetProjects, call GetProjectsByUser with user from context
+- [X] T063 [US2] Update backend/services/task_service.go: Add GetTasksByUser(userID, role) method (filter by project ownership)
+- [X] T064 [US2] Update backend/handlers/task_handler.go: In GetTasks, call GetTasksByUser with user from context
 
 ### Frontend Implementation
 
@@ -203,6 +203,11 @@ Each user story is independently testable and can be delivered as an increment.
 - ✅ Access protected route without login → Redirected to login page
 
 ---
+- ✅ Admin user → Sees all projects/tasks
+- ✅ Regular user → Sees only own projects/tasks
+- ✅ Access protected route without login → Redirected to login page
+
+---
 
 ## Phase 5: User Story 3 - بازیابی رمز عبور (Password Recovery) (Priority: P2)
 
@@ -221,48 +226,48 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Backend - Email Service
 
-- [ ] T077 [P] [US3] Create backend/services/email_service.go with SendEmail(to, subject, body) function
-- [ ] T078 [P] [US3] In email_service.go: Implement SMTP client using net/smtp with Gmail configuration from .env
-- [ ] T079 [P] [US3] In email_service.go: Add SendPasswordResetEmail(to, resetLink) function with Persian email template
-- [ ] T080 [P] [US3] Persian email template with RTL direction: "برای بازیابی رمز عبور خود، روی لینک زیر کلیک کنید"
+- [X] T077 [P] [US3] Create backend/services/email_service.go with SendEmail(to, subject, body) function
+- [X] T078 [P] [US3] In email_service.go: Implement SMTP client using net/smtp with Gmail configuration from .env
+- [X] T079 [P] [US3] In email_service.go: Add SendPasswordResetEmail(to, resetLink) function with Persian email template
+- [X] T080 [P] [US3] Persian email template with RTL direction: "برای بازیابی رمز عبور خود، روی لینک زیر کلیک کنید"
 
 ### Backend - Password Reset Logic
 
-- [ ] T081 [US3] In backend/services/auth_service.go: Add RequestPasswordReset(email) method
-- [ ] T082 [US3] In RequestPasswordReset: Generate cryptographically secure 32-byte token using crypto/rand
-- [ ] T083 [US3] In RequestPasswordReset: Hash token with SHA-256, store hash in password_reset_tokens table with 1-hour expiry
-- [ ] T084 [US3] In RequestPasswordReset: Send plain token via email (format: APP_URL/reset-password?token=xxx)
-- [ ] T085 [US3] In RequestPasswordReset: Always return success message (prevent email enumeration): "اگر ایمیل شما در سیستم ثبت باشد، لینک بازیابی ارسال می‌شود"
-- [ ] T086 [US3] In auth_service.go: Add ResetPassword(token, newPassword) method
-- [ ] T087 [US3] In ResetPassword: Hash received token, lookup in database, verify not expired and not used
-- [ ] T088 [US3] In ResetPassword: Return Persian error for invalid/expired token: "لینک بازیابی نامعتبر یا منقضی شده است"
-- [ ] T089 [US3] In ResetPassword: Validate new password strength, hash with bcrypt, update user password, mark token as used
+- [X] T081 [US3] In backend/services/auth_service.go: Add RequestPasswordReset(email) method
+- [X] T082 [US3] In RequestPasswordReset: Generate cryptographically secure 32-byte token using crypto/rand
+- [X] T083 [US3] In RequestPasswordReset: Hash token with SHA-256, store hash in password_reset_tokens table with 1-hour expiry
+- [X] T084 [US3] In RequestPasswordReset: Send plain token via email (format: APP_URL/reset-password?token=xxx)
+- [X] T085 [US3] In RequestPasswordReset: Always return success message (prevent email enumeration): "اگر ایمیل شما در سیستم ثبت باشد، لینک بازیابی ارسال می‌شود"
+- [X] T086 [US3] In auth_service.go: Add ResetPassword(token, newPassword) method
+- [X] T087 [US3] In ResetPassword: Hash received token, lookup in database, verify not expired and not used
+- [X] T088 [US3] In ResetPassword: Return Persian error for invalid/expired token: "لینک بازیابی نامعتبر یا منقضی شده است"
+- [X] T089 [US3] In ResetPassword: Validate new password strength, hash with bcrypt, update user password, mark token as used
 
 ### Backend - API Endpoints
 
-- [ ] T090 [US3] In backend/handlers/auth_handler.go: Add ForgotPassword handler
-- [ ] T091 [US3] In ForgotPassword handler: Rate limit to 3 requests per hour per IP
-- [ ] T092 [US3] In ForgotPassword handler: Call auth_service.RequestPasswordReset, return success message
-- [ ] T093 [US3] In auth_handler.go: Add ResetPassword handler
-- [ ] T094 [US3] In ResetPassword handler: Validate token and newPassword from request body
-- [ ] T095 [US3] In ResetPassword handler: Return Persian validation errors for weak password
-- [ ] T096 [US3] In ResetPassword handler: Call auth_service.ResetPassword, return success message
-- [ ] T097 [US3] In backend/routes/routes.go: Add POST /api/auth/forgot-password (public)
-- [ ] T098 [US3] In routes.go: Add POST /api/auth/reset-password (public)
+- [X] T090 [US3] In backend/handlers/auth_handler.go: Add ForgotPassword handler
+- [X] T091 [US3] In ForgotPassword handler: Rate limit to 3 requests per hour per IP
+- [X] T092 [US3] In ForgotPassword handler: Call auth_service.RequestPasswordReset, return success message
+- [X] T093 [US3] In auth_handler.go: Add ResetPassword handler
+- [X] T094 [US3] In ResetPassword handler: Validate token and newPassword from request body
+- [X] T095 [US3] In ResetPassword handler: Return Persian validation errors for weak password
+- [X] T096 [US3] In ResetPassword handler: Call auth_service.ResetPassword, return success message
+- [X] T097 [US3] In backend/routes/routes.go: Add POST /api/auth/forgot-password (public)
+- [X] T098 [US3] In routes.go: Add POST /api/auth/reset-password (public)
 
 ### Frontend Implementation
 
-- [ ] T099 [P] [US3] Create frontend/src/components/ForgotPasswordForm.svelte with Svelte 5 runes
-- [ ] T100 [US3] In ForgotPasswordForm.svelte: Add email input field with Persian label (ایمیل)
-- [ ] T101 [US3] In ForgotPasswordForm.svelte: POST to /api/auth/forgot-password, show success message
-- [ ] T102 [US3] In ForgotPasswordForm.svelte: Display Persian message: "اگر ایمیل شما در سیستم ثبت باشد، لینک بازیابی ارسال می‌شود"
-- [ ] T103 [P] [US3] Create frontend/src/components/ResetPasswordForm.svelte
-- [ ] T104 [US3] In ResetPasswordForm.svelte: Extract token from URL query parameter
-- [ ] T105 [US3] In ResetPasswordForm.svelte: Add fields for new password and confirmation with Persian labels
-- [ ] T106 [US3] In ResetPasswordForm.svelte: POST to /api/auth/reset-password with token and new password
-- [ ] T107 [US3] In ResetPasswordForm.svelte: Display Persian success message: "رمز عبور شما با موفقیت تغییر یافت"
-- [ ] T108 [US3] In ResetPasswordForm.svelte: Display Persian error for invalid/expired token
-- [ ] T109 [US3] In App.svelte: Add route for /reset-password to show ResetPasswordForm
+- [X] T099 [P] [US3] Create frontend/src/components/ForgotPasswordForm.svelte with Svelte 5 runes
+- [X] T100 [US3] In ForgotPasswordForm.svelte: Add email input field with Persian label (ایمیل)
+- [X] T101 [US3] In ForgotPasswordForm.svelte: POST to /api/auth/forgot-password, show success message
+- [X] T102 [US3] In ForgotPasswordForm.svelte: Display Persian message: "اگر ایمیل شما در سیستم ثبت باشد، لینک بازیابی ارسال می‌شود"
+- [X] T103 [P] [US3] Create frontend/src/components/ResetPasswordForm.svelte
+- [X] T104 [US3] In ResetPasswordForm.svelte: Extract token from URL query parameter
+- [X] T105 [US3] In ResetPasswordForm.svelte: Add fields for new password and confirmation with Persian labels
+- [X] T106 [US3] In ResetPasswordForm.svelte: POST to /api/auth/reset-password with token and new password
+- [X] T107 [US3] In ResetPasswordForm.svelte: Display Persian success message: "رمز عبور شما با موفقیت تغییر یافت"
+- [X] T108 [US3] In ResetPasswordForm.svelte: Display Persian error for invalid/expired token
+- [X] T109 [US3] In App.svelte: Add route for /reset-password to show ResetPasswordForm
 
 **Manual Test Checklist for US3**:
 - ✅ Request password reset with registered email → Email received (check inbox or logs)
@@ -291,19 +296,19 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Backend Implementation
 
-- [ ] T110 [US4] In backend/handlers/auth_handler.go: Add Logout handler
-- [ ] T111 [US4] In Logout handler: Extract refresh_token from cookie
-- [ ] T112 [US4] In Logout handler: Call session_repository.Revoke to mark session as revoked
-- [ ] T113 [US4] In Logout handler: Clear access_token and refresh_token cookies (set Max-Age = 0)
-- [ ] T114 [US4] In Logout handler: Return Persian success message: "با موفقیت خارج شدید"
-- [ ] T115 [US4] In backend/routes/routes.go: Add POST /api/auth/logout (protected with RequireAuth)
+- [X] T110 [US4] In backend/handlers/auth_handler.go: Add Logout handler
+- [X] T111 [US4] In Logout handler: Extract refresh_token from cookie
+- [X] T112 [US4] In Logout handler: Call session_repository.Revoke to mark session as revoked
+- [X] T113 [US4] In Logout handler: Clear access_token and refresh_token cookies (set Max-Age = 0)
+- [X] T114 [US4] In Logout handler: Return Persian success message: "با موفقیت خارج شدید"
+- [X] T115 [US4] In backend/routes/routes.go: Add POST /api/auth/logout (protected with RequireAuth)
 
 ### Frontend Implementation
 
-- [ ] T116 [US4] Update frontend/src/stores/authStore.js: Implement logout() method that POSTs to /api/auth/logout
-- [ ] T117 [US4] In authStore logout(): Clear user state (user = null, isAuthenticated = false)
-- [ ] T118 [US4] In App.svelte: Add logout button in header with Persian label (خروج)
-- [ ] T119 [US4] In App.svelte: On logout button click, call authStore.logout() and redirect to login page
+- [X] T116 [US4] Update frontend/src/stores/authStore.js: Implement logout() method that POSTs to /api/auth/logout
+- [X] T117 [US4] In authStore logout(): Clear user state (user = null, isAuthenticated = false)
+- [X] T118 [US4] In App.svelte: Add logout button in header with Persian label (خروج)
+- [X] T119 [US4] In App.svelte: On logout button click, call authStore.logout() and redirect to login page
 
 **Manual Test Checklist for US4**:
 - ✅ Logout → Cookies cleared, redirected to login page
@@ -330,40 +335,40 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Backend - User Management Endpoints
 
-- [ ] T120 [P] [US5] Create backend/handlers/user_handler.go with GetUsers handler
-- [ ] T121 [US5] In GetUsers handler: Support pagination (page, limit query params), default limit 20, max 100
-- [ ] T122 [US5] In GetUsers handler: Support filtering by role and is_active
-- [ ] T123 [US5] In GetUsers handler: Call user_repository.List, return users with pagination metadata (exclude password_hash)
-- [ ] T124 [P] [US5] In user_handler.go: Add GetUserByID handler that returns user details (admin only)
-- [ ] T125 [P] [US5] In user_handler.go: Add UpdateUserRole handler
-- [ ] T126 [US5] In UpdateUserRole: Validate role is "admin" or "user", return Persian error: "نقش نامعتبر است"
-- [ ] T127 [US5] In UpdateUserRole: Call user_repository.Update to change role, return updated user
-- [ ] T128 [P] [US5] In user_handler.go: Add UpdateUserActivation handler
-- [ ] T129 [US5] In UpdateUserActivation: Prevent admin from deactivating themselves, return Persian error: "نمی‌توانید حساب کاربری خود را غیرفعال کنید"
-- [ ] T130 [US5] In UpdateUserActivation: Prevent deactivating last admin, return Persian error: "نمی‌توانید آخرین ادمین را غیرفعال کنید"
-- [ ] T131 [US5] In UpdateUserActivation: Call user_repository.Update to change is_active, return updated user
+- [X] T120 [P] [US5] Create backend/handlers/user_handler.go with GetUsers handler
+- [X] T121 [US5] In GetUsers handler: Support pagination (page, limit query params), default limit 20, max 100
+- [X] T122 [US5] In GetUsers handler: Support filtering by role and is_active
+- [X] T123 [US5] In GetUsers handler: Call user_repository.List, return users with pagination metadata (exclude password_hash)
+- [X] T124 [P] [US5] In user_handler.go: Add GetUserByID handler that returns user details (admin only)
+- [X] T125 [P] [US5] In user_handler.go: Add UpdateUserRole handler
+- [X] T126 [US5] In UpdateUserRole: Validate role is "admin" or "user", return Persian error: "نقش نامعتبر است"
+- [X] T127 [US5] In UpdateUserRole: Call user_repository.Update to change role, return updated user
+- [X] T128 [P] [US5] In user_handler.go: Add UpdateUserActivation handler
+- [X] T129 [US5] In UpdateUserActivation: Prevent admin from deactivating themselves, return Persian error: "نمی‌توانید حساب کاربری خود را غیرفعال کنید"
+- [X] T130 [US5] In UpdateUserActivation: Prevent deactivating last admin, return Persian error: "نمی‌توانید آخرین ادمین را غیرفعال کنید"
+- [X] T131 [US5] In UpdateUserActivation: Call user_repository.Update to change is_active, return updated user
 
 ### Backend - Admin Routes
 
-- [ ] T132 [US5] In backend/routes/routes.go: Add GET /api/users (protected with RequireAuth + RequireRole("admin"))
-- [ ] T133 [US5] In routes.go: Add GET /api/users/:id (admin only)
-- [ ] T134 [US5] In routes.go: Add PUT /api/users/:id/role (admin only)
-- [ ] T135 [US5] In routes.go: Add PUT /api/users/:id/activate (admin only)
+- [X] T132 [US5] In backend/routes/routes.go: Add GET /api/users (protected with RequireAuth + RequireRole("admin"))
+- [X] T133 [US5] In routes.go: Add GET /api/users/:id (admin only)
+- [X] T134 [US5] In routes.go: Add PUT /api/users/:id/role (admin only)
+- [X] T135 [US5] In routes.go: Add PUT /api/users/:id/activate (admin only)
 
 ### Frontend - User Management Component
 
-- [ ] T136 [P] [US5] Create frontend/src/components/UserManagement.svelte with Svelte 5 runes
-- [ ] T137 [US5] In UserManagement.svelte: Fetch users from GET /api/users on component mount
-- [ ] T138 [US5] In UserManagement.svelte: Display users in table with columns: نام کاربری, ایمیل, نقش, وضعیت, عملیات
-- [ ] T139 [US5] In UserManagement.svelte: Add pagination controls (قبلی / بعدی)
-- [ ] T140 [US5] In UserManagement.svelte: Add role dropdown for each user (ادمین / کاربر عادی)
-- [ ] T141 [US5] In UserManagement.svelte: On role change, PUT to /api/users/:id/role and refresh list
-- [ ] T142 [US5] In UserManagement.svelte: Add activate/deactivate toggle button (فعال / غیرفعال)
-- [ ] T143 [US5] In UserManagement.svelte: On activation change, PUT to /api/users/:id/activate and refresh list
-- [ ] T144 [US5] In UserManagement.svelte: Display Persian error messages from API
-- [ ] T145 [US5] In UserManagement.svelte: Show confirmation dialog before role change or deactivation
-- [ ] T146 [US5] In App.svelte: Add "User Management" menu item in navigation (only show if user is admin)
-- [ ] T147 [US5] In App.svelte: Add route for user management page that shows UserManagement component
+- [X] T136 [P] [US5] Create frontend/src/components/UserManagement.svelte with Svelte 5 runes
+- [X] T137 [US5] In UserManagement.svelte: Fetch users from GET /api/users on component mount
+- [X] T138 [US5] In UserManagement.svelte: Display users in table with columns: نام کاربری, ایمیل, نقش, وضعیت, عملیات
+- [X] T139 [US5] In UserManagement.svelte: Add pagination controls (قبلی / بعدی)
+- [X] T140 [US5] In UserManagement.svelte: Add role dropdown for each user (ادمین / کاربر عادی)
+- [X] T141 [US5] In UserManagement.svelte: On role change, PUT to /api/users/:id/role and refresh list
+- [X] T142 [US5] In UserManagement.svelte: Add activate/deactivate toggle button (فعال / غیرفعال)
+- [X] T143 [US5] In UserManagement.svelte: On activation change, PUT to /api/users/:id/activate and refresh list
+- [X] T144 [US5] In UserManagement.svelte: Display Persian error messages from API
+- [X] T145 [US5] In UserManagement.svelte: Show confirmation dialog before role change or deactivation
+- [X] T146 [US5] In App.svelte: Add "User Management" menu item in navigation (only show if user is admin)
+- [X] T147 [US5] In App.svelte: Add route for user management page that shows UserManagement component
 
 **Manual Test Checklist for US5**:
 - ✅ Login as admin → User management menu visible

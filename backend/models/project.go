@@ -7,15 +7,17 @@ import (
 )
 
 type Project struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	Identifier  string    `json:"identifier"`
-	Homepage    *string   `json:"homepage,omitempty"`
-	IsPublic    bool      `json:"is_public"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID  `json:"id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Status      string     `json:"status"`
+	Identifier  string     `json:"identifier"`
+	Homepage    *string    `json:"homepage,omitempty"`
+	IsPublic    bool       `json:"is_public"`
+	UserID      *uuid.UUID `json:"user_id,omitempty"`
+	CreatedBy   *uuid.UUID `json:"created_by,omitempty"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type CreateProjectRequest struct {

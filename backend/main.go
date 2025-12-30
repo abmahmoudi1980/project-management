@@ -43,20 +43,24 @@ func main() {
 	timeLogRepo := repositories.NewTimeLogRepository(config.DB)
 	userRepo := repositories.NewUserRepository(config.DB)
 	sessionRepo := repositories.NewSessionRepository(config.DB)
+	passwordResetRepo := repositories.NewPasswordResetRepository(config.DB)
 
 	// Initialize services
+	emailService := services.NewEmailService()
 	projectService := services.NewProjectService(projectRepo)
 	taskService := services.NewTaskService(taskRepo, projectRepo)
 	timeLogService := services.NewTimeLogService(timeLogRepo, taskRepo)
-	authService := services.NewAuthService(userRepo, sessionRepo)
+	authService := services.NewAuthService(userRepo, sessionRepo, passwordResetRepo, emailService)
+	userService := services.NewUserService(userRepo)
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(projectService)
 	taskHandler := handlers.NewTaskHandler(taskService)
 	timeLogHandler := handlers.NewTimeLogHandler(timeLogService)
 	authHandler := handlers.NewAuthHandler(authService)
+	userHandler := handlers.NewUserHandler(userService)
 
-	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler)
+	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler)
 
 	log.Println("Server starting on port 3000")
 	if err := app.Listen(":3000"); err != nil {

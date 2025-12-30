@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"project-management/middleware"
 	"project-management/models"
 	"project-management/services"
 
@@ -17,7 +18,14 @@ func NewProjectHandler(service *services.ProjectService) *ProjectHandler {
 }
 
 func (h *ProjectHandler) GetAllProjects(c *fiber.Ctx) error {
-	projects, err := h.service.GetAllProjects(c.Context())
+	// Get user from context (set by RequireAuth middleware)
+	userContext, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	// Get projects filtered by user role
+	projects, err := h.service.GetProjectsByUser(c.Context(), userContext.UserID, userContext.Role)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch projects"})
 	}

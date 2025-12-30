@@ -36,17 +36,24 @@ type AuthService interface {
 	ValidateAccessToken(tokenString string) (*jwt.Token, error)
 	RefreshToken(ctx context.Context, refreshToken string) (string, string, error)
 	HandleFailedLogin(ctx context.Context, userID uuid.UUID) error
+	RequestPasswordReset(ctx context.Context, email string) error
+	ResetPassword(ctx context.Context, token, newPassword string) error
+	RevokeSession(ctx context.Context, refreshToken string) error
 }
 
 type authService struct {
-	userRepo    repositories.UserRepository
-	sessionRepo repositories.SessionRepository
+	userRepo          repositories.UserRepository
+	sessionRepo       repositories.SessionRepository
+	passwordResetRepo repositories.PasswordResetRepository
+	emailService      *EmailService
 }
 
-func NewAuthService(userRepo repositories.UserRepository, sessionRepo repositories.SessionRepository) AuthService {
+func NewAuthService(userRepo repositories.UserRepository, sessionRepo repositories.SessionRepository, passwordResetRepo repositories.PasswordResetRepository, emailService *EmailService) AuthService {
 	return &authService{
-		userRepo:    userRepo,
-		sessionRepo: sessionRepo,
+		userRepo:          userRepo,
+		sessionRepo:       sessionRepo,
+		passwordResetRepo: passwordResetRepo,
+		emailService:      emailService,
 	}
 }
 
@@ -304,6 +311,120 @@ func (s *authService) HandleFailedLogin(ctx context.Context, userID uuid.UUID) e
 	}
 
 	return nil
+}
+
+// RequestPasswordReset generates a password reset token and sends it via email
+func (s *authService) RequestPasswordReset(ctx context.Context, email string) error {
+	// Always return success to prevent email enumeration
+	// This means we don't reveal whether the email exists or not
+
+	email = strings.ToLower(email)
+	user, err := s.userRepo.GetByEmail(ctx, email)
+
+	// If user doesn't exist, silently succeed (security best practice)
+	if err != nil || user == nil {
+		return nil
+	}
+
+	// Generate cryptographically secure 32-byte token
+	token, err := generateSecureToken()
+	if err != nil {
+		return err
+	}
+
+	// Hash token for database storage
+	tokenHash := hashToken(token)
+
+	// Create password reset token with 1-hour expiry
+	resetToken := &models.PasswordResetToken{
+		UserID:    user.ID,
+		TokenHash: tokenHash,
+		ExpiresAt: time.Now().Add(1 * time.Hour),
+		Used:      false,
+	}
+
+	err = s.passwordResetRepo.Create(ctx, resetToken)
+	if err != nil {
+		return err
+	}
+
+	// Send email with plain token (not the hash)
+	err = s.emailService.SendPasswordResetEmail(user.Email, token)
+	if err != nil {
+		// Log error but don't fail the request
+		fmt.Printf("Failed to send password reset email: %v\n", err)
+	}
+
+	return nil
+}
+
+// ResetPassword validates token and updates user password
+func (s *authService) ResetPassword(ctx context.Context, token, newPassword string) error {
+	// Validate new password strength
+	if !isStrongPassword(newPassword) {
+		return ErrWeakPassword
+	}
+
+	// Hash the received token to match database
+	tokenHash := hashToken(token)
+
+	// Lookup token
+	resetToken, err := s.passwordResetRepo.GetByToken(ctx, tokenHash)
+	if err != nil || resetToken == nil {
+		return ErrInvalidToken
+	}
+
+	// Check if token is expired
+	if time.Now().After(resetToken.ExpiresAt) {
+		return ErrInvalidToken
+	}
+
+	// Check if token was already used
+	if resetToken.Used {
+		return ErrInvalidToken
+	}
+
+	// Hash new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 10)
+	if err != nil {
+		return err
+	}
+
+	// Get user
+	user, err := s.userRepo.GetByID(ctx, resetToken.UserID)
+	if err != nil || user == nil {
+		return ErrInvalidToken
+	}
+
+	// Update user password
+	user.PasswordHash = string(hashedPassword)
+	err = s.userRepo.Update(ctx, user)
+	if err != nil {
+		return err
+	}
+
+	// Mark token as used
+	err = s.passwordResetRepo.MarkAsUsed(ctx, tokenHash)
+	if err != nil {
+		return err
+	}
+
+	// Reset failed login attempts if any
+	err = s.userRepo.UpdateFailedAttempts(ctx, user.ID, 0)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RevokeSession revokes a session by marking it as revoked in the database
+func (s *authService) RevokeSession(ctx context.Context, refreshToken string) error {
+	// Hash the refresh token to match database
+	tokenHash := hashToken(refreshToken)
+
+	// Revoke the session
+	return s.sessionRepo.Revoke(ctx, tokenHash)
 }
 
 // Helper functions

@@ -17,8 +17,10 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	Update(ctx context.Context, user *models.User) error
 	List(ctx context.Context, limit, offset int, role string, isActive *bool) ([]*models.User, int, error)
+	ListPaginated(ctx context.Context, limit, offset int, role string, isActive *bool) ([]models.User, int, error)
 	UpdateFailedAttempts(ctx context.Context, userID uuid.UUID, attempts int) error
 	LockAccount(ctx context.Context, userID uuid.UUID, lockUntil time.Time) error
+	CountActiveAdmins(ctx context.Context) (int, error)
 }
 
 type userRepository struct {
@@ -134,4 +136,61 @@ func (r *userRepository) LockAccount(ctx context.Context, userID uuid.UUID, lock
 	query := "UPDATE users SET locked_until = $1, updated_at = $2 WHERE id = $3"
 	_, err := r.db.Exec(ctx, query, lockUntil, time.Now(), userID)
 	return err
+}
+
+// ListPaginated returns users with pagination (returns User values, not pointers)
+func (r *userRepository) ListPaginated(ctx context.Context, limit, offset int, role string, isActive *bool) ([]models.User, int, error) {
+	query := "SELECT id, username, email, role, is_active, created_at, updated_at, last_login_at FROM users WHERE 1=1"
+	countQuery := "SELECT COUNT(*) FROM users WHERE 1=1"
+	args := []interface{}{}
+	argCount := 1
+
+	if role != "" {
+		query += fmt.Sprintf(" AND role = $%d", argCount)
+		countQuery += fmt.Sprintf(" AND role = $%d", argCount)
+		args = append(args, role)
+		argCount++
+	}
+
+	if isActive != nil {
+		query += fmt.Sprintf(" AND is_active = $%d", argCount)
+		countQuery += fmt.Sprintf(" AND is_active = $%d", argCount)
+		args = append(args, *isActive)
+		argCount++
+	}
+
+	var total int
+	if err := r.db.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d OFFSET $%d", argCount, argCount+1)
+	args = append(args, limit, offset)
+
+	rows, err := r.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	users := []models.User{}
+	for rows.Next() {
+		user := models.User{}
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Role, &user.IsActive, &user.CreatedAt, &user.UpdatedAt, &user.LastLoginAt)
+		if err != nil {
+			return nil, 0, err
+		}
+		users = append(users, user)
+	}
+
+	return users, total, nil
+}
+
+// CountActiveAdmins returns the count of active admin users
+func (r *userRepository) CountActiveAdmins(ctx context.Context) (int, error) {
+	query := "SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = true"
+
+	var count int
+	err := r.db.QueryRow(ctx, query).Scan(&count)
+	return count, err
 }

@@ -13,6 +13,7 @@ func SetupRoutes(
 	taskHandler *handlers.TaskHandler,
 	timeLogHandler *handlers.TimeLogHandler,
 	authHandler *handlers.AuthHandler,
+	userHandler *handlers.UserHandler,
 ) {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json")
@@ -25,6 +26,8 @@ func SetupRoutes(
 	auth := api.Group("/auth")
 	auth.Post("/register", authHandler.Register)
 	auth.Post("/login", authHandler.Login)
+	auth.Post("/forgot-password", authHandler.ForgotPassword)
+	auth.Post("/reset-password", authHandler.ResetPassword)
 
 	// Protected auth routes (require authentication)
 	auth.Get("/me", middleware.RequireAuth, authHandler.GetCurrentUser)
@@ -55,4 +58,11 @@ func SetupRoutes(
 	timelogs := api.Group("/timelogs", middleware.RequireAuth)
 	timelogs.Get("/:id", timeLogHandler.GetTimeLog)
 	timelogs.Delete("/:id", timeLogHandler.DeleteTimeLog)
+
+	// Admin user management routes (admin only)
+	users := api.Group("/users", middleware.RequireAuth, middleware.RequireRole("admin"))
+	users.Get("/", userHandler.GetUsers)
+	users.Get("/:id", userHandler.GetUserByID)
+	users.Put("/:id/role", userHandler.UpdateUserRole)
+	users.Put("/:id/activate", userHandler.UpdateUserActivation)
 }

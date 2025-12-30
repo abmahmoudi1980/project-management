@@ -24,6 +24,30 @@ func (s *ProjectService) GetAllProjects(ctx context.Context) ([]models.Project, 
 	return s.repo.GetAll(ctx)
 }
 
+// GetProjectsByUser returns all projects for admins, or only projects created by the user for regular users
+func (s *ProjectService) GetProjectsByUser(ctx context.Context, userID uuid.UUID, role string) ([]models.Project, error) {
+	// Admins can see all projects
+	if role == "admin" {
+		return s.repo.GetAll(ctx)
+	}
+
+	// Regular users only see projects they created
+	allProjects, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter projects by user_id or created_by
+	var userProjects []models.Project
+	for _, p := range allProjects {
+		if (p.UserID != nil && *p.UserID == userID) || (p.CreatedBy != nil && *p.CreatedBy == userID) {
+			userProjects = append(userProjects, p)
+		}
+	}
+
+	return userProjects, nil
+}
+
 func (s *ProjectService) GetProjectByID(ctx context.Context, id uuid.UUID) (*models.Project, error) {
 	return s.repo.GetByID(ctx, id)
 }

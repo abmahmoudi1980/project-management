@@ -27,6 +27,29 @@ func (s *TaskService) GetTasksByProjectID(ctx context.Context, projectID uuid.UU
 	return s.repo.GetByProjectID(ctx, projectID)
 }
 
+// GetTasksByUser returns tasks filtered by user role
+// Admins can see all tasks, regular users only see tasks from projects they own
+func (s *TaskService) GetTasksByUser(ctx context.Context, userID uuid.UUID, role string, projectID uuid.UUID) ([]models.Task, error) {
+	// Verify project exists
+	project, err := s.projectRepo.GetByID(ctx, projectID)
+	if err != nil || project == nil {
+		return nil, models.ErrNotFound
+	}
+
+	// Admins can see all tasks
+	if role == "admin" {
+		return s.repo.GetByProjectID(ctx, projectID)
+	}
+
+	// Regular users can only see tasks from projects they own
+	if (project.UserID != nil && *project.UserID == userID) || (project.CreatedBy != nil && *project.CreatedBy == userID) {
+		return s.repo.GetByProjectID(ctx, projectID)
+	}
+
+	// User doesn't own this project, return empty list
+	return []models.Task{}, nil
+}
+
 func (s *TaskService) GetTaskByID(ctx context.Context, id uuid.UUID) (*models.Task, error) {
 	return s.repo.GetByID(ctx, id)
 }
