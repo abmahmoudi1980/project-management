@@ -2,20 +2,18 @@
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
-  export let value = ""; // Gregorian ISO date
-  export let placeholder = "مثال: 1403/10/10";
-  export let error = false;
+  let { value = $bindable(""), placeholder = "مثال: 1403/10/10", error = false } = $props();
 
   const dispatch = createEventDispatcher();
 
-  let jalaliDate = "";
-  let inputElement;
-  let showCalendar = false;
-  let currentMonth = moment();
-  let calendarContainer;
+  let jalaliDate = $state("");
+  let inputElement = $state();
+  let showCalendar = $state(false);
+  let currentMonth = $state(moment());
+  let calendarContainer = $state();
 
   // Convert Gregorian to Jalali when value changes
-  $: {
+  $effect(() => {
     if (value) {
       jalaliDate = moment(value, "YYYY-MM-DD").locale("fa").format("YYYY/MM/DD");
       currentMonth = moment(value, "YYYY-MM-DD");
@@ -23,10 +21,10 @@
       jalaliDate = "";
       currentMonth = moment();
     }
-  }
+  });
 
   // Generate calendar days
-  $: calendarDays = generateCalendar(currentMonth);
+  let calendarDays = $derived(generateCalendar(currentMonth));
 
   function handleInput(event) {
     let input = event.target.value;

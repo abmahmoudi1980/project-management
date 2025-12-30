@@ -5,7 +5,7 @@
   import ProjectList from "./components/ProjectList.svelte";
   import TaskList from "./components/TaskList.svelte";
 
-  let selectedProject = null;
+  let selectedProject = $state(null);
 
   onMount(async () => {
     await projects.load();

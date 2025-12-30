@@ -6,11 +6,11 @@
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
-  export let project;
+  let { project } = $props();
   const dispatch = createEventDispatcher();
 
-  $: showForm = false;
-  $: selectedTask = null;
+  let showForm = $state(false);
+  let selectedTask = $state(null);
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";

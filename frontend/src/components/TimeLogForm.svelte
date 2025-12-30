@@ -3,11 +3,11 @@
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
   import moment from "jalali-moment";
 
-  export let task;
+  let { task } = $props();
 
-  let date = new Date().toISOString().split("T")[0];
-  let durationMinutes = 30;
-  let note = "";
+  let date = $state(new Date().toISOString().split("T")[0]);
+  let durationMinutes = $state(30);
+  let note = $state("");
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";

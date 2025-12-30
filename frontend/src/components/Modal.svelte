@@ -2,9 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { fade, scale } from "svelte/transition";
 
-  export let show = false;
-  export let title = "";
-  export let maxWidth = "2xl"; // sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl
+  let { show = false, title = "", maxWidth = "2xl" } = $props();
 
   const dispatch = createEventDispatcher();
 
