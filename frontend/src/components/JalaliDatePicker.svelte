@@ -208,6 +208,7 @@
           type="button"
           onclick={nextMonth}
           class="p-1 hover:bg-gray-100 rounded"
+          aria-label="ماه بعد"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -222,6 +223,7 @@
           type="button"
           onclick={previousMonth}
           class="p-1 hover:bg-gray-100 rounded"
+          aria-label="ماه قبل"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

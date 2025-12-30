@@ -141,7 +141,9 @@
 
 <!-- Modal for New Project -->
 <Modal show={showModal} title="ایجاد پروژه جدید" maxWidth="lg" on:close={closeModal}>
-  <ProjectForm
-    on:created={closeModal}
-  />
+  {#snippet children()}
+    <ProjectForm
+      on:created={closeModal}
+    />
+  {/snippet}
 </Modal>

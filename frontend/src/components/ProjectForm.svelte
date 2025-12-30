@@ -152,7 +152,7 @@
       rows="3"
       class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
       placeholder="توضیحات مختصری درباره پروژه..."
-    />
+    ></textarea>
   </div>
 
   <div class="grid grid-cols-2 gap-4">
@@ -172,7 +172,7 @@
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1.5"
+      <label for="is_public" class="block text-sm font-medium text-slate-700 mb-1.5"
         >دسترسی</label
       >
       <div class="flex items-center h-10">

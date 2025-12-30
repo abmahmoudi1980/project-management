@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { fade, scale } from "svelte/transition";
 
-  let { show = false, title = "", maxWidth = "2xl" } = $props();
+  let { show = false, title = "", maxWidth = "2xl", children } = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -40,6 +40,8 @@
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
     onclick={handleBackdropClick}
+    onkeydown={handleKeydown}
+    tabindex="-1"
     transition:fade={{ duration: 200 }}
     role="dialog"
     aria-modal="true"
@@ -78,7 +80,7 @@
 
       <!-- Modal Body (scrollable) -->
       <div class="flex-1 overflow-y-auto px-6 py-6">
-        <slot />
+        {@render children()}
       </div>
     </div>
   </div>
