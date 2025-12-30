@@ -1,11 +1,18 @@
 <script>
   import { timeLogs } from "../stores/timeLogStore";
+  import JalaliDatePicker from "./JalaliDatePicker.svelte";
+  import moment from "jalali-moment";
 
   export let task;
 
   let date = new Date().toISOString().split("T")[0];
   let durationMinutes = 30;
   let note = "";
+
+  function formatJalaliDate(dateString) {
+    if (!dateString) return "";
+    return moment(dateString).locale("fa").format("YYYY/MM/DD");
+  }
 
   async function handleSubmit() {
     if (!durationMinutes || durationMinutes <= 0) return;
@@ -38,11 +45,12 @@
 
 <div class="space-y-4">
   <form on:submit|preventDefault={handleSubmit} class="flex gap-3">
-    <input
-      type="date"
-      bind:value={date}
-      class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
+    <div class="w-40">
+      <JalaliDatePicker
+        bind:value={date}
+        placeholder="1403/10/10"
+      />
+    </div>
     <input
       type="number"
       bind:value={durationMinutes}
@@ -74,7 +82,7 @@
         >
           <div>
             <span class="font-medium"
-              >{new Date(log.date).toLocaleDateString('fa-IR')}</span
+              >{formatJalaliDate(log.date)}</span
             >
             <span class="mx-2">•</span>
             <span class="text-blue-600 font-semibold"

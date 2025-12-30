@@ -4,12 +4,18 @@
   import TaskForm from "./TaskForm.svelte";
   import TimeLogForm from "./TimeLogForm.svelte";
   import { createEventDispatcher } from "svelte";
+  import moment from "jalali-moment";
 
   export let project;
   const dispatch = createEventDispatcher();
 
   $: showForm = false;
   $: selectedTask = null;
+
+  function formatJalaliDate(dateString) {
+    if (!dateString) return "";
+    return moment(dateString).locale("fa").format("YYYY/MM/DD");
+  }
 
   function toggleForm() {
     showForm = !showForm;
@@ -118,7 +124,7 @@
               {/if}
               {#if task.start_date}
                 <span
-                  >شروع: {new Date(task.start_date).toLocaleDateString('fa-IR')}</span
+                  >شروع: {formatJalaliDate(task.start_date)}</span
                 >
               {/if}
               {#if task.due_date}
@@ -128,7 +134,7 @@
                     ? 'text-rose-600'
                     : ''}"
                 >
-                  مهلت: {new Date(task.due_date).toLocaleDateString('fa-IR')}
+                  مهلت: {formatJalaliDate(task.due_date)}
                 </span>
               {/if}
               {#if task.estimated_hours}

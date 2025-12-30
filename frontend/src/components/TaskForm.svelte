@@ -1,6 +1,7 @@
 <script>
   import { tasks } from "../stores/taskStore";
   import { createEventDispatcher } from "svelte";
+  import JalaliDatePicker from "./JalaliDatePicker.svelte";
 
   export let project;
   const dispatch = createEventDispatcher();
@@ -178,13 +179,11 @@
         for="start_date"
         class="block text-sm font-medium text-gray-700 mb-1">تاریخ شروع</label
       >
-      <input
-        type="date"
-        id="start_date"
+      <JalaliDatePicker
         bind:value={start_date}
         on:change={validateDates}
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        class:border-red-500={dateError}
+        placeholder="1403/10/10"
+        error={dateError}
       />
     </div>
 
@@ -192,13 +191,11 @@
       <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1"
         >تاریخ مهلت</label
       >
-      <input
-        type="date"
-        id="due_date"
+      <JalaliDatePicker
         bind:value={due_date}
         on:change={validateDates}
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        class:border-red-500={dateError}
+        placeholder="1403/10/20"
+        error={dateError}
       />
     </div>
   </div>
