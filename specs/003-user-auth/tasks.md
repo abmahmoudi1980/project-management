@@ -30,11 +30,11 @@ Each user story is independently testable and can be delivered as an increment.
 
 **Duration**: ~1 hour
 
-- [ ] T001 Add JWT dependency: `cd backend && go get github.com/golang-jwt/jwt/v5`
-- [ ] T002 Create environment configuration file: `.env` with JWT_SECRET, SMTP credentials
-- [ ] T003 Generate JWT secret: Run `openssl rand -base64 32` and add to `.env`
-- [ ] T004 Create backend/middleware/ directory for authentication middleware
-- [ ] T005 Create backend/config/jwt.go for JWT configuration constants
+- [X] T001 Add JWT dependency: `cd backend && go get github.com/golang-jwt/jwt/v5`
+- [X] T002 Create environment configuration file: `.env` with JWT_SECRET, SMTP credentials
+- [X] T003 Generate JWT secret: Run `openssl rand -base64 32` and add to `.env`
+- [X] T004 Create backend/middleware/ directory for authentication middleware
+- [X] T005 Create backend/config/jwt.go for JWT configuration constants
 
 ---
 
@@ -48,45 +48,45 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Database Setup
 
-- [ ] T006 Create database migration file: backend/migration/002_add_user_authentication.sql
-- [ ] T007 In migration: Create users table (id, username, email, password_hash, role, is_active, failed_login_attempts, locked_until, created_at, updated_at, last_login_at)
-- [ ] T008 In migration: Create sessions table (id, user_id, refresh_token_hash, user_agent, ip_address, created_at, expires_at, revoked)
-- [ ] T009 In migration: Create password_reset_tokens table (id, user_id, token_hash, created_at, expires_at, used)
-- [ ] T010 In migration: Add indexes (users.email, users.role, sessions.user_id, sessions.refresh_token_hash, password_reset_tokens.token_hash)
-- [ ] T011 In migration: ALTER TABLE projects ADD COLUMN user_id UUID REFERENCES users(id)
-- [ ] T012 In migration: ALTER TABLE projects ADD COLUMN created_by UUID REFERENCES users(id)
-- [ ] T013 In migration: ALTER TABLE tasks ADD COLUMN created_by UUID REFERENCES users(id)
-- [ ] T014 In migration: Insert seed admin user (email: admin@example.com, password: Admin123!, role: admin)
-- [ ] T015 Run migration: `cd backend && go run run_migration.go` and verify tables created
+- [X] T006 Create database migration file: backend/migration/002_add_user_authentication.sql
+- [X] T007 In migration: Create users table (id, username, email, password_hash, role, is_active, failed_login_attempts, locked_until, created_at, updated_at, last_login_at)
+- [X] T008 In migration: Create sessions table (id, user_id, refresh_token_hash, user_agent, ip_address, created_at, expires_at, revoked)
+- [X] T009 In migration: Create password_reset_tokens table (id, user_id, token_hash, created_at, expires_at, used)
+- [X] T010 In migration: Add indexes (users.email, users.role, sessions.user_id, sessions.refresh_token_hash, password_reset_tokens.token_hash)
+- [X] T011 In migration: ALTER TABLE projects ADD COLUMN user_id UUID REFERENCES users(id)
+- [X] T012 In migration: ALTER TABLE projects ADD COLUMN created_by UUID REFERENCES users(id)
+- [X] T013 In migration: ALTER TABLE tasks ADD COLUMN created_by UUID REFERENCES users(id)
+- [X] T014 In migration: Insert seed admin user (email: admin@example.com, password: Admin123!, role: admin)
+- [X] T015 Run migration: `cd backend && go run run_migration.go` and verify tables created
 
 ### Core Models
 
-- [ ] T016 [P] Create backend/models/user.go with User struct (ID, Username, Email, PasswordHash, Role, IsActive, FailedLoginAttempts, LockedUntil, CreatedAt, UpdatedAt, LastLoginAt)
-- [ ] T017 [P] In user.go: Add CreateUserRequest, LoginRequest, LoginResponse structs
-- [ ] T018 [P] Create backend/models/session.go with Session struct
-- [ ] T019 [P] Create backend/models/password_reset_token.go with PasswordResetToken struct
+- [X] T016 [P] Create backend/models/user.go with User struct (ID, Username, Email, PasswordHash, Role, IsActive, FailedLoginAttempts, LockedUntil, CreatedAt, UpdatedAt, LastLoginAt)
+- [X] T017 [P] In user.go: Add CreateUserRequest, LoginRequest, LoginResponse structs
+- [X] T018 [P] Create backend/models/session.go with Session struct
+- [X] T019 [P] Create backend/models/password_reset_token.go with PasswordResetToken struct
 
 ### Core Repositories
 
-- [ ] T020 [P] Create backend/repositories/user_repository.go with interface: Create, GetByID, GetByEmail, Update, List, UpdateFailedAttempts, LockAccount
-- [ ] T021 [P] Implement user repository methods with PostgreSQL queries
-- [ ] T022 [P] Create backend/repositories/session_repository.go with interface: Create, GetByRefreshToken, Revoke, DeleteExpired
-- [ ] T023 [P] Create backend/repositories/password_reset_repository.go with interface: Create, GetByToken, MarkAsUsed, DeleteExpired
+- [X] T020 [P] Create backend/repositories/user_repository.go with interface: Create, GetByID, GetByEmail, Update, List, UpdateFailedAttempts, LockAccount
+- [X] T021 [P] Implement user repository methods with PostgreSQL queries
+- [X] T022 [P] Create backend/repositories/session_repository.go with interface: Create, GetByRefreshToken, Revoke, DeleteExpired
+- [X] T023 [P] Create backend/repositories/password_reset_repository.go with interface: Create, GetByToken, MarkAsUsed, DeleteExpired
 
 ### Core Services
 
-- [ ] T024 Create backend/services/auth_service.go with interface: Register, Login, VerifyPassword, GenerateTokens, ValidateToken, RefreshToken
-- [ ] T025 In auth_service.go: Implement Register (validate input, hash password with bcrypt cost 10, create user, generate tokens)
-- [ ] T026 In auth_service.go: Implement Login (get user by email, check password, check account not locked/inactive, update last_login_at, generate tokens)
-- [ ] T027 In auth_service.go: Implement GenerateTokens (create access JWT 15min, refresh JWT 7days, store refresh token hash in sessions table)
-- [ ] T028 In auth_service.go: Implement ValidateToken (parse JWT, verify signature, check expiration)
-- [ ] T029 In auth_service.go: Implement HandleFailedLogin (increment failed_attempts, lock account after 5 attempts for 30 minutes)
+- [X] T024 Create backend/services/auth_service.go with interface: Register, Login, VerifyPassword, GenerateTokens, ValidateToken, RefreshToken
+- [X] T025 In auth_service.go: Implement Register (validate input, hash password with bcrypt cost 10, create user, generate tokens)
+- [X] T026 In auth_service.go: Implement Login (get user by email, check password, check account not locked/inactive, update last_login_at, generate tokens)
+- [X] T027 In auth_service.go: Implement GenerateTokens (create access JWT 15min, refresh JWT 7days, store refresh token hash in sessions table)
+- [X] T028 In auth_service.go: Implement ValidateToken (parse JWT, verify signature, check expiration)
+- [X] T029 In auth_service.go: Implement HandleFailedLogin (increment failed_attempts, lock account after 5 attempts for 30 minutes)
 
 ### Authentication Middleware
 
-- [ ] T030 Create backend/middleware/auth.go with RequireAuth middleware (extract JWT from cookie, validate, set user info in context)
-- [ ] T031 In auth.go: Add RequireRole(roles ...string) middleware (check user role from context against allowed roles)
-- [ ] T032 In auth.go: Add helper function getUserFromContext(c *fiber.Ctx) to extract user info from Fiber context
+- [X] T030 Create backend/middleware/auth.go with RequireAuth middleware (extract JWT from cookie, validate, set user info in context)
+- [X] T031 In auth.go: Add RequireRole(roles ...string) middleware (check user role from context against allowed roles)
+- [X] T032 In auth.go: Add helper function getUserFromContext(c *fiber.Ctx) to extract user info from Fiber context
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -108,26 +108,26 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Backend Implementation
 
-- [ ] T033 [US1] Create backend/handlers/auth_handler.go with Register handler
-- [ ] T034 [US1] In Register handler: Validate request body (username 3-50 chars, valid email, password 8+ chars with uppercase/lowercase/digit)
-- [ ] T035 [US1] In Register handler: Return Persian error for duplicate email: "این ایمیل قبلاً ثبت شده است"
-- [ ] T036 [US1] In Register handler: Return Persian error for weak password: "رمز عبور باید حداقل 8 کاراکتر و شامل حروف بزرگ، کوچک و اعداد باشد"
-- [ ] T037 [US1] In Register handler: Call auth_service.Register, set httpOnly cookies (access_token, refresh_token), return user info (exclude password_hash)
-- [ ] T038 [US1] In backend/routes/routes.go: Add POST /api/auth/register route (public, no auth required)
+- [X] T033 [US1] Create backend/handlers/auth_handler.go with Register handler
+- [X] T034 [US1] In Register handler: Validate request body (username 3-50 chars, valid email, password 8+ chars with uppercase/lowercase/digit)
+- [X] T035 [US1] In Register handler: Return Persian error for duplicate email: "این ایمیل قبلاً ثبت شده است"
+- [X] T036 [US1] In Register handler: Return Persian error for weak password: "رمز عبور باید حداقل 8 کاراکتر و شامل حروف بزرگ، کوچک و اعداد باشد"
+- [X] T037 [US1] In Register handler: Call auth_service.Register, set httpOnly cookies (access_token, refresh_token), return user info (exclude password_hash)
+- [X] T038 [US1] In backend/routes/routes.go: Add POST /api/auth/register route (public, no auth required)
 
 ### Frontend Implementation
 
-- [ ] T039 [P] [US1] Create frontend/src/stores/authStore.js with writable store (user, isAuthenticated, isLoading)
-- [ ] T040 [P] [US1] In authStore.js: Add register(username, email, password) method that POSTs to /api/auth/register
-- [ ] T041 [P] [US1] In authStore.js: Add checkAuth() method that GETs /api/auth/me to check if user is logged in
-- [ ] T042 [P] [US1] In authStore.js: Add logout() method that POSTs to /api/auth/logout and clears user state
-- [ ] T043 [P] [US1] Create frontend/src/components/RegisterForm.svelte with Svelte 5 runes
-- [ ] T044 [US1] In RegisterForm.svelte: Add form fields with Persian labels (نام کاربری, ایمیل, رمز عبور, تکرار رمز عبور)
-- [ ] T045 [US1] In RegisterForm.svelte: Add client-side validation (check password confirmation matches)
-- [ ] T046 [US1] In RegisterForm.svelte: Display Persian error messages from API
-- [ ] T047 [US1] In RegisterForm.svelte: Use $state for form fields, $derived for validation, call authStore.register() on submit
-- [ ] T048 [US1] Update frontend/src/lib/api.js: Add `credentials: 'include'` to all fetch calls to send cookies
-- [ ] T049 [US1] Update frontend/src/App.svelte: Add route logic to show RegisterForm when not authenticated
+- [X] T039 [P] [US1] Create frontend/src/stores/authStore.js with writable store (user, isAuthenticated, isLoading)
+- [X] T040 [P] [US1] In authStore.js: Add register(username, email, password) method that POSTs to /api/auth/register
+- [X] T041 [P] [US1] In authStore.js: Add checkAuth() method that GETs /api/auth/me to check if user is logged in
+- [X] T042 [P] [US1] In authStore.js: Add logout() method that POSTs to /api/auth/logout and clears user state
+- [X] T043 [P] [US1] Create frontend/src/components/RegisterForm.svelte with Svelte 5 runes
+- [X] T044 [US1] In RegisterForm.svelte: Add form fields with Persian labels (نام کاربری, ایمیل, رمز عبور, تکرار رمز عبور)
+- [X] T045 [US1] In RegisterForm.svelte: Add client-side validation (check password confirmation matches)
+- [X] T046 [US1] In RegisterForm.svelte: Display Persian error messages from API
+- [X] T047 [US1] In RegisterForm.svelte: Use $state for form fields, $derived for validation, call authStore.register() on submit
+- [X] T048 [US1] Update frontend/src/lib/api.js: Add `credentials: 'include'` to all fetch calls to send cookies
+- [X] T049 [US1] Update frontend/src/App.svelte: Add route logic to show RegisterForm when not authenticated
 
 **Manual Test Checklist for US1**:
 - ✅ Register with valid data → Account created, automatically logged in
@@ -155,20 +155,20 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Backend Implementation
 
-- [ ] T050 [US2] In backend/handlers/auth_handler.go: Add Login handler
-- [ ] T051 [US2] In Login handler: Validate request (email and password required)
-- [ ] T052 [US2] In Login handler: Check account not locked (locked_until < NOW), return Persian error: "حساب کاربری شما قفل شده است. لطفاً 30 دقیقه صبر کنید"
-- [ ] T053 [US2] In Login handler: Check account is active (is_active = true), return Persian error: "حساب کاربری شما غیرفعال شده است"
-- [ ] T054 [US2] In Login handler: Call auth_service.Login, handle invalid credentials with Persian error: "ایمیل یا رمز عبور نادرست است"
-- [ ] T055 [US2] In Login handler: On failed login, call auth_service.HandleFailedLogin to increment counter and lock after 5 attempts
-- [ ] T056 [US2] In Login handler: On successful login, reset failed_login_attempts to 0, set httpOnly cookies, return user info
-- [ ] T057 [US2] In backend/routes/routes.go: Add POST /api/auth/login route (public)
-- [ ] T058 [US2] In routes.go: Add GET /api/auth/me route (protected with RequireAuth middleware) to get current user info
-- [ ] T059 [US2] Create backend/handlers/auth_handler.go: Add GetCurrentUser handler that returns user info from context (exclude password_hash)
+- [X] T050 [US2] In backend/handlers/auth_handler.go: Add Login handler
+- [X] T051 [US2] In Login handler: Validate request (email and password required)
+- [X] T052 [US2] In Login handler: Check account not locked (locked_until < NOW), return Persian error: "حساب کاربری شما قفل شده است. لطفاً 30 دقیقه صبر کنید"
+- [X] T053 [US2] In Login handler: Check account is active (is_active = true), return Persian error: "حساب کاربری شما غیرفعال شده است"
+- [X] T054 [US2] In Login handler: Call auth_service.Login, handle invalid credentials with Persian error: "ایمیل یا رمز عبور نادرست است"
+- [X] T055 [US2] In Login handler: On failed login, call auth_service.HandleFailedLogin to increment counter and lock after 5 attempts
+- [X] T056 [US2] In Login handler: On successful login, reset failed_login_attempts to 0, set httpOnly cookies, return user info
+- [X] T057 [US2] In backend/routes/routes.go: Add POST /api/auth/login route (public)
+- [X] T058 [US2] In routes.go: Add GET /api/auth/me route (protected with RequireAuth middleware) to get current user info
+- [X] T059 [US2] Create backend/handlers/auth_handler.go: Add GetCurrentUser handler that returns user info from context (exclude password_hash)
 
 ### Role-Based Access Control
 
-- [ ] T060 [US2] In routes.go: Wrap all existing routes (projects, tasks, timelogs) with RequireAuth middleware
+- [X] T060 [US2] In routes.go: Wrap all existing routes (projects, tasks, timelogs) with RequireAuth middleware
 - [ ] T061 [US2] Update backend/services/project_service.go: Add GetProjectsByUser(userID, role) method (admins see all, users see own)
 - [ ] T062 [US2] Update backend/handlers/project_handler.go: In GetProjects, call GetProjectsByUser with user from context
 - [ ] T063 [US2] Update backend/services/task_service.go: Add GetTasksByUser(userID, role) method (filter by project ownership)
@@ -176,21 +176,21 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Frontend Implementation
 
-- [ ] T065 [P] [US2] Create frontend/src/components/LoginForm.svelte with Svelte 5 runes
-- [ ] T066 [US2] In LoginForm.svelte: Add form with Persian labels (ایمیل, رمز عبور, ورود)
-- [ ] T067 [US2] In LoginForm.svelte: Display Persian error messages (invalid credentials, account locked, account deactivated)
-- [ ] T068 [US2] In LoginForm.svelte: Use $state for form fields, call authStore.login() on submit
-- [ ] T069 [US2] In authStore.js: Implement login(email, password) that POSTs to /api/auth/login and updates store on success
-- [ ] T070 [US2] Update frontend/src/App.svelte: Call authStore.checkAuth() in onMount to check if user is already logged in
-- [ ] T071 [US2] In App.svelte: Use $effect to redirect to login page if not authenticated
-- [ ] T072 [US2] In App.svelte: Show loading state while checkAuth() is running
-- [ ] T073 [US2] Update frontend/src/lib/api.js: Add global 401 handler that calls authStore.logout() and redirects to login
+- [X] T065 [P] [US2] Create frontend/src/components/LoginForm.svelte with Svelte 5 runes
+- [X] T066 [US2] In LoginForm.svelte: Add form with Persian labels (ایمیل, رمز عبور, ورود)
+- [X] T067 [US2] In LoginForm.svelte: Display Persian error messages (invalid credentials, account locked, account deactivated)
+- [X] T068 [US2] In LoginForm.svelte: Use $state for form fields, call authStore.login() on submit
+- [X] T069 [US2] In authStore.js: Implement login(email, password) that POSTs to /api/auth/login and updates store on success
+- [X] T070 [US2] Update frontend/src/App.svelte: Call authStore.checkAuth() in onMount to check if user is already logged in
+- [X] T071 [US2] In App.svelte: Use $effect to redirect to login page if not authenticated
+- [X] T072 [US2] In App.svelte: Show loading state while checkAuth() is running
+- [X] T073 [US2] Update frontend/src/lib/api.js: Add global 401 handler that calls authStore.logout() and redirects to login
 
 ### Access Control UI
 
-- [ ] T074 [US2] Update frontend/src/components/ProjectList.svelte: Show all projects if admin, filter if regular user
-- [ ] T075 [US2] Update frontend/src/components/TaskList.svelte: Show all tasks if admin, filter by project ownership if regular user
-- [ ] T076 [US2] In App.svelte: Show user role badge (ادمین / کاربر عادی) in header
+- [X] T074 [US2] Update frontend/src/components/ProjectList.svelte: Show all projects if admin, filter if regular user
+- [X] T075 [US2] Update frontend/src/components/TaskList.svelte: Show all tasks if admin, filter by project ownership if regular user
+- [X] T076 [US2] In App.svelte: Show user role badge (ادمین / کاربر عادی) in header
 
 **Manual Test Checklist for US2**:
 - ✅ Login with valid credentials → Logged in, cookies set, redirected to main app

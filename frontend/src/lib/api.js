@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:3000/api';
 
 async function apiCall(endpoint, options = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -6,10 +6,19 @@ async function apiCall(endpoint, options = {}) {
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include', // Always send cookies with requests
     ...options,
   });
 
   if (!response.ok) {
+    // Handle 401 Unauthorized - user needs to login
+    if (response.status === 401) {
+      // Redirect to login by reloading the page
+      // The authStore.checkAuth() will handle showing login screen
+      window.location.reload();
+      return;
+    }
+    
     const error = await response.json().catch(() => ({ error: 'An error occurred' }));
     throw new Error(error.error || 'An error occurred');
   }
