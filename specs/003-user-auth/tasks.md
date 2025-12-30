@@ -390,33 +390,33 @@ Each user story is independently testable and can be delivered as an increment.
 
 ### Security Headers & Rate Limiting
 
-- [ ] T148 [P] Configure Fiber helmet middleware in backend/main.go with security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- [ ] T149 [P] Configure CORS middleware in main.go (allow origin: http://localhost:5173, allow credentials: true)
-- [ ] T150 [P] Add IP-based rate limiter middleware (10 requests/minute per IP) to all auth endpoints
-- [ ] T151 [P] Add stricter rate limiter to login endpoint (5 attempts per 5 minutes per IP)
+- [X] T148 [P] Configure Fiber helmet middleware in backend/main.go with security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [X] T149 [P] Configure CORS middleware in main.go (allow origin: http://localhost:5173, allow credentials: true)
+- [X] T150 [P] Add IP-based rate limiter middleware (10 requests/minute per IP) to all auth endpoints
+- [X] T151 [P] Add stricter rate limiter to login endpoint (5 attempts per 5 minutes per IP)
 
 ### Password Change & Profile Update
 
-- [ ] T152 [P] In backend/handlers/auth_handler.go: Add UpdateProfile handler (update username, email)
-- [ ] T153 [P] In auth_handler.go: Add ChangePassword handler (verify current password, update to new password)
-- [ ] T154 [P] In backend/routes/routes.go: Add PUT /api/auth/me (protected)
-- [ ] T155 [P] In routes.go: Add PUT /api/auth/me/password (protected)
-- [ ] T156 [P] Create frontend/src/components/ProfileSettings.svelte with forms for profile update and password change
+- [X] T152 [P] In backend/handlers/auth_handler.go: Add UpdateProfile handler (update username, email)
+- [X] T153 [P] In auth_handler.go: Add ChangePassword handler (verify current password, update to new password)
+- [X] T154 [P] In backend/routes/routes.go: Add PUT /api/auth/me (protected)
+- [X] T155 [P] In routes.go: Add PUT /api/auth/me/password (protected)
+- [X] T156 [P] Create frontend/src/components/ProfileSettings.svelte with forms for profile update and password change
 
 ### UI Polish & Persian Labels
 
-- [ ] T157 [P] Review all components for 100% Persian labels and error messages
-- [ ] T158 [P] Add loading spinners to all forms during API calls
-- [ ] T159 [P] Add success toast notifications for all operations (ثبت‌نام موفق، ورود موفق، etc.)
-- [ ] T160 [P] Add RTL (direction: rtl) styling to all forms and text in Tailwind config
-- [ ] T161 [P] Style all forms consistently with Tailwind classes (shadows, borders, focus states)
+- [X] T157 [P] Review all components for 100% Persian labels and error messages
+- [X] T158 [P] Add loading spinners to all forms during API calls
+- [X] T159 [P] Add success toast notifications for all operations (ثبت‌نام موفق، ورود موفق، etc.)
+- [X] T160 [P] Add RTL (direction: rtl) styling to all forms and text in Tailwind config
+- [X] T161 [P] Style all forms consistently with Tailwind classes (shadows, borders, focus states)
 
 ### Cleanup & Maintenance
 
-- [ ] T162 [P] Create database cleanup job script: backend/scripts/cleanup_expired_sessions.go (delete sessions where expires_at < NOW)
-- [ ] T163 [P] Create cleanup job for password reset tokens: Delete tokens where (expires_at < NOW OR used = true)
-- [ ] T164 [P] Add documentation comment to .env.example with all required environment variables
-- [ ] T165 [P] Update README.md with authentication setup instructions
+- [X] T162 [P] Create database cleanup job script: backend/scripts/cleanup_expired_sessions.go (delete sessions where expires_at < NOW)
+- [X] T163 [P] Create cleanup job for password reset tokens: Delete tokens where (expires_at < NOW OR used = true)
+- [X] T164 [P] Add documentation comment to .env.example with all required environment variables
+- [X] T165 [P] Update README.md with authentication setup instructions
 
 ---
 

@@ -11,6 +11,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/joho/godotenv"
 )
 
@@ -36,6 +37,9 @@ func main() {
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowHeaders:     "Content-Type,Authorization",
 	}))
+
+	// Security headers
+	app.Use(helmet.New())
 
 	// Initialize repositories
 	projectRepo := repositories.NewProjectRepository(config.DB)

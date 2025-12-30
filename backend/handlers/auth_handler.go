@@ -285,3 +285,94 @@ func (h *AuthHandler) ResetPassword(c *fiber.Ctx) error {
 		},
 	})
 }
+
+// UpdateProfile handles user profile updates
+func (h *AuthHandler) UpdateProfile(c *fiber.Ctx) error {
+	userCtx, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "دسترسی غیرمجاز",
+				"code":    "UNAUTHORIZED",
+			},
+		})
+	}
+
+	var req models.UpdateUserRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "درخواست نامعتبر است",
+				"code":    "INVALID_REQUEST",
+			},
+		})
+	}
+
+	user, err := h.authService.UpdateProfile(c.Context(), userCtx.UserID, req)
+	if err != nil {
+		statusCode := fiber.StatusBadRequest
+		if err == services.ErrEmailExists {
+			statusCode = fiber.StatusConflict
+		}
+
+		return c.Status(statusCode).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": err.Error(),
+				"code":    "UPDATE_FAILED",
+			},
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"user": user,
+		},
+	})
+}
+
+// ChangePassword handles password changes
+func (h *AuthHandler) ChangePassword(c *fiber.Ctx) error {
+	userCtx, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "دسترسی غیرمجاز",
+				"code":    "UNAUTHORIZED",
+			},
+		})
+	}
+
+	var req models.ChangePasswordRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": "درخواست نامعتبر است",
+				"code":    "INVALID_REQUEST",
+			},
+		})
+	}
+
+	err = h.authService.ChangePassword(c.Context(), userCtx.UserID, req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"error": fiber.Map{
+				"message": err.Error(),
+				"code":    "CHANGE_PASSWORD_FAILED",
+			},
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"message": "رمز عبور با موفقیت تغییر یافت",
+		},
+	})
+}

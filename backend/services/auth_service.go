@@ -39,6 +39,8 @@ type AuthService interface {
 	RequestPasswordReset(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context, token, newPassword string) error
 	RevokeSession(ctx context.Context, refreshToken string) error
+	UpdateProfile(ctx context.Context, userID uuid.UUID, req models.UpdateUserRequest) (*models.User, error)
+	ChangePassword(ctx context.Context, userID uuid.UUID, req models.ChangePasswordRequest) error
 }
 
 type authService struct {
@@ -425,6 +427,73 @@ func (s *authService) RevokeSession(ctx context.Context, refreshToken string) er
 
 	// Revoke the session
 	return s.sessionRepo.Revoke(ctx, tokenHash)
+}
+
+// UpdateProfile updates user profile information
+func (s *authService) UpdateProfile(ctx context.Context, userID uuid.UUID, req models.UpdateUserRequest) (*models.User, error) {
+	// Validate input
+	if req.Username == "" || req.Email == "" {
+		return nil, errors.New("نام کاربری و ایمیل نمی‌توانند خالی باشند")
+	}
+
+	if !isValidEmail(req.Email) {
+		return nil, errors.New("ایمیل نامعتبر است")
+	}
+
+	// Check if email is already taken by another user
+	existingUser, err := s.userRepo.GetByEmail(ctx, req.Email)
+	if err == nil && existingUser.ID != userID {
+		return nil, ErrEmailExists
+	}
+
+	// Update user
+	user := &models.User{
+		ID:       userID,
+		Username: req.Username,
+		Email:    req.Email,
+	}
+
+	err = s.userRepo.Update(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return updated user
+	return s.userRepo.GetByID(ctx, userID)
+}
+
+// ChangePassword changes user password after verifying current password
+func (s *authService) ChangePassword(ctx context.Context, userID uuid.UUID, req models.ChangePasswordRequest) error {
+	// Validate input
+	if req.CurrentPassword == "" || req.NewPassword == "" {
+		return errors.New("رمز عبور فعلی و جدید نمی‌توانند خالی باشند")
+	}
+
+	if !isStrongPassword(req.NewPassword) {
+		return ErrWeakPassword
+	}
+
+	// Get current user
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return errors.New("کاربر یافت نشد")
+	}
+
+	// Verify current password
+	if err := s.VerifyPassword(user.PasswordHash, req.CurrentPassword); err != nil {
+		return errors.New("رمز عبور فعلی نادرست است")
+	}
+
+	// Hash new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New("خطا در هش کردن رمز عبور")
+	}
+
+	// Update password
+	user.PasswordHash = string(hashedPassword)
+	err = s.userRepo.Update(ctx, user)
+	return err
 }
 
 // Helper functions

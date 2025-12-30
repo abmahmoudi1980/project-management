@@ -5,6 +5,7 @@ import (
 	"project-management/middleware"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func SetupRoutes(
@@ -23,15 +24,22 @@ func SetupRoutes(
 	api := app.Group("/api")
 
 	// Public auth routes (no authentication required)
-	auth := api.Group("/auth")
+	auth := api.Group("/auth", limiter.New(limiter.Config{
+		Max: 10, // 10 requests per minute per IP
+	}))
 	auth.Post("/register", authHandler.Register)
-	auth.Post("/login", authHandler.Login)
+	auth.Post("/login", limiter.New(limiter.Config{
+		Max:        5,      // 5 attempts per 5 minutes per IP for login
+		Expiration: 5 * 60, // 5 minutes
+	}), authHandler.Login)
 	auth.Post("/forgot-password", authHandler.ForgotPassword)
 	auth.Post("/reset-password", authHandler.ResetPassword)
 
 	// Protected auth routes (require authentication)
 	auth.Get("/me", middleware.RequireAuth, authHandler.GetCurrentUser)
 	auth.Post("/logout", middleware.RequireAuth, authHandler.Logout)
+	auth.Put("/me", middleware.RequireAuth, authHandler.UpdateProfile)
+	auth.Put("/me/password", middleware.RequireAuth, authHandler.ChangePassword)
 
 	// Protected project routes
 	projects := api.Group("/projects", middleware.RequireAuth)

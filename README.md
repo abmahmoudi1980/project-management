@@ -15,7 +15,9 @@ A high-performance Project Management application built with Go (Fiber + pgx) an
 - Priority levels (Low, Medium, High)
 - Task completion tracking
 - Time logging for tasks
-- Responsive UI
+- User Authentication (Registration, Login, Password Reset)
+- Role-based Access Control (Admin/User)
+- Responsive UI with Persian language support
 
 ## Project Structure
 
@@ -64,6 +66,34 @@ CREATE DATABASE project_management;
 psql -U postgres -d project_management -f schema.sql
 ```
 
+3. Run the authentication migration:
+```bash
+cd backend && go run run_migration.go
+```
+
+### Authentication Setup
+
+1. Copy the environment template:
+```bash
+cp .env.example .env
+```
+
+2. Generate a secure JWT secret:
+```bash
+openssl rand -base64 32
+```
+Add this value to `JWT_SECRET` in `.env`
+
+3. Configure Gmail SMTP (for password reset):
+- Enable 2FA on your Gmail account
+- Generate an App Password: https://support.google.com/accounts/answer/185833
+- Set `SMTP_USER` and `SMTP_PASSWORD` in `.env`
+
+4. The default admin user will be created during migration:
+- Email: `admin@example.com`
+- Password: `Admin123!`
+- Change this password after first login!
+
 ### Backend Setup
 
 1. Navigate to the backend directory:
@@ -109,6 +139,22 @@ npm run dev
 The application will be available at `http://localhost:5173`
 
 ## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user info
+- `PUT /api/auth/me` - Update user profile
+- `PUT /api/auth/me/password` - Change password
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
+
+### User Management (Admin only)
+- `GET /api/users` - List all users
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id/role` - Change user role
+- `PUT /api/users/:id/activate` - Activate/deactivate user
 
 ### Projects
 - `GET /api/projects` - List all projects
