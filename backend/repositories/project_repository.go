@@ -1,0 +1,88 @@
+package repositories
+
+import (
+	"context"
+	"project-management/models"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type ProjectRepository struct {
+	db *pgxpool.Pool
+}
+
+func NewProjectRepository(db *pgxpool.Pool) *ProjectRepository {
+	return &ProjectRepository{db: db}
+}
+
+func (r *ProjectRepository) GetAll(ctx context.Context) ([]models.Project, error) {
+	rows, err := r.db.Query(ctx, "SELECT id, title, description, status, created_at, updated_at FROM projects ORDER BY created_at DESC")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.Project
+	for rows.Next() {
+		var p models.Project
+		if err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	return projects, nil
+}
+
+func (r *ProjectRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Project, error) {
+	var p models.Project
+	err := r.db.QueryRow(ctx, "SELECT id, title, description, status, created_at, updated_at FROM projects WHERE id = $1", id).
+		Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.CreatedAt, &p.UpdatedAt)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (r *ProjectRepository) Create(ctx context.Context, req models.CreateProjectRequest) (*models.Project, error) {
+	id := uuid.New()
+	var p models.Project
+
+	err := r.db.QueryRow(ctx,
+		"INSERT INTO projects (id, title, description, status) VALUES ($1, $2, $3, $4) RETURNING id, title, description, status, created_at, updated_at",
+		id, req.Title, req.Description, req.Status).
+		Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.CreatedAt, &p.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (r *ProjectRepository) Update(ctx context.Context, id uuid.UUID, req models.UpdateProjectRequest) (*models.Project, error) {
+	var p models.Project
+
+	err := r.db.QueryRow(ctx,
+		"UPDATE projects SET title = $1, description = $2, status = $3 WHERE id = $4 RETURNING id, title, description, status, created_at, updated_at",
+		req.Title, req.Description, req.Status, id).
+		Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.CreatedAt, &p.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (r *ProjectRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := r.db.Exec(ctx, "DELETE FROM projects WHERE id = $1", id)
+	return err
+}
