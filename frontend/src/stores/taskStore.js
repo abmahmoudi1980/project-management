@@ -7,8 +7,13 @@ function createTaskStore() {
   return {
     subscribe,
     load: async (projectId) => {
-      const tasks = await api.tasks.getByProject(projectId);
-      set(tasks);
+      try {
+        const tasks = await api.tasks.getByProject(projectId);
+        set(Array.isArray(tasks) ? tasks : []);
+      } catch (error) {
+        console.error('Failed to load tasks:', error);
+        set([]);
+      }
     },
     create: async (projectId, taskData) => {
       const task = await api.tasks.create(projectId, taskData);

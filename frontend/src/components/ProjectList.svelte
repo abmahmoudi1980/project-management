@@ -1,15 +1,20 @@
 <script>
   import { projects } from "../stores/projectStore";
   import ProjectForm from "./ProjectForm.svelte";
+  import Modal from "./Modal.svelte";
   import { createEventDispatcher } from "svelte";
 
   export let selectedProject = null;
   const dispatch = createEventDispatcher();
 
-  let showForm = false;
+  let showModal = false;
 
-  function toggleForm() {
-    showForm = !showForm;
+  function openModal() {
+    showModal = true;
+  }
+
+  function closeModal() {
+    showModal = false;
   }
 
   async function handleProjectSelect(project) {
@@ -124,46 +129,17 @@
   <!-- New Project Button (Fixed at bottom) -->
   <div class="p-4 border-t border-slate-200">
     <button
-      on:click={toggleForm}
-      class="w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-        {showForm
-        ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-        : 'bg-indigo-600 text-white hover:bg-indigo-700'}"
+      on:click={openModal}
+      class="w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
     >
-      {showForm ? "Cancel" : "+ New Project"}
+      + New Project
     </button>
   </div>
-
-  {#if showForm}
-    <div class="absolute inset-0 bg-white z-10 overflow-y-auto">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-slate-900">New Project</h3>
-          <button
-            on:click={toggleForm}
-            class="text-slate-400 hover:text-slate-600"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-        <ProjectForm
-          on:created={() => {
-            showForm = false;
-          }}
-        />
-      </div>
-    </div>
-  {/if}
 </div>
+
+<!-- Modal for New Project -->
+<Modal show={showModal} title="Create New Project" maxWidth="lg" on:close={closeModal}>
+  <ProjectForm
+    on:created={closeModal}
+  />
+</Modal>

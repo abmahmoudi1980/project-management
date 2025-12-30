@@ -75,8 +75,8 @@
         description: description.trim(),
         priority,
         category: category.trim() || null,
-        start_date: start_date || null,
-        due_date: due_date || null,
+        start_date: start_date ? new Date(start_date).toISOString() : null,
+        due_date: due_date ? new Date(due_date).toISOString() : null,
         estimated_hours: estimated_hours ? parseFloat(estimated_hours) : null,
         done_ratio: parseInt(done_ratio),
       });
