@@ -90,7 +90,7 @@
 </script>
 
 <form
-  on:submit|preventDefault={handleSubmit}
+  onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}
   class="space-y-5"
 >
   {#if error}
@@ -124,7 +124,7 @@
       type="text"
       id="identifier"
       bind:value={identifier}
-      on:blur={validateIdentifier}
+      onblur={validateIdentifier}
       class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
       class:border-red-500={identifierError}
       class:ring-2={identifierError}
@@ -197,7 +197,7 @@
       type="url"
       id="homepage"
       bind:value={homepage}
-      on:blur={validateHomepage}
+      onblur={validateHomepage}
       class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
       class:border-red-500={homepageError}
       class:ring-2={homepageError}

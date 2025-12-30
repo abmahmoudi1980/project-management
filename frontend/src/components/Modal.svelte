@@ -34,12 +34,12 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if show}
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
-    on:click={handleBackdropClick}
+    onclick={handleBackdropClick}
     transition:fade={{ duration: 200 }}
     role="dialog"
     aria-modal="true"
@@ -56,7 +56,7 @@
       >
         <h2 class="text-xl font-semibold text-slate-900">{title}</h2>
         <button
-          on:click={close}
+          onclick={close}
           class="text-slate-400 hover:text-slate-600 transition-colors"
           aria-label="Close modal"
         >

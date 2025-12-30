@@ -46,7 +46,7 @@
     {#each $projects || [] as project}
       <div class="group relative">
         <button
-          on:click={() => handleProjectSelect(project)}
+          onclick={() => handleProjectSelect(project)}
           class="w-full text-left px-3 py-2.5 rounded-lg transition-all relative
             {selectedProject?.id === project.id
             ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 pl-2.5'
@@ -82,7 +82,7 @@
                     href={project.homepage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    on:click|stopPropagation
+                    onclick={(e) => e.stopPropagation()}
                     class="text-xs text-blue-500 hover:text-blue-700 flex items-center"
                     title="Visit homepage"
                   >
@@ -106,7 +106,7 @@
           </div>
         </button>
         <button
-          on:click|stopPropagation={() => handleProjectDelete(project.id)}
+          onclick={(e) => { e.stopPropagation(); handleProjectDelete(project.id); }}
           class="absolute left-2 top-2 opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-200 rounded transition-opacity"
           title="Delete project"
         >
@@ -131,7 +131,7 @@
   <!-- New Project Button (Fixed at bottom) -->
   <div class="p-4 border-t border-slate-200">
     <button
-      on:click={openModal}
+      onclick={openModal}
       class="w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
     >
       + پروژه جدید

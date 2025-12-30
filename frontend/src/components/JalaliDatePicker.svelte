@@ -177,17 +177,17 @@
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="relative">
   <input
     type="text"
     bind:this={inputElement}
     bind:value={jalaliDate}
-    on:input={handleInput}
-    on:blur={handleBlur}
-    on:keydown={handleKeydown}
-    on:click={toggleCalendar}
+    oninput={handleInput}
+    onblur={handleBlur}
+    onkeydown={handleKeydown}
+    onclick={toggleCalendar}
     {placeholder}
     maxlength="10"
     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
@@ -206,7 +206,7 @@
       <div class="flex items-center justify-between mb-4">
         <button
           type="button"
-          on:click={nextMonth}
+          onclick={nextMonth}
           class="p-1 hover:bg-gray-100 rounded"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,7 +220,7 @@
         
         <button
           type="button"
-          on:click={previousMonth}
+          onclick={previousMonth}
           class="p-1 hover:bg-gray-100 rounded"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,7 +244,7 @@
           {#if day}
             <button
               type="button"
-              on:click={() => selectDate(day)}
+              onclick={() => selectDate(day)}
               class="p-2 text-sm rounded hover:bg-blue-100 transition-colors"
               class:bg-blue-500={day.isSelected}
               class:text-white={day.isSelected}
@@ -264,7 +264,7 @@
       <div class="mt-3 pt-3 border-t border-gray-200">
         <button
           type="button"
-          on:click={() => selectDate({
+          onclick={() => selectDate({
             day: moment().locale('fa').jDate(),
             gregorian: moment().format('YYYY-MM-DD'),
             isToday: true,

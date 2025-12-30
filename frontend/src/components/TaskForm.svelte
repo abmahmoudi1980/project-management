@@ -104,7 +104,7 @@
 </script>
 
 <form
-  on:submit|preventDefault={handleSubmit}
+  onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}
   class="space-y-4 p-4 border rounded-lg bg-white"
 >
   <h3 class="text-lg font-semibold text-gray-800">ایجاد وظیفه جدید</h3>
@@ -181,7 +181,7 @@
       >
       <JalaliDatePicker
         bind:value={start_date}
-        on:change={validateDates}
+        onchange={validateDates}
         placeholder="1403/10/10"
         error={dateError}
       />
@@ -193,7 +193,7 @@
       >
       <JalaliDatePicker
         bind:value={due_date}
-        on:change={validateDates}
+        onchange={validateDates}
         placeholder="1403/10/20"
         error={dateError}
       />
@@ -214,7 +214,7 @@
         type="number"
         id="estimated_hours"
         bind:value={estimated_hours}
-        on:blur={validateEstimatedHours}
+        onblur={validateEstimatedHours}
         min="0"
         step="0.5"
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -237,7 +237,7 @@
         type="range"
         id="done_ratio"
         bind:value={done_ratio}
-        on:change={validateDoneRatio}
+        onchange={validateDoneRatio}
         min="0"
         max="100"
         step="5"

@@ -44,7 +44,7 @@
 </script>
 
 <div class="space-y-4">
-  <form on:submit|preventDefault={handleSubmit} class="flex gap-3">
+  <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex gap-3">
     <div class="w-40">
       <JalaliDatePicker
         bind:value={date}
@@ -93,7 +93,7 @@
             {/if}
           </div>
           <button
-            on:click={() => handleDelete(log.id)}
+            onclick={() => handleDelete(log.id)}
             class="text-red-500 hover:text-red-700 text-xs"
           >
             حذف

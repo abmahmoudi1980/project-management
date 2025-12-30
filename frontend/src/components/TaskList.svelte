@@ -48,7 +48,7 @@
       {($tasks || []).length === 1 ? "وظیفه" : "وظیفه"}
     </div>
     <button
-      on:click={toggleForm}
+      onclick={toggleForm}
       class="px-4 py-2 text-sm font-medium rounded-lg transition-colors
         {showForm
         ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -79,7 +79,7 @@
         <div class="flex items-center gap-4 p-4">
           <!-- Checkbox -->
           <button
-            on:click={() => handleTaskToggle(task)}
+            onclick={() => handleTaskToggle(task)}
             class="flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all
               {task.completed
               ? 'bg-emerald-500 border-emerald-500'
@@ -177,7 +177,7 @@
             class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <button
-              on:click={() => handleTaskSelect(task)}
+              onclick={() => handleTaskSelect(task)}
               class="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
               title="Log time"
             >
@@ -196,7 +196,7 @@
               </svg>
             </button>
             <button
-              on:click={() => handleTaskDelete(task.id)}
+              onclick={() => handleTaskDelete(task.id)}
               class="p-1.5 hover:bg-rose-50 rounded-lg transition-colors"
               title="Delete task"
             >
