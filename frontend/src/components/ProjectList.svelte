@@ -4,10 +4,10 @@
   import Modal from "./Modal.svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let selectedProject = null;
+  let { selectedProject = $bindable(null) } = $props();
   const dispatch = createEventDispatcher();
 
-  let showModal = false;
+  let showModal = $state(false);
 
   function openModal() {
     showModal = true;
@@ -44,85 +44,87 @@
   <!-- Project List -->
   <nav class="flex-1 px-3 space-y-1">
     {#each $projects || [] as project}
-      <button
-        on:click={() => handleProjectSelect(project)}
-        class="group w-full text-left px-3 py-2.5 rounded-lg transition-all relative
-          {selectedProject?.id === project.id
-          ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 pl-2.5'
-          : 'text-slate-700 hover:bg-slate-50 border-l-4 border-transparent'}"
-      >
-        <div class="flex items-start justify-between">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <h3 class="font-medium text-sm truncate">{project.title}</h3>
-              {#if project.is_public}
-                <span
-                  class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
-                >
-                  عمومی
-                </span>
-              {/if}
-            </div>
-            {#if project.identifier}
-              <p class="text-xs text-slate-500 font-mono truncate">
-                {project.identifier}
-              </p>
-            {/if}
-            <div class="flex items-center gap-2 mt-0.5">
-              <p
-                class="text-xs {selectedProject?.id === project.id
-                  ? 'text-indigo-600'
-                  : 'text-slate-500'}"
-              >
-                {project.status}
-              </p>
-              {#if project.homepage}
-                <a
-                  href={project.homepage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  on:click|stopPropagation
-                  class="text-xs text-blue-500 hover:text-blue-700 flex items-center"
-                  title="Visit homepage"
-                >
-                  <svg
-                    class="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+      <div class="group relative">
+        <button
+          on:click={() => handleProjectSelect(project)}
+          class="w-full text-left px-3 py-2.5 rounded-lg transition-all relative
+            {selectedProject?.id === project.id
+            ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 pl-2.5'
+            : 'text-slate-700 hover:bg-slate-50 border-l-4 border-transparent'}"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex-1 min-w-0 pr-8">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-medium text-sm truncate">{project.title}</h3>
+                {#if project.is_public}
+                  <span
+                    class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
-                </a>
+                    عمومی
+                  </span>
+                {/if}
+              </div>
+              {#if project.identifier}
+                <p class="text-xs text-slate-500 font-mono truncate">
+                  {project.identifier}
+                </p>
               {/if}
+              <div class="flex items-center gap-2 mt-0.5">
+                <p
+                  class="text-xs {selectedProject?.id === project.id
+                    ? 'text-indigo-600'
+                    : 'text-slate-500'}"
+                >
+                  {project.status}
+                </p>
+                {#if project.homepage}
+                  <a
+                    href={project.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    on:click|stopPropagation
+                    class="text-xs text-blue-500 hover:text-blue-700 flex items-center"
+                    title="Visit homepage"
+                  >
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </a>
+                {/if}
+              </div>
             </div>
           </div>
-          <button
-            on:click|stopPropagation={() => handleProjectDelete(project.id)}
-            class="opacity-0 group-hover:opacity-100 ml-2 p-1 hover:bg-slate-200 rounded transition-opacity"
-            title="Delete project"
+        </button>
+        <button
+          on:click|stopPropagation={() => handleProjectDelete(project.id)}
+          class="absolute left-2 top-2 opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-200 rounded transition-opacity"
+          title="Delete project"
+        >
+          <svg
+            class="w-4 h-4 text-slate-400 hover:text-rose-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              class="w-4 h-4 text-slate-400 hover:text-rose-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-          </button>
-        </div>
-      </button>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
     {/each}
   </nav>
 

@@ -3,21 +3,21 @@
   import { createEventDispatcher } from "svelte";
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
 
-  export let project;
+  let { project } = $props();
   const dispatch = createEventDispatcher();
 
-  let title = "";
-  let description = "";
-  let priority = "Medium";
-  let category = "";
-  let start_date = "";
-  let due_date = "";
-  let estimated_hours = "";
-  let done_ratio = 0;
-  let error = "";
-  let dateError = "";
-  let doneRatioError = "";
-  let estimatedHoursError = "";
+  let title = $state("");
+  let description = $state("");
+  let priority = $state("Medium");
+  let category = $state("");
+  let start_date = $state("");
+  let due_date = $state("");
+  let estimated_hours = $state("");
+  let done_ratio = $state(0);
+  let error = $state("");
+  let dateError = $state("");
+  let doneRatioError = $state("");
+  let estimatedHoursError = $state("");
 
   // Validate date range
   function validateDates() {

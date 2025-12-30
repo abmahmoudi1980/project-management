@@ -4,15 +4,15 @@
 
   const dispatch = createEventDispatcher();
 
-  let title = "";
-  let description = "";
-  let status = "active";
-  let identifier = "";
-  let homepage = "";
-  let is_public = false;
-  let error = "";
-  let identifierError = "";
-  let homepageError = "";
+  let title = $state("");
+  let description = $state("");
+  let status = $state("active");
+  let identifier = $state("");
+  let homepage = $state("");
+  let is_public = $state(false);
+  let error = $state("");
+  let identifierError = $state("");
+  let homepageError = $state("");
 
   // Validate identifier format (alphanumeric, underscore, hyphen only)
   function validateIdentifier() {
