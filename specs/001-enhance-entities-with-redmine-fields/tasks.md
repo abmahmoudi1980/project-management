@@ -51,39 +51,39 @@ This is a web application with:
 
 ### Backend Models for User Story 1
 
-- [ ] T009 [P] [US1] Update Project struct in backend/models/project.go to add Identifier (string), Homepage (\*string), IsPublic (bool) fields with JSON tags
-- [ ] T010 [P] [US1] Update CreateProjectRequest struct in backend/models/project.go to include identifier, homepage, is_public fields
-- [ ] T011 [P] [US1] Update UpdateProjectRequest struct in backend/models/project.go to include identifier, homepage, is_public fields
+- [x] T009 [P] [US1] Update Project struct in backend/models/project.go to add Identifier (string), Homepage (\*string), IsPublic (bool) fields with JSON tags
+- [x] T010 [P] [US1] Update CreateProjectRequest struct in backend/models/project.go to include identifier, homepage, is_public fields
+- [x] T011 [P] [US1] Update UpdateProjectRequest struct in backend/models/project.go to include identifier, homepage, is_public fields
 
 ### Backend Repositories for User Story 1
 
-- [ ] T012 [US1] Update Create function in backend/repositories/project_repository.go INSERT statement to include identifier, homepage, is_public columns
-- [ ] T013 [US1] Update GetAll function in backend/repositories/project_repository.go SELECT statement to include identifier, homepage, is_public columns
-- [ ] T014 [US1] Update GetByID function in backend/repositories/project_repository.go SELECT statement to include identifier, homepage, is_public columns
-- [ ] T015 [US1] Update Update function in backend/repositories/project_repository.go to handle identifier, homepage, is_public columns
+- [x] T012 [US1] Update Create function in backend/repositories/project_repository.go INSERT statement to include identifier, homepage, is_public columns
+- [x] T013 [US1] Update GetAll function in backend/repositories/project_repository.go SELECT statement to include identifier, homepage, is_public columns
+- [x] T014 [US1] Update GetByID function in backend/repositories/project_repository.go SELECT statement to include identifier, homepage, is_public columns
+- [x] T015 [US1] Update Update function in backend/repositories/project_repository.go to handle identifier, homepage, is_public columns
 
 ### Backend Services for User Story 1
 
-- [ ] T016 [US1] Add ValidateProjectIdentifier function in backend/services/project*service.go to check uniqueness and regex pattern ^[a-zA-Z0-9*-]+$
-- [ ] T017 [US1] Add ValidateHomepageURL function in backend/services/project_service.go to validate URL format if provided
-- [ ] T018 [US1] Update CreateProject function in backend/services/project_service.go to call validation for identifier and homepage
-- [ ] T019 [US1] Update UpdateProject function in backend/services/project_service.go to call validation for identifier and homepage
+- [x] T016 [US1] Add ValidateProjectIdentifier function in backend/services/project*service.go to check uniqueness and regex pattern ^[a-zA-Z0-9*-]+$
+- [x] T017 [US1] Add ValidateHomepageURL function in backend/services/project_service.go to validate URL format if provided
+- [x] T018 [US1] Update CreateProject function in backend/services/project_service.go to call validation for identifier and homepage
+- [x] T019 [US1] Update UpdateProject function in backend/services/project_service.go to call validation for identifier and homepage
 
 ### Backend Handlers for User Story 1
 
-- [ ] T020 [US1] Update CreateProject handler in backend/handlers/project_handler.go to parse identifier, homepage, is_public from request body
-- [ ] T021 [US1] Update UpdateProject handler in backend/handlers/project_handler.go to parse identifier, homepage, is_public from request body
-- [ ] T022 [US1] Add error handling in backend/handlers/project_handler.go for validation errors (duplicate identifier, invalid URL)
+- [x] T020 [US1] Update CreateProject handler in backend/handlers/project_handler.go to parse identifier, homepage, is_public from request body
+- [x] T021 [US1] Update UpdateProject handler in backend/handlers/project_handler.go to parse identifier, homepage, is_public from request body
+- [x] T022 [US1] Add error handling in backend/handlers/project_handler.go for validation errors (duplicate identifier, invalid URL)
 
 ### Frontend for User Story 1
 
-- [ ] T023 [P] [US1] Update projectStore in frontend/src/stores/projectStore.js to include identifier, homepage, isPublic in state
-- [ ] T024 [P] [US1] Update createProject and updateProject functions in frontend/src/lib/api.js to send identifier, homepage, is_public fields
-- [ ] T025 [US1] Add identifier input field (text) to ProjectForm.svelte with validation for alphanumeric, underscore, hyphen only
-- [ ] T026 [US1] Add homepage input field (URL type) to ProjectForm.svelte with optional validation
-- [ ] T027 [US1] Add is_public checkbox to ProjectForm.svelte
-- [ ] T028 [US1] Update ProjectList.svelte to display identifier, homepage link (if present), and public badge
-- [ ] T029 [US1] Add client-side validation feedback in ProjectForm.svelte for invalid identifiers and URLs
+- [x] T023 [P] [US1] Update projectStore in frontend/src/stores/projectStore.js to include identifier, homepage, isPublic in state
+- [x] T024 [P] [US1] Update createProject and updateProject functions in frontend/src/lib/api.js to send identifier, homepage, is_public fields
+- [x] T025 [US1] Add identifier input field (text) to ProjectForm.svelte with validation for alphanumeric, underscore, hyphen only
+- [x] T026 [US1] Add homepage input field (URL type) to ProjectForm.svelte with optional validation
+- [x] T027 [US1] Add is_public checkbox to ProjectForm.svelte
+- [x] T028 [US1] Update ProjectList.svelte to display identifier, homepage link (if present), and public badge
+- [x] T029 [US1] Add client-side validation feedback in ProjectForm.svelte for invalid identifiers and URLs
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Projects can be created with identifier, homepage, and public visibility.
 
@@ -97,43 +97,43 @@ This is a web application with:
 
 ### Backend Models for User Story 2
 
-- [ ] T030 [P] [US2] Update Task struct in backend/models/task.go to add Description (string), AssigneeID (*uuid.UUID), AuthorID (*uuid.UUID), Category (*string), StartDate (*time.Time), DueDate (*time.Time), EstimatedHours (*float64), DoneRatio (int) fields with JSON tags
-- [ ] T031 [P] [US2] Update CreateTaskRequest struct in backend/models/task.go to include all new task fields
-- [ ] T032 [P] [US2] Update UpdateTaskRequest struct in backend/models/task.go to include all new task fields
+- [x] T030 [P] [US2] Update Task struct in backend/models/task.go to add Description (string), AssigneeID (*uuid.UUID), AuthorID (*uuid.UUID), Category (*string), StartDate (*time.Time), DueDate (*time.Time), EstimatedHours (*float64), DoneRatio (int) fields with JSON tags
+- [x] T031 [P] [US2] Update CreateTaskRequest struct in backend/models/task.go to include all new task fields
+- [x] T032 [P] [US2] Update UpdateTaskRequest struct in backend/models/task.go to include all new task fields
 
 ### Backend Repositories for User Story 2
 
-- [ ] T033 [US2] Update Create function in backend/repositories/task_repository.go INSERT statement to include description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio columns
-- [ ] T034 [US2] Update GetAll function in backend/repositories/task_repository.go SELECT statement to include all new task columns
-- [ ] T035 [US2] Update GetByID function in backend/repositories/task_repository.go SELECT statement to include all new task columns
-- [ ] T036 [US2] Update GetByProjectID function in backend/repositories/task_repository.go SELECT statement to include all new task columns
-- [ ] T037 [US2] Update Update function in backend/repositories/task_repository.go to handle all new task columns with NULL handling for optional fields
+- [x] T033 [US2] Update Create function in backend/repositories/task_repository.go INSERT statement to include description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio columns
+- [x] T034 [US2] Update GetAll function in backend/repositories/task_repository.go SELECT statement to include all new task columns
+- [x] T035 [US2] Update GetByID function in backend/repositories/task_repository.go SELECT statement to include all new task columns
+- [x] T036 [US2] Update GetByProjectID function in backend/repositories/task_repository.go SELECT statement to include all new task columns
+- [x] T037 [US2] Update Update function in backend/repositories/task_repository.go to handle all new task columns with NULL handling for optional fields
 
 ### Backend Services for User Story 2
 
-- [ ] T038 [US2] Add ValidateTaskDates function in backend/services/task_service.go to ensure due_date >= start_date when both provided
-- [ ] T039 [US2] Add ValidateDoneRatio function in backend/services/task_service.go to ensure 0 <= done_ratio <= 100
-- [ ] T040 [US2] Add ValidateEstimatedHours function in backend/services/task_service.go to ensure estimated_hours >= 0 if provided
-- [ ] T041 [US2] Update CreateTask function in backend/services/task_service.go to call all validation functions
-- [ ] T042 [US2] Update UpdateTask function in backend/services/task_service.go to call all validation functions
+- [x] T038 [US2] Add ValidateTaskDates function in backend/services/task_service.go to ensure due_date >= start_date when both provided
+- [x] T039 [US2] Add ValidateDoneRatio function in backend/services/task_service.go to ensure 0 <= done_ratio <= 100
+- [x] T040 [US2] Add ValidateEstimatedHours function in backend/services/task_service.go to ensure estimated_hours >= 0 if provided
+- [x] T041 [US2] Update CreateTask function in backend/services/task_service.go to call all validation functions
+- [x] T042 [US2] Update UpdateTask function in backend/services/task_service.go to call all validation functions
 
 ### Backend Handlers for User Story 2
 
-- [ ] T043 [US2] Update CreateTask handler in backend/handlers/task_handler.go to parse description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio from request body
-- [ ] T044 [US2] Update UpdateTask handler in backend/handlers/task_handler.go to parse all new task fields from request body
-- [ ] T045 [US2] Add error handling in backend/handlers/task_handler.go for validation errors (invalid dates, invalid done_ratio, invalid estimated_hours)
+- [x] T043 [US2] Update CreateTask handler in backend/handlers/task_handler.go to parse description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio from request body
+- [x] T044 [US2] Update UpdateTask handler in backend/handlers/task_handler.go to parse all new task fields from request body
+- [x] T045 [US2] Add error handling in backend/handlers/task_handler.go for validation errors (invalid dates, invalid done_ratio, invalid estimated_hours)
 
 ### Frontend for User Story 2
 
-- [ ] T046 [P] [US2] Update taskStore in frontend/src/stores/taskStore.js to include description, assigneeId, authorId, category, startDate, dueDate, estimatedHours, doneRatio in state
-- [ ] T047 [P] [US2] Update createTask and updateTask functions in frontend/src/lib/api.js to send all new task fields
-- [ ] T048 [US2] Add description textarea to TaskForm.svelte with proper styling
-- [ ] T049 [US2] Add category input field (text or select dropdown) to TaskForm.svelte
-- [ ] T050 [US2] Add start_date and due_date date picker inputs to TaskForm.svelte with date range validation
-- [ ] T051 [US2] Add estimated_hours number input to TaskForm.svelte with min=0 validation
-- [ ] T052 [US2] Add done_ratio slider or number input (0-100) to TaskForm.svelte with range validation
-- [ ] T053 [US2] Update TaskList.svelte to display category, dates, estimated hours, and progress bar based on done_ratio
-- [ ] T054 [US2] Add client-side validation feedback in TaskForm.svelte for invalid date ranges and numeric values
+- [x] T046 [P] [US2] Update taskStore in frontend/src/stores/taskStore.js to include description, assigneeId, authorId, category, startDate, dueDate, estimatedHours, doneRatio in state
+- [x] T047 [P] [US2] Update createTask and updateTask functions in frontend/src/lib/api.js to send all new task fields
+- [x] T048 [US2] Add description textarea to TaskForm.svelte with proper styling
+- [x] T049 [US2] Add category input field (text or select dropdown) to TaskForm.svelte
+- [x] T050 [US2] Add start_date and due_date date picker inputs to TaskForm.svelte with date range validation
+- [x] T051 [US2] Add estimated_hours number input to TaskForm.svelte with min=0 validation
+- [x] T052 [US2] Add done_ratio slider or number input (0-100) to TaskForm.svelte with range validation
+- [x] T053 [US2] Update TaskList.svelte to display category, dates, estimated hours, and progress bar based on done_ratio
+- [x] T054 [US2] Add client-side validation feedback in TaskForm.svelte for invalid date ranges and numeric values
 
 **Checkpoint**: At this point, User Story 2 should be fully functional and testable independently. Tasks can be created with full metadata including dates, estimates, and progress tracking.
 

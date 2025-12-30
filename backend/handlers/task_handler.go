@@ -46,7 +46,8 @@ func (h *TaskHandler) CreateTask(c *fiber.Ctx) error {
 		if err == models.ErrValidation || err == models.ErrNotFound {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
-		return c.Status(500).JSON(fiber.Map{"error": "failed to create task"})
+		// Handle validation errors from service layer (dates, done_ratio, etc.)
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(201).JSON(task)
@@ -82,7 +83,8 @@ func (h *TaskHandler) UpdateTask(c *fiber.Ctx) error {
 		if err == models.ErrValidation {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
-		return c.Status(500).JSON(fiber.Map{"error": "failed to update task"})
+		// Handle validation errors from service layer (dates, done_ratio, etc.)
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.JSON(task)

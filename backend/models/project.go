@@ -11,20 +11,29 @@ type Project struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
+	Identifier  string    `json:"identifier"`
+	Homepage    *string   `json:"homepage,omitempty"`
+	IsPublic    bool      `json:"is_public"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CreateProjectRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Status      string  `json:"status"`
+	Identifier  string  `json:"identifier"`
+	Homepage    *string `json:"homepage,omitempty"`
+	IsPublic    bool    `json:"is_public"`
 }
 
 type UpdateProjectRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Status      string  `json:"status"`
+	Identifier  string  `json:"identifier"`
+	Homepage    *string `json:"homepage,omitempty"`
+	IsPublic    bool    `json:"is_public"`
 }
 
 var (

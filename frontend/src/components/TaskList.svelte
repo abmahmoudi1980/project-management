@@ -105,9 +105,55 @@
             >
               {task.title}
             </h3>
-            <p class="text-xs text-slate-500 mt-0.5">
-              Task #{task.id.slice(0, 8)}
-            </p>
+            {#if task.description}
+              <p class="text-sm text-slate-600 mt-1">{task.description}</p>
+            {/if}
+            <div class="flex items-center gap-3 mt-2 text-xs text-slate-500">
+              {#if task.category}
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium"
+                >
+                  {task.category}
+                </span>
+              {/if}
+              {#if task.start_date}
+                <span
+                  >Start: {new Date(task.start_date).toLocaleDateString()}</span
+                >
+              {/if}
+              {#if task.due_date}
+                <span
+                  class="font-medium {new Date(task.due_date) < new Date() &&
+                  !task.completed
+                    ? 'text-rose-600'
+                    : ''}"
+                >
+                  Due: {new Date(task.due_date).toLocaleDateString()}
+                </span>
+              {/if}
+              {#if task.estimated_hours}
+                <span>Est: {task.estimated_hours}h</span>
+              {/if}
+            </div>
+            {#if task.done_ratio > 0}
+              <div class="mt-2">
+                <div
+                  class="flex items-center justify-between text-xs text-slate-600 mb-1"
+                >
+                  <span>Progress</span>
+                  <span class="font-medium">{task.done_ratio}%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5">
+                  <div
+                    class="h-1.5 rounded-full transition-all {task.done_ratio ===
+                    100
+                      ? 'bg-emerald-500'
+                      : 'bg-indigo-500'}"
+                    style="width: {task.done_ratio}%"
+                  ></div>
+                </div>
+              </div>
+            {/if}
           </div>
 
           <!-- Priority Badge -->

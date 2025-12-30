@@ -35,7 +35,8 @@ func (h *ProjectHandler) CreateProject(c *fiber.Ctx) error {
 		if err == models.ErrValidation {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
-		return c.Status(500).JSON(fiber.Map{"error": "failed to create project"})
+		// Handle validation errors from service layer (identifier, URL, etc.)
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(201).JSON(project)
@@ -71,7 +72,8 @@ func (h *ProjectHandler) UpdateProject(c *fiber.Ctx) error {
 		if err == models.ErrValidation {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
-		return c.Status(500).JSON(fiber.Map{"error": "failed to update project"})
+		// Handle validation errors from service layer (identifier, URL, etc.)
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.JSON(project)

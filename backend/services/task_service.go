@@ -2,8 +2,10 @@ package services
 
 import (
 	"context"
+	"errors"
 	"project-management/models"
 	"project-management/repositories"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -36,6 +38,22 @@ func (s *TaskService) CreateTask(ctx context.Context, projectID uuid.UUID, req m
 	if req.Priority == "" {
 		req.Priority = "Medium"
 	}
+
+	// Validate dates
+	if err := s.ValidateTaskDates(req.StartDate, req.DueDate); err != nil {
+		return nil, err
+	}
+
+	// Validate done_ratio
+	if err := s.ValidateDoneRatio(req.DoneRatio); err != nil {
+		return nil, err
+	}
+
+	// Validate estimated_hours
+	if err := s.ValidateEstimatedHours(req.EstimatedHours); err != nil {
+		return nil, err
+	}
+
 	return s.repo.Create(ctx, projectID, req)
 }
 
@@ -43,6 +61,22 @@ func (s *TaskService) UpdateTask(ctx context.Context, id uuid.UUID, req models.U
 	if req.Title == "" {
 		return nil, models.ErrValidation
 	}
+
+	// Validate dates
+	if err := s.ValidateTaskDates(req.StartDate, req.DueDate); err != nil {
+		return nil, err
+	}
+
+	// Validate done_ratio
+	if err := s.ValidateDoneRatio(req.DoneRatio); err != nil {
+		return nil, err
+	}
+
+	// Validate estimated_hours
+	if err := s.ValidateEstimatedHours(req.EstimatedHours); err != nil {
+		return nil, err
+	}
+
 	return s.repo.Update(ctx, id, req)
 }
 
@@ -53,12 +87,46 @@ func (s *TaskService) ToggleTaskCompletion(ctx context.Context, id uuid.UUID) (*
 	}
 
 	return s.repo.Update(ctx, id, models.UpdateTaskRequest{
-		Title:     task.Title,
-		Priority:  task.Priority,
-		Completed: !task.Completed,
+		Title:          task.Title,
+		Description:    task.Description,
+		Priority:       task.Priority,
+		Completed:      !task.Completed,
+		AssigneeID:     task.AssigneeID,
+		AuthorID:       task.AuthorID,
+		Category:       task.Category,
+		StartDate:      task.StartDate,
+		DueDate:        task.DueDate,
+		EstimatedHours: task.EstimatedHours,
+		DoneRatio:      task.DoneRatio,
 	})
 }
 
 func (s *TaskService) DeleteTask(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Delete(ctx, id)
+}
+
+// ValidateTaskDates ensures due_date >= start_date when both are provided
+func (s *TaskService) ValidateTaskDates(startDate, dueDate *time.Time) error {
+	if startDate != nil && dueDate != nil {
+		if dueDate.Before(*startDate) {
+			return errors.New("due date must be equal to or after start date")
+		}
+	}
+	return nil
+}
+
+// ValidateDoneRatio ensures done_ratio is between 0 and 100
+func (s *TaskService) ValidateDoneRatio(doneRatio int) error {
+	if doneRatio < 0 || doneRatio > 100 {
+		return errors.New("done ratio must be between 0 and 100")
+	}
+	return nil
+}
+
+// ValidateEstimatedHours ensures estimated_hours >= 0 if provided
+func (s *TaskService) ValidateEstimatedHours(estimatedHours *float64) error {
+	if estimatedHours != nil && *estimatedHours < 0 {
+		return errors.New("estimated hours must be greater than or equal to 0")
+	}
+	return nil
 }

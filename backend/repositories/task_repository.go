@@ -19,7 +19,7 @@ func NewTaskRepository(db *pgxpool.Pool) *TaskRepository {
 
 func (r *TaskRepository) GetByProjectID(ctx context.Context, projectID uuid.UUID) ([]models.Task, error) {
 	rows, err := r.db.Query(ctx,
-		"SELECT id, project_id, title, priority, completed, created_at, updated_at FROM tasks WHERE project_id = $1 ORDER BY created_at DESC",
+		"SELECT id, project_id, title, description, priority, completed, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio, created_at, updated_at FROM tasks WHERE project_id = $1 ORDER BY created_at DESC",
 		projectID)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (r *TaskRepository) GetByProjectID(ctx context.Context, projectID uuid.UUID
 	var tasks []models.Task
 	for rows.Next() {
 		var t models.Task
-		if err := rows.Scan(&t.ID, &t.ProjectID, &t.Title, &t.Priority, &t.Completed, &t.CreatedAt, &t.UpdatedAt); err != nil {
+		if err := rows.Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed, &t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate, &t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt); err != nil {
 			return nil, err
 		}
 		tasks = append(tasks, t)
@@ -41,8 +41,8 @@ func (r *TaskRepository) GetByProjectID(ctx context.Context, projectID uuid.UUID
 func (r *TaskRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Task, error) {
 	var t models.Task
 	err := r.db.QueryRow(ctx,
-		"SELECT id, project_id, title, priority, completed, created_at, updated_at FROM tasks WHERE id = $1", id).
-		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Priority, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
+		"SELECT id, project_id, title, description, priority, completed, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio, created_at, updated_at FROM tasks WHERE id = $1", id).
+		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed, &t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate, &t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt)
 
 	if err == pgx.ErrNoRows {
 		return nil, nil
@@ -59,9 +59,9 @@ func (r *TaskRepository) Create(ctx context.Context, projectID uuid.UUID, req mo
 	var t models.Task
 
 	err := r.db.QueryRow(ctx,
-		"INSERT INTO tasks (id, project_id, title, priority) VALUES ($1, $2, $3, $4) RETURNING id, project_id, title, priority, completed, created_at, updated_at",
-		id, projectID, req.Title, req.Priority).
-		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Priority, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
+		"INSERT INTO tasks (id, project_id, title, description, priority, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, project_id, title, description, priority, completed, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio, created_at, updated_at",
+		id, projectID, req.Title, req.Description, req.Priority, req.AssigneeID, req.AuthorID, req.Category, req.StartDate, req.DueDate, req.EstimatedHours, req.DoneRatio).
+		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed, &t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate, &t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -74,9 +74,9 @@ func (r *TaskRepository) Update(ctx context.Context, id uuid.UUID, req models.Up
 	var t models.Task
 
 	err := r.db.QueryRow(ctx,
-		"UPDATE tasks SET title = $1, priority = $2, completed = $3 WHERE id = $4 RETURNING id, project_id, title, priority, completed, created_at, updated_at",
-		req.Title, req.Priority, req.Completed, id).
-		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Priority, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
+		"UPDATE tasks SET title = $1, description = $2, priority = $3, completed = $4, assignee_id = $5, author_id = $6, category = $7, start_date = $8, due_date = $9, estimated_hours = $10, done_ratio = $11 WHERE id = $12 RETURNING id, project_id, title, description, priority, completed, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio, created_at, updated_at",
+		req.Title, req.Description, req.Priority, req.Completed, req.AssigneeID, req.AuthorID, req.Category, req.StartDate, req.DueDate, req.EstimatedHours, req.DoneRatio, id).
+		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed, &t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate, &t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt)
 
 	if err != nil {
 		return nil, err

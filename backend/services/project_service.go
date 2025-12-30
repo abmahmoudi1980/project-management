@@ -2,8 +2,12 @@ package services
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"net/url"
 	"project-management/models"
 	"project-management/repositories"
+	"regexp"
 
 	"github.com/google/uuid"
 )
@@ -31,6 +35,17 @@ func (s *ProjectService) CreateProject(ctx context.Context, req models.CreatePro
 	if req.Status == "" {
 		req.Status = "active"
 	}
+
+	// Validate identifier
+	if err := s.ValidateProjectIdentifier(ctx, req.Identifier, nil); err != nil {
+		return nil, err
+	}
+
+	// Validate homepage URL
+	if err := s.ValidateHomepageURL(req.Homepage); err != nil {
+		return nil, err
+	}
+
 	return s.repo.Create(ctx, req)
 }
 
@@ -38,9 +53,68 @@ func (s *ProjectService) UpdateProject(ctx context.Context, id uuid.UUID, req mo
 	if req.Title == "" {
 		return nil, models.ErrValidation
 	}
+
+	// Validate identifier with exclusion of current project
+	if err := s.ValidateProjectIdentifier(ctx, req.Identifier, &id); err != nil {
+		return nil, err
+	}
+
+	// Validate homepage URL
+	if err := s.ValidateHomepageURL(req.Homepage); err != nil {
+		return nil, err
+	}
+
 	return s.repo.Update(ctx, id, req)
 }
 
 func (s *ProjectService) DeleteProject(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Delete(ctx, id)
+}
+
+// ValidateProjectIdentifier validates the project identifier format and checks uniqueness
+func (s *ProjectService) ValidateProjectIdentifier(ctx context.Context, identifier string, excludeID *uuid.UUID) error {
+	if identifier == "" {
+		return errors.New("identifier is required")
+	}
+
+	// Validate format: only alphanumeric, underscore, and hyphen allowed
+	matched, err := regexp.MatchString(`^[a-zA-Z0-9_-]+$`, identifier)
+	if err != nil {
+		return err
+	}
+	if !matched {
+		return errors.New("identifier can only contain alphanumeric characters, underscores, and hyphens")
+	}
+
+	// Check uniqueness by querying all projects
+	projects, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, p := range projects {
+		// Skip the project being updated
+		if excludeID != nil && p.ID == *excludeID {
+			continue
+		}
+		if p.Identifier == identifier {
+			return fmt.Errorf("identifier '%s' is already in use", identifier)
+		}
+	}
+
+	return nil
+}
+
+// ValidateHomepageURL validates the homepage URL format if provided
+func (s *ProjectService) ValidateHomepageURL(homepage *string) error {
+	if homepage == nil || *homepage == "" {
+		return nil // Homepage is optional
+	}
+
+	_, err := url.ParseRequestURI(*homepage)
+	if err != nil {
+		return errors.New("invalid homepage URL format")
+	}
+
+	return nil
 }
