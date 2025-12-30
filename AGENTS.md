@@ -1,7 +1,7 @@
 # Agent Context File
 
 **Last Updated**: 2025-12-30  
-**Branch**: 002-svelte5-upgrade  
+**Branch**: 003-user-auth  
 **Purpose**: Provide AI coding agents with project-specific context
 
 ## Technology Stack
@@ -10,6 +10,7 @@
 - **Language**: Go 1.21+
 - **Framework**: Fiber (Go web framework)
 - **Database**: PostgreSQL 12+ (using pgx driver)
+- **Authentication**: JWT (golang-jwt/jwt/v5), bcrypt password hashing
 - **Architecture**: Layered (handlers → services → repositories → models)
 
 ### Frontend  
@@ -54,7 +55,67 @@ project-management/
 ```
 
 ## Current Feature Context
+3: User Authentication (IN PROGRESS) 🚧
 
+**Status**: Planning Complete, Implementation In Progress  
+**Branch**: `003-user-auth`
+
+**Objective**: Implement complete user authentication system with registration, login, password reset, and role-based access control (Admin and Regular User).
+
+**Key Features**:
+- User registration and login (Persian UI)
+- JWT-based authentication with httpOnly cookies
+- Two user roles: Admin (full access) and Regular User (limited access)
+- Password reset via email (Gmail SMTP)
+- Account security (lockout after 5 failed attempts)
+- Admin user management (list, change roles, activate/deactivate)
+- Role-based access control middleware
+
+**New Dependencies**:
+- Backend: `github.com/golang-jwt/jwt/v5` (JWT tokens)
+- Backend: `golang.org/x/crypto/bcrypt` (password hashing)
+
+**Database Changes**:
+- New tables: `users`, `sessions`, `password_reset_tokens`
+- Modified tables: `projects` (add user_id, created_by), `tasks` (add created_by)
+
+**Security Features**:
+- bcrypt password hashing (cost factor 10)
+- Account lockout: 5 failed attempts → 30 minutes
+- JWT tokens: Access (15 min) + Refresh (7 days)
+- httpOnly cookies (XSS protection)
+- Rate limiting on auth endpoints
+- Security headers (CSP, HSTS, X-Frame-Options)
+
+**API Endpoints** (12 new):
+- Public: POST /auth/register, /auth/login, /auth/forgot-password, /auth/reset-password
+- Protected: GET/PUT /auth/me, PUT /auth/me/password, POST /auth/logout
+- Admin: GET /users, GET /users/:id, PUT /users/:id/role, PUT /users/:id/activate
+
+**Frontend Components** (5 new):
+- LoginForm.svelte - User login form
+- RegisterForm.svelte - User registration form
+- ForgotPasswordForm.svelte - Password reset request
+- ResetPasswordForm.svelte - Password reset confirmation
+- UserManagement.svelte - Admin user management UI
+
+**Stores** (1 new):
+- authStore.js - Authentication state management (login, logout, checkAuth)
+
+**Environment Variables Required**:
+- JWT_SECRET, JWT_ACCESS_EXPIRY, JWT_REFRESH_EXPIRY
+- SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD
+- APP_URL, API_URL
+
+**Reference Documents**:
+- Spec: `specs/003-user-auth/spec.md`
+- Plan: `specs/003-user-auth/plan.md`
+- Data Model: `specs/003-user-auth/data-model.md`
+- API Contracts: `specs/003-user-auth/contracts/api-endpoints.md`
+- Research: `specs/003-user-auth/research.md`
+- Quickstart: `specs/003-user-auth/quickstart.md`
+
+### Feature 00
 ### Feature 002: Svelte 5 Upgrade (COMPLETED) ✅
 
 **Status**: Implementation Complete  
