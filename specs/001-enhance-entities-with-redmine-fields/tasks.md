@@ -30,14 +30,14 @@ This is a web application with:
 
 **Purpose**: Add new columns to existing tables without data loss
 
-- [ ] T001 Create migration directory in backend/migration/
-- [ ] T002 Create migration script backend/migration/001_enhance_entities.sql with all ALTER TABLE statements
-- [ ] T003 Add identifier, homepage, is_public columns to projects table in backend/migration/001_enhance_entities.sql
-- [ ] T004 Add description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio columns to tasks table in backend/migration/001_enhance_entities.sql
-- [ ] T005 Add user_id, activity_type, project_id columns to time_logs table in backend/migration/001_enhance_entities.sql
-- [ ] T006 Add indexes (idx_projects_identifier, idx_tasks_assignee_id, idx_tasks_due_date, idx_time_logs_user_id, idx_time_logs_activity_type) in backend/migration/001_enhance_entities.sql
-- [ ] T007 Add constraints (unique identifier, done_ratio check 0-100) in backend/migration/001_enhance_entities.sql
-- [ ] T008 Run migration script and verify schema changes with \d commands
+- [x] T001 Create migration directory in backend/migration/
+- [x] T002 Create migration script backend/migration/001_enhance_entities.sql with all ALTER TABLE statements
+- [x] T003 Add identifier, homepage, is_public columns to projects table in backend/migration/001_enhance_entities.sql
+- [x] T004 Add description, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio columns to tasks table in backend/migration/001_enhance_entities.sql
+- [x] T005 Add user_id, activity_type, project_id columns to time_logs table in backend/migration/001_enhance_entities.sql
+- [x] T006 Add indexes (idx_projects_identifier, idx_tasks_assignee_id, idx_tasks_due_date, idx_time_logs_user_id, idx_time_logs_activity_type) in backend/migration/001_enhance_entities.sql
+- [x] T007 Add constraints (unique identifier, done_ratio check 0-100) in backend/migration/001_enhance_entities.sql
+- [x] T008 Run migration script and verify schema changes with \d commands
 
 **Checkpoint**: Database schema ready - backend model updates can now begin
 
