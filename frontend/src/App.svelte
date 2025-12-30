@@ -11,10 +11,10 @@
     await projects.load();
   });
 
-  async function handleProjectSelect(project) {
-    selectedProject = project;
-    if (project) {
-      await tasks.load(project.id);
+  async function handleProjectSelect(event) {
+    selectedProject = event.detail;
+    if (event.detail) {
+      await tasks.load(event.detail.id);
     }
   }
 </script>

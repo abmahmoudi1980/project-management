@@ -11,8 +11,8 @@
     if (!durationMinutes || durationMinutes <= 0) return;
 
     await timeLogs.create(task.id, {
-      date: new Date(date),
-      durationMinutes,
+      date: new Date(date).toISOString(),
+      duration_minutes: durationMinutes,
       note: note.trim() || null,
     });
 
@@ -65,10 +65,10 @@
     </button>
   </form>
 
-  {#if $timeLogs.length > 0}
+  {#if ($timeLogs || []).length > 0}
     <div class="space-y-2">
       <h4 class="text-sm font-medium text-gray-700">Time Logs</h4>
-      {#each $timeLogs as log (log.id)}
+      {#each $timeLogs || [] as log (log.id)}
         <div
           class="flex justify-between items-center p-3 bg-gray-50 rounded-lg text-sm"
         >

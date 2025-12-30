@@ -6,7 +6,7 @@
   export let selectedProject = null;
   const dispatch = createEventDispatcher();
 
-  $: showForm = false;
+  let showForm = false;
 
   function toggleForm() {
     showForm = !showForm;
@@ -28,7 +28,7 @@
   }
 </script>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full relative">
   <!-- Projects Header -->
   <div class="px-6 py-4">
     <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -38,7 +38,7 @@
 
   <!-- Project List -->
   <nav class="flex-1 px-3 space-y-1">
-    {#each $projects as project}
+    {#each $projects || [] as project}
       <button
         on:click={() => handleProjectSelect(project)}
         class="group w-full text-left px-3 py-2.5 rounded-lg transition-all relative

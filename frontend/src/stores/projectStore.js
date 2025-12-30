@@ -12,17 +12,17 @@ function createProjectStore() {
     },
     create: async (projectData) => {
       const project = await api.projects.create(projectData);
-      update(projects => [project, ...projects]);
+      update(currentProjects => [project, ...currentProjects]);
       return project;
     },
     update: async (id, projectData) => {
       const project = await api.projects.update(id, projectData);
-      update(projects => projects.map(p => p.id === id ? project : p));
+      update(currentProjects => currentProjects.map(p => p.id === id ? project : p));
       return project;
     },
     delete: async (id) => {
       await api.projects.delete(id);
-      update(projects => projects.filter(p => p.id !== id));
+      update(currentProjects => currentProjects.filter(p => p.id !== id));
     }
   };
 }

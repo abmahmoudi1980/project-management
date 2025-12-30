@@ -38,8 +38,8 @@
   <!-- Toolbar -->
   <div class="flex items-center justify-between">
     <div class="text-sm text-slate-500">
-      {$tasks.length}
-      {$tasks.length === 1 ? "Task" : "Tasks"}
+      {($tasks || []).length}
+      {($tasks || []).length === 1 ? "Task" : "Tasks"}
     </div>
     <button
       on:click={toggleForm}
@@ -65,7 +65,7 @@
 
   <!-- Task List -->
   <div class="space-y-3">
-    {#each $tasks as task}
+    {#each $tasks || [] as task}
       <div
         class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
       >
@@ -180,7 +180,7 @@
       </div>
     {/each}
 
-    {#if $tasks.length === 0}
+    {#if ($tasks || []).length === 0}
       <div class="text-center py-12">
         <svg
           class="w-12 h-12 mx-auto text-slate-300 mb-3"
