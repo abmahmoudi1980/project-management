@@ -8,21 +8,21 @@ function createProjectStore() {
     subscribe,
     load: async () => {
       const projects = await api.projects.getAll();
-      set(projects);
+      set(projects || []);
     },
     create: async (projectData) => {
       const project = await api.projects.create(projectData);
-      update(currentProjects => [project, ...currentProjects]);
+      update(currentProjects => [project, ...(currentProjects || [])]);
       return project;
     },
     update: async (id, projectData) => {
       const project = await api.projects.update(id, projectData);
-      update(currentProjects => currentProjects.map(p => p.id === id ? project : p));
+      update(currentProjects => (currentProjects || []).map(p => p.id === id ? project : p));
       return project;
     },
     delete: async (id) => {
       await api.projects.delete(id);
-      update(currentProjects => currentProjects.filter(p => p.id !== id));
+      update(currentProjects => (currentProjects || []).filter(p => p.id !== id));
     }
   };
 }

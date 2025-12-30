@@ -24,8 +24,8 @@
   <aside class="w-64 bg-white border-r border-slate-200 flex flex-col">
     <!-- App Header -->
     <div class="px-6 py-5 border-b border-slate-200">
-      <h1 class="text-xl font-semibold text-slate-900">GoFlow</h1>
-      <p class="text-xs text-slate-500 mt-0.5">Project & Task Manager</p>
+      <h1 class="text-xl font-semibold text-slate-900">جریان کار</h1>
+      <p class="text-xs text-slate-500 mt-0.5">مدیریت پروژه و وظایف</p>
     </div>
 
     <!-- Project List -->
@@ -67,9 +67,9 @@
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
             />
           </svg>
-          <p class="text-slate-500 text-lg">Select a project to get started</p>
+          <p class="text-slate-500 text-lg">یک پروژه را برای شروع انتخاب کنید</p>
           <p class="text-slate-400 text-sm mt-1">
-            Choose from the sidebar or create a new project
+            از نوار کناری انتخاب کنید یا پروژه جدیدی ایجاد کنید
           </p>
         </div>
       </div>

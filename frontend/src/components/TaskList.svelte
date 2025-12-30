@@ -25,7 +25,7 @@
   }
 
   async function handleTaskDelete(taskId) {
-    if (confirm("Are you sure you want to delete this task?")) {
+    if (confirm("آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟")) {
       await tasks.delete(taskId);
       if (selectedTask?.id === taskId) {
         selectedTask = null;
@@ -39,7 +39,7 @@
   <div class="flex items-center justify-between">
     <div class="text-sm text-slate-500">
       {($tasks || []).length}
-      {($tasks || []).length === 1 ? "Task" : "Tasks"}
+      {($tasks || []).length === 1 ? "وظیفه" : "وظیفه"}
     </div>
     <button
       on:click={toggleForm}
@@ -48,7 +48,7 @@
         ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
         : 'bg-slate-900 text-white hover:bg-slate-800'}"
     >
-      {showForm ? "Cancel" : "+ Add Task"}
+      {showForm ? "لغو" : "+ افزودن وظیفه"}
     </button>
   </div>
 
@@ -118,7 +118,7 @@
               {/if}
               {#if task.start_date}
                 <span
-                  >Start: {new Date(task.start_date).toLocaleDateString()}</span
+                  >شروع: {new Date(task.start_date).toLocaleDateString('fa-IR')}</span
                 >
               {/if}
               {#if task.due_date}
@@ -128,11 +128,11 @@
                     ? 'text-rose-600'
                     : ''}"
                 >
-                  Due: {new Date(task.due_date).toLocaleDateString()}
+                  مهلت: {new Date(task.due_date).toLocaleDateString('fa-IR')}
                 </span>
               {/if}
               {#if task.estimated_hours}
-                <span>Est: {task.estimated_hours}h</span>
+                <span>تخمین: {task.estimated_hours} ساعت</span>
               {/if}
             </div>
             {#if task.done_ratio > 0}
@@ -140,7 +140,7 @@
                 <div
                   class="flex items-center justify-between text-xs text-slate-600 mb-1"
                 >
-                  <span>Progress</span>
+                  <span>پیشرفت</span>
                   <span class="font-medium">{task.done_ratio}%</span>
                 </div>
                 <div class="w-full bg-slate-200 rounded-full h-1.5">
@@ -163,7 +163,7 @@
             {task.priority === 'Medium' ? 'bg-amber-50 text-amber-700' : ''}
             {task.priority === 'Low' ? 'bg-slate-100 text-slate-600' : ''}"
           >
-            {task.priority}
+            {task.priority === 'High' ? 'بالا' : task.priority === 'Medium' ? 'متوسط' : 'پایین'}
           </span>
 
           <!-- Hover Actions -->
@@ -212,8 +212,8 @@
 
           <!-- Total Time -->
           <div class="flex-shrink-0 text-right">
-            <div class="text-sm font-semibold text-slate-700">0h 0m</div>
-            <div class="text-xs text-slate-400">logged</div>
+            <div class="text-sm font-semibold text-slate-700">0 ساعت 0 دقیقه</div>
+            <div class="text-xs text-slate-400">ثبت شده</div>
           </div>
         </div>
 
@@ -241,9 +241,9 @@
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
           />
         </svg>
-        <p class="text-slate-500">No tasks yet</p>
+        <p class="text-slate-500">هنوز وظیفه‌ای وجود ندارد</p>
         <p class="text-slate-400 text-sm mt-1">
-          Create your first task to get started
+          اولین وظیفه خود را برای شروع ایجاد کنید
         </p>
       </div>
     {/if}

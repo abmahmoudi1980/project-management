@@ -23,7 +23,7 @@
   }
 
   async function handleProjectDelete(projectId) {
-    if (confirm("Are you sure you want to delete this project?")) {
+    if (confirm("آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟")) {
       await projects.delete(projectId);
       if (selectedProject?.id === projectId) {
         selectedProject = null;
@@ -37,7 +37,7 @@
   <!-- Projects Header -->
   <div class="px-6 py-4">
     <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-      Projects
+      پروژه‌ها
     </h2>
   </div>
 
@@ -59,7 +59,7 @@
                 <span
                   class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
                 >
-                  Public
+                  عمومی
                 </span>
               {/if}
             </div>
@@ -132,13 +132,13 @@
       on:click={openModal}
       class="w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
     >
-      + New Project
+      + پروژه جدید
     </button>
   </div>
 </div>
 
 <!-- Modal for New Project -->
-<Modal show={showModal} title="Create New Project" maxWidth="lg" on:close={closeModal}>
+<Modal show={showModal} title="ایجاد پروژه جدید" maxWidth="lg" on:close={closeModal}>
   <ProjectForm
     on:created={closeModal}
   />

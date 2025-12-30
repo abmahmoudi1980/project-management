@@ -21,7 +21,7 @@
   // Validate date range
   function validateDates() {
     if (start_date && due_date && new Date(due_date) < new Date(start_date)) {
-      dateError = "Due date must be equal to or after start date";
+      dateError = "تاریخ مهلت باید بعد از تاریخ شروع یا برابر با آن باشد";
       return false;
     }
     dateError = "";
@@ -32,7 +32,7 @@
   function validateDoneRatio() {
     const ratio = parseInt(done_ratio);
     if (isNaN(ratio) || ratio < 0 || ratio > 100) {
-      doneRatioError = "Done ratio must be between 0 and 100";
+      doneRatioError = "درصد پیشرفت باید بین 0 تا 100 باشد";
       return false;
     }
     doneRatioError = "";
@@ -45,7 +45,7 @@
       const hours = parseFloat(estimated_hours);
       if (isNaN(hours) || hours < 0) {
         estimatedHoursError =
-          "Estimated hours must be greater than or equal to 0";
+          "ساعات تخمینی باید بزرگتر یا مساوی 0 باشد";
         return false;
       }
     }
@@ -57,7 +57,7 @@
     error = "";
 
     if (!title.trim()) {
-      error = "Title is required";
+      error = "عنوان الزامی است";
       return;
     }
 
@@ -97,7 +97,7 @@
 
       dispatch("created");
     } catch (err) {
-      error = err.message || "Failed to create task";
+      error = err.message || "ایجاد وظیفه با خطا مواجه شد";
     }
   }
 </script>
@@ -106,7 +106,7 @@
   on:submit|preventDefault={handleSubmit}
   class="space-y-4 p-4 border rounded-lg bg-white"
 >
-  <h3 class="text-lg font-semibold text-gray-800">Create New Task</h3>
+  <h3 class="text-lg font-semibold text-gray-800">ایجاد وظیفه جدید</h3>
 
   {#if error}
     <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
@@ -116,14 +116,14 @@
 
   <div>
     <label for="task-title" class="block text-sm font-medium text-gray-700 mb-1"
-      >Title</label
+      >عنوان</label
     >
     <input
       type="text"
       id="task-title"
       bind:value={title}
       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="Task title"
+      placeholder="عنوان وظیفه"
       required
     />
   </div>
@@ -131,43 +131,43 @@
   <div>
     <label
       for="description"
-      class="block text-sm font-medium text-gray-700 mb-1">Description</label
+      class="block text-sm font-medium text-gray-700 mb-1">توضیحات</label
     >
     <textarea
       id="description"
       bind:value={description}
       rows="3"
       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="Task description (optional)"
+      placeholder="توضیحات وظیفه (اختیاری)"
     />
   </div>
 
   <div class="grid grid-cols-2 gap-4">
     <div>
       <label for="priority" class="block text-sm font-medium text-gray-700 mb-1"
-        >Priority</label
+        >اولویت</label
       >
       <select
         id="priority"
         bind:value={priority}
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
+        <option value="Low">پایین</option>
+        <option value="Medium">متوسط</option>
+        <option value="High">بالا</option>
       </select>
     </div>
 
     <div>
       <label for="category" class="block text-sm font-medium text-gray-700 mb-1"
-        >Category</label
+        >دسته‌بندی</label
       >
       <input
         type="text"
         id="category"
         bind:value={category}
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Backend, Frontend, etc."
+        placeholder="بک‌اند، فرانت‌اند، ..."
       />
     </div>
   </div>
@@ -176,7 +176,7 @@
     <div>
       <label
         for="start_date"
-        class="block text-sm font-medium text-gray-700 mb-1">Start Date</label
+        class="block text-sm font-medium text-gray-700 mb-1">تاریخ شروع</label
       >
       <input
         type="date"
@@ -190,7 +190,7 @@
 
     <div>
       <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1"
-        >Due Date</label
+        >تاریخ مهلت</label
       >
       <input
         type="date"
@@ -211,7 +211,7 @@
       <label
         for="estimated_hours"
         class="block text-sm font-medium text-gray-700 mb-1"
-        >Estimated Hours</label
+        >ساعات تخمینی</label
       >
       <input
         type="number"
@@ -234,7 +234,7 @@
         for="done_ratio"
         class="block text-sm font-medium text-gray-700 mb-1"
       >
-        Progress (%) - {done_ratio}%
+        پیشرفت (%) - {done_ratio}%
       </label>
       <input
         type="range"
@@ -258,6 +258,6 @@
     disabled={!title.trim()}
     class="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors"
   >
-    Create Task
+    ایجاد وظیفه
   </button>
 </form>

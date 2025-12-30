@@ -21,7 +21,7 @@
   }
 
   async function handleDelete(timeLogId) {
-    if (confirm("Are you sure you want to delete this time log?")) {
+    if (confirm("آیا مطمئن هستید که می‌خواهید این زمان ثبت شده را حذف کنید؟")) {
       await timeLogs.delete(timeLogId);
     }
   }
@@ -47,13 +47,13 @@
       type="number"
       bind:value={durationMinutes}
       min="1"
-      placeholder="Minutes"
+      placeholder="دقیقه"
       class="px-3 py-2 border border-gray-300 rounded-lg w-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <input
       type="text"
       bind:value={note}
-      placeholder="Note (optional)"
+      placeholder="یادداشت (اختیاری)"
       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
@@ -61,20 +61,20 @@
       disabled={!durationMinutes || durationMinutes <= 0}
       class="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors"
     >
-      Add
+      افزودن
     </button>
   </form>
 
   {#if ($timeLogs || []).length > 0}
     <div class="space-y-2">
-      <h4 class="text-sm font-medium text-gray-700">Time Logs</h4>
+      <h4 class="text-sm font-medium text-gray-700">زمان‌های ثبت شده</h4>
       {#each $timeLogs || [] as log (log.id)}
         <div
           class="flex justify-between items-center p-3 bg-gray-50 rounded-lg text-sm"
         >
           <div>
             <span class="font-medium"
-              >{new Date(log.date).toLocaleDateString()}</span
+              >{new Date(log.date).toLocaleDateString('fa-IR')}</span
             >
             <span class="mx-2">•</span>
             <span class="text-blue-600 font-semibold"
@@ -88,7 +88,7 @@
             on:click={() => handleDelete(log.id)}
             class="text-red-500 hover:text-red-700 text-xs"
           >
-            Delete
+            حذف
           </button>
         </div>
       {/each}
