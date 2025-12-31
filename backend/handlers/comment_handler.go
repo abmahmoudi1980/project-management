@@ -29,7 +29,7 @@ func (h *CommentHandler) GetCommentsByTask(c *fiber.Ctx) error {
 		})
 	}
 
-	comments, err := h.service.GetCommentsByTaskID(c.Context(), taskID)
+	comments, err := h.service.GetCommentsByTaskIDWithUser(c.Context(), taskID)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"success": false,

@@ -31,6 +31,14 @@ func (s *CommentService) GetCommentsByTaskID(ctx context.Context, taskID uuid.UU
 	return s.repo.GetByTaskID(ctx, taskID)
 }
 
+func (s *CommentService) GetCommentsByTaskIDWithUser(ctx context.Context, taskID uuid.UUID) ([]models.CommentWithUser, error) {
+	task, err := s.taskRepo.GetByID(ctx, taskID)
+	if err != nil || task == nil {
+		return nil, ErrCommentNotFound
+	}
+	return s.repo.GetByTaskIDWithUser(ctx, taskID)
+}
+
 func (s *CommentService) GetCommentByID(ctx context.Context, id uuid.UUID) (*models.Comment, error) {
 	return s.repo.GetByID(ctx, id)
 }

@@ -14,6 +14,7 @@
 
   let showForm = $state(false);
   let selectedTask = $state(null);
+  let showCommentsForTask = $state(null);
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
@@ -27,6 +28,11 @@
   async function handleTaskSelect(task) {
     selectedTask = task;
     await timeLogs.load(task.id);
+    await comments.load(task.id);
+  }
+
+  async function toggleComments(task) {
+    showCommentsForTask = showCommentsForTask === task.id ? null : task.id;
     await comments.load(task.id);
   }
 
@@ -178,7 +184,7 @@
 
           <!-- Hover Actions -->
           <div
-            class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            class="flex items-center gap-2 transition-opacity"
           >
             <button
               onclick={() => handleTaskSelect(task)}
@@ -196,6 +202,25 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+            <button
+              onclick={() => toggleComments(task)}
+              class="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+              title="Comments"
+            >
+              <svg
+                class="w-4 h-4 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
                 />
               </svg>
             </button>
@@ -227,11 +252,13 @@
           </div>
         </div>
 
-        <!-- Expanded: Time Logging Panel -->
         {#if selectedTask?.id === task.id}
           <div class="border-t border-slate-200 bg-slate-50/50 px-4 py-4">
             <TimeLogForm {task} on:logged={() => (selectedTask = null)} />
           </div>
+        {/if}
+
+        {#if showCommentsForTask === task.id}
           <div class="border-t border-slate-200 px-4 py-4">
             <CommentList {task} authUser={$authStore.user} />
           </div>

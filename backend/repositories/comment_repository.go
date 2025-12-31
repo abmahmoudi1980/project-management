@@ -41,6 +41,31 @@ func (r *CommentRepository) GetByTaskID(ctx context.Context, taskID uuid.UUID) (
 	return comments, nil
 }
 
+func (r *CommentRepository) GetByTaskIDWithUser(ctx context.Context, taskID uuid.UUID) ([]models.CommentWithUser, error) {
+	rows, err := r.db.Query(ctx,
+		`SELECT c.id, c.task_id, c.user_id, u.username, c.content, c.created_at, c.updated_at
+		 FROM comments c
+		 JOIN users u ON c.user_id = u.id
+		 WHERE c.task_id = $1
+		 ORDER BY c.created_at ASC`,
+		taskID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.CommentWithUser
+	for rows.Next() {
+		var c models.CommentWithUser
+		if err := rows.Scan(&c.ID, &c.TaskID, &c.UserID, &c.Username, &c.Content, &c.CreatedAt, &c.UpdatedAt); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+
+	return comments, nil
+}
+
 func (r *CommentRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Comment, error) {
 	var c models.Comment
 	err := r.db.QueryRow(ctx,

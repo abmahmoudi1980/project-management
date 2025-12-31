@@ -15,6 +15,16 @@ type Comment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type CommentWithUser struct {
+	ID        uuid.UUID `json:"id"`
+	TaskID    uuid.UUID `json:"task_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Username  string    `json:"username"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type CreateCommentRequest struct {
 	Content string `json:"content"`
 }
