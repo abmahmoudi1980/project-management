@@ -16,15 +16,11 @@ function createTaskStore() {
 
   const load = async (projectId, reset = false) => {
     try {
-      if (reset) {
-        update(state => ({ ...state, currentPage: 1, currentProjectId: projectId, loadingMore: true }));
-      } else {
-        update(state => ({ ...state, loadingMore: true }));
-      }
+      // Always update currentProjectId when loading, and reset page to 1
+      update(state => ({ ...state, currentPage: 1, currentProjectId: projectId, loadingMore: true }));
 
-      const currentPage = reset ? 1 : initialState.currentPage;
-      const response = await api.tasks.getByProject(projectId, currentPage, initialState.pageSize);
-      console.log('Initial load response:', { projectId, currentPage, pageSize: initialState.pageSize, response });
+      const response = await api.tasks.getByProject(projectId, 1, initialState.pageSize);
+      console.log('Initial load response:', { projectId, pageSize: initialState.pageSize, taskCount: response.tasks?.length, total: response.total, hasMore: response.has_more });
 
       update(state => ({
         ...state,
@@ -33,7 +29,6 @@ function createTaskStore() {
         hasMore: response.has_more || false,
         loadingMore: false
       }));
-      console.log('After initial load:', { total: initialState.total, hasMore: initialState.hasMore });
     } catch (error) {
       console.error('Failed to load tasks:', error);
       update(state => ({
@@ -46,25 +41,39 @@ function createTaskStore() {
   };
 
   const loadMore = async () => {
-    update(state => {
-      console.log('loadMore called from state:', { loadingMore: state.loadingMore, hasMore: state.hasMore, currentProjectId: state.currentProjectId, currentPage: state.currentPage });
-      if (state.loadingMore || !state.hasMore || !state.currentProjectId) return state;
-      return { ...state, loadingMore: true };
-    });
-
+    // First check if we can load more
+    let canLoadMore = false;
     let currentState;
-    subscribe(state => currentState = state)();
+    
+    subscribe(state => {
+      currentState = state;
+      if (!state.loadingMore && state.hasMore && state.currentProjectId) {
+        canLoadMore = true;
+      }
+    })();
 
-    if (!currentState || currentState.loadingMore || !currentState.hasMore || !currentState.currentProjectId) {
+    if (!canLoadMore) {
+      console.log('Cannot load more:', { 
+        loadingMore: currentState?.loadingMore, 
+        hasMore: currentState?.hasMore, 
+        currentProjectId: currentState?.currentProjectId 
+      });
       return;
     }
 
+    // Set loading state
+    update(state => ({ ...state, loadingMore: true }));
+
     try {
-      const nextPage = currentState.currentPage + 1;
-      console.log('Fetching page:', nextPage);
-      const response = await api.tasks.getByProject(currentState.currentProjectId, nextPage, currentState.pageSize);
+      // Re-subscribe to get the latest state after update
+      let latestState;
+      subscribe(state => latestState = state)();
+      
+      const nextPage = latestState.currentPage + 1;
+      console.log('Fetching page:', nextPage, 'for project:', latestState.currentProjectId);
+      const response = await api.tasks.getByProject(latestState.currentProjectId, nextPage, latestState.pageSize);
       const newTasks = Array.isArray(response.tasks) ? response.tasks : [];
-      console.log('Response:', response);
+      console.log('LoadMore response:', { nextPage, tasksReceived: newTasks.length, hasMore: response.has_more });
 
       update(state => ({
         ...state,
