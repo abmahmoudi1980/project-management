@@ -109,28 +109,34 @@ function createTaskStore() {
     },
     update: async (id, taskData) => {
       const task = await api.tasks.update(id, taskData);
-      update(currentTasks => currentTasks.map(t => t.id === id ? task : t));
+      update(state => ({
+        ...state,
+        tasks: state.tasks.map(t => t.id === id ? task : t)
+      }));
       return task;
     },
     toggleComplete: async (id) => {
       const task = await api.tasks.toggleComplete(id);
-      update(currentTasks => currentTasks.map(t => t.id === id ? task : t));
+      update(state => ({
+        ...state,
+        tasks: state.tasks.map(t => t.id === id ? task : t)
+      }));
       return task;
     },
     delete: async (id) => {
       await api.tasks.delete(id);
-      update(currentTasks => currentTasks.filter(t => t.id !== id));
-      total -= 1;
+      update(state => ({
+        ...state,
+        tasks: state.tasks.filter(t => t.id !== id),
+        total: state.total - 1
+      }));
     },
     getById: async (id) => {
       const task = await api.tasks.get(id);
-      update(currentTasks => {
-        const index = currentTasks.findIndex(t => t.id === id);
-        if (index >= 0) {
-          currentTasks[index] = task;
-        }
-        return currentTasks;
-      });
+      update(state => ({
+        ...state,
+        tasks: state.tasks.map(t => t.id === id ? task : t)
+      }));
       return task;
     }
   };
