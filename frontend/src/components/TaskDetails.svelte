@@ -47,8 +47,9 @@
     description = task.description || "";
     priority = task.priority;
     category = task.category || "";
-    start_date = task.start_date ? formatJalaliDateOnly(task.start_date) : "";
-    due_date = task.due_date ? formatJalaliDateOnly(task.due_date) : "";
+    // Store dates in YYYY-MM-DD format for JalaliDatePicker to properly convert
+    start_date = task.start_date ? task.start_date.split('T')[0] : "";
+    due_date = task.due_date ? task.due_date.split('T')[0] : "";
     estimated_hours = task.estimated_hours ? task.estimated_hours.toString() : "";
     done_ratio = task.done_ratio;
     isEditing = true;
