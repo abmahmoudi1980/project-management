@@ -262,7 +262,7 @@
               </p>
             {/if}
           </div>
-          <TaskList />
+          <TaskList project={selectedProject} />
         </div>
       {:else}
         <div class="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">

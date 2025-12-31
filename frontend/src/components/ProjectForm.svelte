@@ -180,7 +180,7 @@
           type="checkbox"
           id="is_public"
           bind:checked={is_public}
-          class="w-6 h-6 min-w-[44px] min-h-[44px] text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
+          class="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
         />
         <label for="is_public" class="ml-2 text-sm text-slate-700 cursor-pointer">
           پروژه عمومی

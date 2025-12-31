@@ -29,9 +29,13 @@
   }
 
   async function handleTaskSelect(task) {
-    selectedTask = task;
-    await timeLogs.load(task.id);
-    await comments.load(task.id);
+    if (selectedTask?.id === task.id) {
+      selectedTask = null;
+    } else {
+      selectedTask = task;
+      await timeLogs.load(task.id);
+      await comments.load(task.id);
+    }
   }
 
   async function toggleComments(task) {
@@ -105,7 +109,7 @@
           <!-- Checkbox -->
           <button
             onclick={() => handleTaskToggle(task)}
-            class="flex-shrink-0 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all self-start md:self-auto
+            class="flex-shrink-0 w-7 h-7 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all self-start md:self-auto
               {task.completed
               ? 'bg-emerald-500 border-emerald-500'
               : 'border-slate-300 hover:border-indigo-400'}"
@@ -305,7 +309,7 @@
   </div>
 </div>
 
- <Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
+  <Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
     <div class="p-4 sm:p-6">
       <h3 class="text-lg font-semibold text-slate-900 mb-2">
         حذف وظیفه

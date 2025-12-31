@@ -162,7 +162,7 @@
   {/snippet}
 </Modal>
 
- <Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; projectToDelete = null; }}>
+  <Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; projectToDelete = null; }}>
     <div class="p-4 sm:p-6">
       <h3 class="text-lg font-semibold text-slate-900 mb-2">
         حذف پروژه

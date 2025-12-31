@@ -2,8 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { fade, scale } from "svelte/transition";
 
-  let { show = false, title = "", maxWidth = "2xl", children } = $props();
-
+  let { show = false, title = "", maxWidth = "2xl", children, fullScreen = true } = $props();
   const dispatch = createEventDispatcher();
 
   const maxWidthClasses = {
@@ -49,7 +48,9 @@
     <div
       class="bg-white sm:rounded-lg shadow-xl w-full sm:w-full {maxWidthClasses[
         maxWidth
-      ]} h-full sm:max-h-[90vh] sm:flex sm:flex-col sm:m-0"
+      ]} {fullScreen
+        ? 'h-full sm:max-h-[90vh] sm:flex sm:flex-col'
+        : 'max-h-[90vh] sm:max-h-[90vh] my-auto'} sm:m-0"
       transition:scale={{ duration: 200, start: 0.95 }}
     >
       <!-- Modal Header -->
