@@ -15,8 +15,16 @@
   // Convert Gregorian to Jalali when value changes
   $effect(() => {
     if (value) {
-      jalaliDate = moment(value, "YYYY-MM-DD").locale("fa").format("YYYY/MM/DD");
-      currentMonth = moment(value, "YYYY-MM-DD");
+      // Check if value is already in Jalali format (YYYY/MM/DD or YYYY-M-D with Jalali-looking year)
+      if (value.includes('/') && parseInt(value.split('/')[0]) > 1000) {
+        // Already in Jalali format - use as is
+        jalaliDate = value;
+        currentMonth = moment.from(value, 'fa', 'jYYYY/jMM/jDD');
+      } else {
+        // Gregorian format (YYYY-MM-DD) - convert to Jalali
+        jalaliDate = moment(value, "YYYY-MM-DD").locale("fa").format("YYYY/MM/DD");
+        currentMonth = moment(value, "YYYY-MM-DD");
+      }
     } else {
       jalaliDate = "";
       currentMonth = moment();
