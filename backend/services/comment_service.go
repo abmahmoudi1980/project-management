@@ -43,7 +43,7 @@ func (s *CommentService) GetCommentByID(ctx context.Context, id uuid.UUID) (*mod
 	return s.repo.GetByID(ctx, id)
 }
 
-func (s *CommentService) CreateComment(ctx context.Context, taskID uuid.UUID, userID uuid.UUID, req models.CreateCommentRequest) (*models.Comment, error) {
+func (s *CommentService) CreateComment(ctx context.Context, taskID uuid.UUID, userID uuid.UUID, req models.CreateCommentRequest) (*models.CommentWithUser, error) {
 	if req.Content == "" {
 		return nil, errors.New("متن کامنت نمی‌تواند خالی باشد")
 	}
@@ -51,10 +51,15 @@ func (s *CommentService) CreateComment(ctx context.Context, taskID uuid.UUID, us
 	if err != nil || task == nil {
 		return nil, ErrCommentNotFound
 	}
-	return s.repo.Create(ctx, taskID, userID, req)
+	comment, err := s.repo.Create(ctx, taskID, userID, req)
+	if err != nil {
+		return nil, err
+	}
+	// Get the comment with user info
+	return s.repo.GetByIDWithUser(ctx, comment.ID)
 }
 
-func (s *CommentService) UpdateComment(ctx context.Context, id uuid.UUID, userID uuid.UUID, req models.UpdateCommentRequest) (*models.Comment, error) {
+func (s *CommentService) UpdateComment(ctx context.Context, id uuid.UUID, userID uuid.UUID, req models.UpdateCommentRequest) (*models.CommentWithUser, error) {
 	if req.Content == "" {
 		return nil, errors.New("متن کامنت نمی‌تواند خالی باشد")
 	}
@@ -65,7 +70,12 @@ func (s *CommentService) UpdateComment(ctx context.Context, id uuid.UUID, userID
 	if comment.UserID != userID {
 		return nil, ErrCommentUnauthorized
 	}
-	return s.repo.Update(ctx, id, req)
+	_, err = s.repo.Update(ctx, id, req)
+	if err != nil {
+		return nil, err
+	}
+	// Get the comment with user info
+	return s.repo.GetByIDWithUser(ctx, id)
 }
 
 func (s *CommentService) DeleteComment(ctx context.Context, id uuid.UUID, userID uuid.UUID) error {

@@ -85,6 +85,26 @@ func (r *CommentRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.
 	return &c, nil
 }
 
+func (r *CommentRepository) GetByIDWithUser(ctx context.Context, id uuid.UUID) (*models.CommentWithUser, error) {
+	var c models.CommentWithUser
+	err := r.db.QueryRow(ctx,
+		`SELECT c.id, c.task_id, c.user_id, u.username, c.content, c.created_at, c.updated_at
+		 FROM comments c
+		 JOIN users u ON c.user_id = u.id
+		 WHERE c.id = $1`,
+		id).
+		Scan(&c.ID, &c.TaskID, &c.UserID, &c.Username, &c.Content, &c.CreatedAt, &c.UpdatedAt)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
+}
+
 func (r *CommentRepository) Create(ctx context.Context, taskID uuid.UUID, userID uuid.UUID, req models.CreateCommentRequest) (*models.Comment, error) {
 	id := uuid.New()
 	var c models.Comment
