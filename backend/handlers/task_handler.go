@@ -67,7 +67,7 @@ func (h *TaskHandler) GetTask(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid task id"})
 	}
 
-	task, err := h.service.GetTaskByID(c.Context(), id)
+	task, err := h.service.GetTaskByIDWithUsers(c.Context(), id)
 	if err != nil || task == nil {
 		return c.Status(404).JSON(fiber.Map{"error": "task not found"})
 	}

@@ -54,6 +54,10 @@ func (s *TaskService) GetTaskByID(ctx context.Context, id uuid.UUID) (*models.Ta
 	return s.repo.GetByID(ctx, id)
 }
 
+func (s *TaskService) GetTaskByIDWithUsers(ctx context.Context, id uuid.UUID) (*models.TaskWithUsers, error) {
+	return s.repo.GetByIDWithUsers(ctx, id)
+}
+
 func (s *TaskService) CreateTask(ctx context.Context, projectID uuid.UUID, req models.CreateTaskRequest) (*models.Task, error) {
 	if req.Title == "" {
 		return nil, models.ErrValidation

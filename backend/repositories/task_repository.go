@@ -54,6 +54,33 @@ func (r *TaskRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Tas
 	return &t, nil
 }
 
+func (r *TaskRepository) GetByIDWithUsers(ctx context.Context, id uuid.UUID) (*models.TaskWithUsers, error) {
+	var t models.TaskWithUsers
+	err := r.db.QueryRow(ctx,
+		`SELECT t.id, t.project_id, t.title, t.description, t.priority, t.completed,
+		        t.assignee_id, t.author_id, t.category, t.start_date, t.due_date,
+		        t.estimated_hours, t.done_ratio, t.created_at, t.updated_at,
+		        assignee.username as assignee_name,
+		        author.username as author_name
+		 FROM tasks t
+		 LEFT JOIN users assignee ON t.assignee_id = assignee.id
+		 LEFT JOIN users author ON t.author_id = author.id
+		 WHERE t.id = $1`, id).
+		Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed,
+			&t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate,
+			&t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt,
+			&t.AssigneeName, &t.AuthorName)
+
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &t, nil
+}
+
 func (r *TaskRepository) Create(ctx context.Context, projectID uuid.UUID, req models.CreateTaskRequest) (*models.Task, error) {
 	id := uuid.New()
 	var t models.Task

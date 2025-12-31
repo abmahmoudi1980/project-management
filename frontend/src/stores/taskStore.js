@@ -33,6 +33,17 @@ function createTaskStore() {
     delete: async (id) => {
       await api.tasks.delete(id);
       update(currentTasks => currentTasks.filter(t => t.id !== id));
+    },
+    getById: async (id) => {
+      const task = await api.tasks.get(id);
+      update(currentTasks => {
+        const index = currentTasks.findIndex(t => t.id === id);
+        if (index >= 0) {
+          currentTasks[index] = task;
+        }
+        return currentTasks;
+      });
+      return task;
     }
   };
 }
