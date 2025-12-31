@@ -177,9 +177,11 @@
       show={showMobileMenu}
       user={$authStore.user}
       isAdmin={$authStore.user?.role === "admin"}
+      selectedProject={selectedProject}
       on:close={() => (showMobileMenu = false)}
       on:navigate={handleMobileNavEvent}
       on:logout={handleMobileNavEvent}
+      on:select={handleProjectSelect}
     />
 
     <!-- Desktop Sidebar -->

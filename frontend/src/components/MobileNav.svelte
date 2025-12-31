@@ -1,8 +1,9 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import { fade, fly } from "svelte/transition";
+  import ProjectList from "./ProjectList.svelte";
 
-  let { show = false, user = null, isAdmin = false } = $props();
+  let { show = false, user = null, isAdmin = false, selectedProject = null } = $props();
   const dispatch = createEventDispatcher();
 
   function closeDrawer() {
@@ -124,9 +125,13 @@
           <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
             پروژه‌ها
           </p>
-          <p class="text-sm text-slate-500 px-2 py-2">
-            پروژه‌ها را از صفحه اصلی انتخاب کنید
-          </p>
+          <ProjectList
+            bind:selectedProject
+            on:select={(event) => {
+              dispatch("select", event.detail);
+              closeDrawer();
+            }}
+          />
         </div>
       </div>
 
