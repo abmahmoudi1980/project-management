@@ -44,8 +44,8 @@
 </script>
 
 <div class="space-y-4">
-  <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex gap-3">
-    <div class="w-40">
+  <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col md:flex-row gap-3">
+    <div class="w-full md:w-40">
       <JalaliDatePicker
         bind:value={date}
         placeholder="1403/10/10"
@@ -56,18 +56,18 @@
       bind:value={durationMinutes}
       min="1"
       placeholder="دقیقه"
-      class="px-3 py-2 border border-gray-300 rounded-lg w-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full md:w-24 px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <input
       type="text"
       bind:value={note}
       placeholder="یادداشت (اختیاری)"
-      class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full md:flex-1 px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
     <button
       type="submit"
       disabled={!durationMinutes || durationMinutes <= 0}
-      class="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors"
+      class="w-full md:w-auto min-h-[44px] bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
     >
       افزودن
     </button>
@@ -78,23 +78,24 @@
       <h4 class="text-sm font-medium text-gray-700">زمان‌های ثبت شده</h4>
       {#each $timeLogs || [] as log (log.id)}
         <div
-          class="flex justify-between items-center p-3 bg-gray-50 rounded-lg text-sm"
+          class="flex flex-col md:flex-row md:justify-between md:items-start gap-2 p-3 bg-gray-50 rounded-lg text-sm"
         >
-          <div>
-            <span class="font-medium"
+          <div class="flex-1">
+            <span class="font-medium block"
               >{formatJalaliDate(log.date)}</span
             >
-            <span class="mx-2">•</span>
-            <span class="text-blue-600 font-semibold"
-              >{formatMinutes(log.duration_minutes)}</span
-            >
-            {#if log.note}
-              <span class="ml-2 text-gray-600">- {log.note}</span>
-            {/if}
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-blue-600 font-semibold"
+                >{formatMinutes(log.duration_minutes)}</span
+              >
+              {#if log.note}
+                <span class="text-gray-600">- {log.note}</span>
+              {/if}
+            </div>
           </div>
           <button
             onclick={() => handleDelete(log.id)}
-            class="text-red-500 hover:text-red-700 text-xs"
+            class="self-start md:self-auto px-3 py-2 min-h-[44px] text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors text-xs font-medium"
           >
             حذف
           </button>

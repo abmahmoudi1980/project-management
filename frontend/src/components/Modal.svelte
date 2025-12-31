@@ -38,7 +38,7 @@
 
 {#if show}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+    class="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black bg-opacity-50"
     onclick={handleBackdropClick}
     onkeydown={handleKeydown}
     tabindex="-1"
@@ -47,19 +47,19 @@
     aria-modal="true"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full {maxWidthClasses[
+      class="bg-white sm:rounded-lg shadow-xl w-full sm:w-full {maxWidthClasses[
         maxWidth
-      ]} max-h-[90vh] flex flex-col"
+      ]} h-full sm:max-h-[90vh] sm:flex sm:flex-col sm:m-0"
       transition:scale={{ duration: 200, start: 0.95 }}
     >
       <!-- Modal Header -->
       <div
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-200"
+        class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 flex-shrink-0"
       >
-        <h2 class="text-xl font-semibold text-slate-900">{title}</h2>
+        <h2 class="text-lg sm:text-xl font-semibold text-slate-900">{title}</h2>
         <button
           onclick={close}
-          class="text-slate-400 hover:text-slate-600 transition-colors"
+          class="p-2 sm:p-0 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 text-slate-400 hover:text-slate-600 hover:bg-slate-100 sm:hover:bg-transparent rounded-lg sm:rounded-none transition-colors"
           aria-label="Close modal"
         >
           <svg
@@ -79,7 +79,7 @@
       </div>
 
       <!-- Modal Body (scrollable) -->
-      <div class="flex-1 overflow-y-auto px-6 py-6">
+      <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6">
         {@render children()}
       </div>
     </div>

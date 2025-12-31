@@ -123,7 +123,7 @@
       type="text"
       id="task-title"
       bind:value={title}
-      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       placeholder="عنوان وظیفه"
       required
     />
@@ -138,12 +138,12 @@
       id="description"
       bind:value={description}
       rows="3"
-      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
       placeholder="توضیحات وظیفه (اختیاری)"
     ></textarea>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
       <label for="priority" class="block text-sm font-medium text-gray-700 mb-1"
         >اولویت</label
@@ -151,7 +151,7 @@
       <select
         id="priority"
         bind:value={priority}
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="Low">پایین</option>
         <option value="Medium">متوسط</option>
@@ -167,13 +167,13 @@
         type="text"
         id="category"
         bind:value={category}
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="بک‌اند، فرانت‌اند، ..."
       />
     </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
       <label
         for="start_date"
@@ -203,7 +203,7 @@
     <p class="text-red-500 text-xs -mt-2">{dateError}</p>
   {/if}
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
       <label
         for="estimated_hours"
@@ -217,7 +217,7 @@
         onblur={validateEstimatedHours}
         min="0"
         step="0.5"
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         class:border-red-500={estimatedHoursError}
         placeholder="8.5"
       />
@@ -241,7 +241,7 @@
         min="0"
         max="100"
         step="5"
-        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
         class:border-red-500={doneRatioError}
       />
       {#if doneRatioError}
@@ -253,7 +253,7 @@
   <button
     type="submit"
     disabled={!title.trim()}
-    class="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors"
+    class="w-full min-h-[44px] bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
   >
     ایجاد وظیفه
   </button>
