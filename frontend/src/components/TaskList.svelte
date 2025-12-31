@@ -1,4 +1,5 @@
 <script>
+  import { onMount, untrack } from "svelte";
   import { tasks } from "../stores/taskStore";
   import { timeLogs } from "../stores/timeLogStore";
   import { comments } from "../stores/commentStore.js";
@@ -20,6 +21,59 @@
   let showDeleteModal = $state(false);
   let taskToDelete = $state(null);
   let showTaskDetails = $state(null);
+  let sentinelRef = $state(null);
+  let intersectionObserver = $state(null);
+  let previousProjectId = $state(null);
+
+  onMount(() => {
+    if (project) {
+      tasks.load(project.id, true);
+      previousProjectId = project.id;
+    }
+
+    return () => {
+      tasks.reset();
+      if (intersectionObserver) {
+        intersectionObserver.disconnect();
+      }
+    };
+  });
+
+  $effect(() => {
+    if (project && previousProjectId !== project.id) {
+      tasks.load(project.id, true);
+      previousProjectId = project.id;
+    }
+  });
+
+  $effect(() => {
+    untrack(() => {
+      if (sentinelRef && !intersectionObserver) {
+        intersectionObserver = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting) {
+              if ($tasks.hasMore && !$tasks.loadingMore) {
+                tasks.loadMore();
+              }
+            }
+          },
+          {
+            rootMargin: "100px",
+            threshold: 0.1
+          }
+        );
+
+        intersectionObserver.observe(sentinelRef);
+      }
+    });
+
+    return () => {
+      if (intersectionObserver) {
+        intersectionObserver.disconnect();
+        intersectionObserver = null;
+      }
+    };
+  });
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
@@ -75,8 +129,8 @@
   <!-- Toolbar -->
   <div class="flex items-center justify-between gap-3">
     <div class="text-sm text-slate-500">
-      {($tasks || []).length}
-      {($tasks || []).length === 1 ? "وظیفه" : "وظیفه"}
+      {$tasks.total}
+      {$tasks.total === 1 ? "وظیفه" : "وظیفه"}
     </div>
     <button
       onclick={toggleForm}
@@ -312,7 +366,7 @@
       </div>
     {/each}
 
-    {#if ($tasks || []).length === 0}
+    {#if ($tasks || []).length === 0 && !$tasks.loadingMore}
       <div class="text-center py-8 md:py-12 px-4">
         <svg
           class="w-10 h-10 md:w-12 md:h-12 mx-auto text-slate-300 mb-2 md:mb-3"
@@ -333,49 +387,84 @@
         </p>
       </div>
     {/if}
+
+    <!-- Loading Indicator -->
+    {#if $tasks.loadingMore}
+      <div class="flex justify-center py-4">
+        <svg
+          class="animate-spin h-6 w-6 text-slate-400"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+    {/if}
+
+    <!-- No More Tasks -->
+    {#if !$tasks.hasMore && $tasks.total > 0 && !$tasks.loadingMore}
+      <div class="text-center py-4 text-sm text-slate-400">
+        هیچ وظیفه بیشتری وجود ندارد
+      </div>
+    {/if}
+
+    <!-- Sentinel Element for Infinite Scroll -->
+    <div bind:this={sentinelRef} class="h-20"></div>
   </div>
 </div>
 
-  <Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
-    <div class="p-4 sm:p-6">
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">
-        حذف وظیفه
-      </h3>
-      <p class="text-slate-600 mb-4">
-        آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-end sm:justify-end">
-        <button
-          onclick={() => { showDeleteModal = false; taskToDelete = null; }}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
-        >
-          لغو
-        </button>
-        <button
-          onclick={handleDelete}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium"
-        >
-          حذف
-        </button>
-      </div>
+<Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
+  <div class="p-4 sm:p-6">
+    <h3 class="text-lg font-semibold text-slate-900 mb-2">
+      حذف وظیفه
+    </h3>
+    <p class="text-slate-600 mb-4">
+      آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟
+    </p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-end sm:justify-end">
+      <button
+        onclick={() => { showDeleteModal = false; taskToDelete = null; }}
+        class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
+      >
+        لغو
+      </button>
+      <button
+        onclick={handleDelete}
+        class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium"
+      >
+        حذف
+      </button>
     </div>
-  </Modal>
+  </div>
+</Modal>
 
-  {#if showTaskDetails}
-    <Modal
-      show={true}
-      title="جزئیات وظیفه"
-      maxWidth="2xl"
-      fullScreen={true}
-      on:close={() => { showTaskDetails = null; }}
-    >
-      <TaskDetails
-        task={showTaskDetails}
-        project={project}
-        on:updated={() => {
-          tasks.load(project.id);
-          showTaskDetails = null;
-        }}
-      />
-    </Modal>
-  {/if}
+{#if showTaskDetails}
+  <Modal
+    show={true}
+    title="جزئیات وظیفه"
+    maxWidth="2xl"
+    fullScreen={true}
+    on:close={() => { showTaskDetails = null; }}
+  >
+    <TaskDetails
+      task={showTaskDetails}
+      project={project}
+      on:updated={() => {
+        tasks.load(project.id);
+        showTaskDetails = null;
+      }}
+    />
+  </Modal>
+{/if}

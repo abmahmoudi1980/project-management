@@ -50,6 +50,43 @@ func (s *TaskService) GetTasksByUser(ctx context.Context, userID uuid.UUID, role
 	return []models.Task{}, nil
 }
 
+func (s *TaskService) GetTasksByUserPaginated(ctx context.Context, userID uuid.UUID, role string, projectID uuid.UUID, page int, pageSize int) (*models.PaginatedTasksResponse, error) {
+	project, err := s.projectRepo.GetByID(ctx, projectID)
+	if err != nil || project == nil {
+		return nil, models.ErrNotFound
+	}
+
+	offset := (page - 1) * pageSize
+
+	total, err := s.repo.GetTotalTasksByProject(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []models.Task
+	if role == "admin" {
+		tasks, err = s.repo.GetByProjectIDPaginated(ctx, projectID, pageSize, offset)
+	} else if (project.UserID != nil && *project.UserID == userID) || (project.CreatedBy != nil && *project.CreatedBy == userID) {
+		tasks, err = s.repo.GetByProjectIDPaginated(ctx, projectID, pageSize, offset)
+	} else {
+		tasks = []models.Task{}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	hasMore := (page * pageSize) < total
+
+	return &models.PaginatedTasksResponse{
+		Tasks:    tasks,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+		HasMore:  hasMore,
+	}, nil
+}
+
 func (s *TaskService) GetTaskByID(ctx context.Context, id uuid.UUID) (*models.Task, error) {
 	return s.repo.GetByID(ctx, id)
 }

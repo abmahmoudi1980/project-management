@@ -23,19 +23,27 @@ func (h *TaskHandler) GetTasksByProject(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid project id"})
 	}
 
-	// Get user from context (set by RequireAuth middleware)
 	userContext, err := middleware.GetUserFromContext(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
 	}
 
-	// Get tasks filtered by user role and project ownership
-	tasks, err := h.service.GetTasksByUser(c.Context(), userContext.UserID, userContext.Role, projectID)
+	page := c.QueryInt("page", 1)
+	if page < 1 {
+		page = 1
+	}
+
+	limit := c.QueryInt("limit", 10)
+	if limit < 1 || limit > 100 {
+		limit = 10
+	}
+
+	response, err := h.service.GetTasksByUserPaginated(c.Context(), userContext.UserID, userContext.Role, projectID, page, limit)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "project not found"})
 	}
 
-	return c.JSON(tasks)
+	return c.JSON(response)
 }
 
 func (h *TaskHandler) CreateTask(c *fiber.Ctx) error {

@@ -70,3 +70,11 @@ type TaskWithUsers struct {
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 }
+
+type PaginatedTasksResponse struct {
+	Tasks    []Task `json:"tasks"`
+	Total    int    `json:"total"`
+	Page     int    `json:"page"`
+	PageSize int    `json:"page_size"`
+	HasMore  bool   `json:"has_more"`
+}

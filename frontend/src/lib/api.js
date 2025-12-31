@@ -39,7 +39,7 @@ export const api = {
     delete: (id) => apiCall(`/projects/${id}`, { method: 'DELETE' }),
   },
   tasks: {
-    getByProject: (projectId) => apiCall(`/projects/${projectId}/tasks`),
+    getByProject: (projectId, page = 1, limit = 10) => apiCall(`/projects/${projectId}/tasks?page=${page}&limit=${limit}`),
     create: (projectId, data) => apiCall(`/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify(data) }),
     get: (id) => apiCall(`/tasks/${id}`),
     update: (id, data) => apiCall(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),

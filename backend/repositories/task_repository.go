@@ -38,6 +38,36 @@ func (r *TaskRepository) GetByProjectID(ctx context.Context, projectID uuid.UUID
 	return tasks, nil
 }
 
+func (r *TaskRepository) GetByProjectIDPaginated(ctx context.Context, projectID uuid.UUID, limit int, offset int) ([]models.Task, error) {
+	rows, err := r.db.Query(ctx,
+		"SELECT id, project_id, title, description, priority, completed, assignee_id, author_id, category, start_date, due_date, estimated_hours, done_ratio, created_at, updated_at FROM tasks WHERE project_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+		projectID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []models.Task
+	for rows.Next() {
+		var t models.Task
+		if err := rows.Scan(&t.ID, &t.ProjectID, &t.Title, &t.Description, &t.Priority, &t.Completed, &t.AssigneeID, &t.AuthorID, &t.Category, &t.StartDate, &t.DueDate, &t.EstimatedHours, &t.DoneRatio, &t.CreatedAt, &t.UpdatedAt); err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, t)
+	}
+
+	return tasks, nil
+}
+
+func (r *TaskRepository) GetTotalTasksByProject(ctx context.Context, projectID uuid.UUID) (int, error) {
+	var total int
+	err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM tasks WHERE project_id = $1", projectID).Scan(&total)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
 func (r *TaskRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Task, error) {
 	var t models.Task
 	err := r.db.QueryRow(ctx,
