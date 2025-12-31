@@ -1,0 +1,141 @@
+version: '3.8'
+
+# Production docker-compose configuration
+# Use with: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: project-management-db-prod
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-project_management}
+      POSTGRES_INITDB_ARGS: "-c max_connections=200 -c shared_buffers=256MB -c effective_cache_size=512MB"
+      TZ: 'Asia/Tehran'
+    ports:
+      - "127.0.0.1:5432:5432"  # Only localhost access
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/migration/001_enhance_entities.sql:/docker-entrypoint-initdb.d/02-enhance_entities.sql
+      - ./backend/migration/002_add_user_authentication.sql:/docker-entrypoint-initdb.d/03-user_authentication.sql
+      - ./backend/migration/003_add_comments.sql:/docker-entrypoint-initdb.d/04-comments.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+  # Go Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: project-management-api-prod
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-project_management}?sslmode=disable}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      SERVER_PORT: 3000
+      TZ: 'Asia/Tehran'
+    expose:
+      - "3000"  # Only expose within network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  # Svelte Frontend with Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: project-management-web-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Uncomment for SSL certificates:
+      # - ./frontend/cert.pem:/etc/nginx/cert.pem:ro
+      # - ./frontend/key.pem:/etc/nginx/key.pem:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '0.5'
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+  # Optional: Backup service for PostgreSQL
+  # backup:
+  #   image: postgres:16-alpine
+  #   container_name: project-management-backup
+  #   environment:
+  #     PGPASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - ./backups:/backups
+  #   entrypoint: |
+  #     sh -c 'while true; do
+  #       pg_dump -h postgres -U ${DB_USER:-postgres} ${DB_NAME:-project_management} > /backups/backup_$$(date +\%Y\%m\%d_\%H\%M\%S).sql
+  #       find /backups -name "backup_*.sql" -mtime +7 -delete
+  #       sleep 86400
+  #     done'
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

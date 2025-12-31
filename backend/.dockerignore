@@ -1,0 +1,50 @@
+# Compiled binaries
+server
+*.exe
+*.dll
+*.so
+
+# Go build cache
+.cache/
+dist/
+
+# Dependencies
+vendor/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files (don't leak secrets)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+
+# Test files (if any)
+*_test.go
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
