@@ -18,10 +18,10 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Create index on email for faster login queries
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- Create index on role for admin queries
-CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
 -- Create sessions table (for refresh tokens)
 CREATE TABLE IF NOT EXISTS sessions (
@@ -36,10 +36,10 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 
 -- Create index on user_id for faster session lookups
-CREATE INDEX idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 
 -- Create index on refresh_token_hash for validation
-CREATE INDEX idx_sessions_refresh_token_hash ON sessions(refresh_token_hash);
+CREATE INDEX IF NOT EXISTS idx_sessions_refresh_token_hash ON sessions(refresh_token_hash);
 
 -- Create password_reset_tokens table
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
@@ -52,10 +52,10 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 );
 
 -- Create index on token_hash for fast token validation
-CREATE INDEX idx_password_reset_tokens_token_hash ON password_reset_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_token_hash ON password_reset_tokens(token_hash);
 
 -- Create index on user_id for cleanup queries
-CREATE INDEX idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
 
 -- Add user_id (owner) to projects table
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE SET NULL;
@@ -90,5 +90,6 @@ END;
 $$ language 'plpgsql';
 
 -- Create trigger for users table
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

@@ -62,6 +62,9 @@ export const api = {
     delete: (id) => apiCall(`/comments/${id}`, { method: 'DELETE' }),
   },
   users: {
+    getAll: (page = 1, limit = 20) => apiCall(`/users?page=${page}&limit=${limit}`),
     getById: (id) => apiCall(`/users/${id}`),
+    updateRole: (id, role) => apiCall(`/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+    updateActivation: (id, isActive) => apiCall(`/users/${id}/activate`, { method: 'PUT', body: JSON.stringify({ is_active: isActive }) }),
   },
 };

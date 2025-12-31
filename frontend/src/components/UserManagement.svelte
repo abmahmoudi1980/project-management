@@ -23,21 +23,9 @@
     errorMessage = '';
 
     try {
-      const response = await fetch(
-        `${api}/users?page=${pagination.page}&limit=${pagination.limit}`,
-        {
-          credentials: 'include',
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        users = data.data.users || [];
-        pagination = data.data.pagination;
-      } else {
-        errorMessage = data.error?.message || 'خطا در دریافت لیست کاربران';
-      }
+      const data = await api.users.getAll(pagination.page, pagination.limit);
+      users = data.data.users || [];
+      pagination = data.data.pagination;
     } catch (error) {
       errorMessage = 'خطا در برقراری ارتباط با سرور';
       console.error('Load users error:', error);
@@ -48,24 +36,10 @@
 
   async function changeUserRole(userId, newRole) {
     try {
-      const response = await fetch(`${api}/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ role: newRole }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        successMessage = 'نقش کاربر با موفقیت تغییر یافت';
-        setTimeout(() => (successMessage = ''), 3000);
-        await loadUsers();
-      } else {
-        errorMessage = data.error?.message || 'خطا در تغییر نقش کاربر';
-      }
+      await api.users.updateRole(userId, newRole);
+      successMessage = 'نقش کاربر با موفقیت تغییر یافت';
+      setTimeout(() => (successMessage = ''), 3000);
+      await loadUsers();
     } catch (error) {
       errorMessage = 'خطا در برقراری ارتباط با سرور';
       console.error('Change role error:', error);
@@ -74,26 +48,12 @@
 
   async function toggleUserActivation(userId, isActive) {
     try {
-      const response = await fetch(`${api}/users/${userId}/activate`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ is_active: !isActive }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        successMessage = isActive
-          ? 'کاربر با موفقیت غیرفعال شد'
-          : 'کاربر با موفقیت فعال شد';
-        setTimeout(() => (successMessage = ''), 3000);
-        await loadUsers();
-      } else {
-        errorMessage = data.error?.message || 'خطا در تغییر وضعیت کاربر';
-      }
+      await api.users.updateActivation(userId, !isActive);
+      successMessage = isActive
+        ? 'کاربر با موفقیت غیرفعال شد'
+        : 'کاربر با موفقیت فعال شد';
+      setTimeout(() => (successMessage = ''), 3000);
+      await loadUsers();
     } catch (error) {
       errorMessage = 'خطا در برقراری ارتباط با سرور';
       console.error('Toggle activation error:', error);
