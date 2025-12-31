@@ -21,6 +21,22 @@ func main() {
 	}
 	defer db.Close()
 
+	// Delete existing tasks and projects
+	log.Println("Cleaning up existing data...")
+	_, err = db.Exec(ctx, `DELETE FROM tasks`)
+	if err != nil {
+		log.Printf("Warning: Failed to delete tasks: %v\n", err)
+	} else {
+		log.Println("Deleted existing tasks")
+	}
+
+	_, err = db.Exec(ctx, `DELETE FROM projects`)
+	if err != nil {
+		log.Printf("Warning: Failed to delete projects: %v\n", err)
+	} else {
+		log.Println("Deleted existing projects")
+	}
+
 	var adminID *uuid.UUID
 	var adminEmail string
 	err = db.QueryRow(ctx, `SELECT id, email FROM users WHERE role = 'admin' LIMIT 1`).Scan(&adminID, &adminEmail)
