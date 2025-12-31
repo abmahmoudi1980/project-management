@@ -52,4 +52,10 @@ export const api = {
     get: (id) => apiCall(`/timelogs/${id}`),
     delete: (id) => apiCall(`/timelogs/${id}`, { method: 'DELETE' }),
   },
+  comments: {
+    getByTask: (taskId) => apiCall(`/tasks/${taskId}/comments`),
+    create: (taskId, data) => apiCall(`/tasks/${taskId}/comments`, { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => apiCall(`/comments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => apiCall(`/comments/${id}`, { method: 'DELETE' }),
+  },
 };

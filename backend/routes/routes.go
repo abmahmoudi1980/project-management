@@ -15,6 +15,7 @@ func SetupRoutes(
 	timeLogHandler *handlers.TimeLogHandler,
 	authHandler *handlers.AuthHandler,
 	userHandler *handlers.UserHandler,
+	commentHandler *handlers.CommentHandler,
 ) {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json")
@@ -62,10 +63,17 @@ func SetupRoutes(
 	tasks.Get("/:taskId/timelogs", timeLogHandler.GetTimeLogsByTask)
 	tasks.Post("/:taskId/timelogs", timeLogHandler.CreateTimeLog)
 
+	tasks.Get("/:taskId/comments", commentHandler.GetCommentsByTask)
+	tasks.Post("/:taskId/comments", commentHandler.CreateComment)
+
 	// Protected timelog routes
 	timelogs := api.Group("/timelogs", middleware.RequireAuth)
 	timelogs.Get("/:id", timeLogHandler.GetTimeLog)
 	timelogs.Delete("/:id", timeLogHandler.DeleteTimeLog)
+
+	comments := api.Group("/comments", middleware.RequireAuth)
+	comments.Put("/:id", commentHandler.UpdateComment)
+	comments.Delete("/:id", commentHandler.DeleteComment)
 
 	// Admin user management routes (admin only)
 	users := api.Group("/users", middleware.RequireAuth, middleware.RequireRole("admin"))

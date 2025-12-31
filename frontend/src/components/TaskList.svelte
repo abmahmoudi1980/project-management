@@ -1,8 +1,11 @@
 <script>
   import { tasks } from "../stores/taskStore";
   import { timeLogs } from "../stores/timeLogStore";
+  import { comments } from "../stores/commentStore.js";
+  import { authStore } from "../stores/authStore.js";
   import TaskForm from "./TaskForm.svelte";
   import TimeLogForm from "./TimeLogForm.svelte";
+  import CommentList from "./CommentList.svelte";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
@@ -24,6 +27,7 @@
   async function handleTaskSelect(task) {
     selectedTask = task;
     await timeLogs.load(task.id);
+    await comments.load(task.id);
   }
 
   async function handleTaskToggle(task) {
@@ -227,6 +231,9 @@
         {#if selectedTask?.id === task.id}
           <div class="border-t border-slate-200 bg-slate-50/50 px-4 py-4">
             <TimeLogForm {task} on:logged={() => (selectedTask = null)} />
+          </div>
+          <div class="border-t border-slate-200 px-4 py-4">
+            <CommentList {task} authUser={$authStore.user} />
           </div>
         {/if}
       </div>
