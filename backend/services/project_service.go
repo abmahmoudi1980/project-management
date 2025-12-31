@@ -31,16 +31,16 @@ func (s *ProjectService) GetProjectsByUser(ctx context.Context, userID uuid.UUID
 		return s.repo.GetAll(ctx)
 	}
 
-	// Regular users only see projects they created
+	// Regular users only see projects they created OR public projects
 	allProjects, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	// Filter projects by user_id or created_by
+	// Filter projects by user_id, created_by, or is_public
 	var userProjects []models.Project
 	for _, p := range allProjects {
-		if (p.UserID != nil && *p.UserID == userID) || (p.CreatedBy != nil && *p.CreatedBy == userID) {
+		if (p.UserID != nil && *p.UserID == userID) || (p.CreatedBy != nil && *p.CreatedBy == userID) || p.IsPublic {
 			userProjects = append(userProjects, p)
 		}
 	}
