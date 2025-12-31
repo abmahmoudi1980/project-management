@@ -109,7 +109,7 @@
           <!-- Checkbox -->
           <button
             onclick={() => handleTaskToggle(task)}
-            class="flex-shrink-0 w-7 h-7 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all self-start md:self-auto
+            class="flex-shrink-0 w-5 h-5 min-w-[35px] min-h-[35px] rounded-full border-2 transition-all self-start md:self-auto
               {task.completed
               ? 'bg-emerald-500 border-emerald-500'
               : 'border-slate-300 hover:border-indigo-400'}"
