@@ -6,16 +6,56 @@
   let { task } = $props();
 
   let date = $state(new Date().toISOString().split("T")[0]);
-  let durationMinutes = $state(30);
+  let durationInput = $state("30m");
   let note = $state("");
+  let durationError = $state("");
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
     return moment(dateString).locale("fa").format("YYYY/MM/DD");
   }
 
+  function parseDuration(input) {
+    if (!input || input.trim() === "") return null;
+
+    const trimmed = input.trim().toLowerCase();
+
+    // Check if it's just a number (legacy support)
+    if (/^\d+$/.test(trimmed)) {
+      const minutes = parseInt(trimmed, 10);
+      return minutes > 0 ? minutes : null;
+    }
+
+    // Parse "Xh Ym" format
+    const hourMatch = trimmed.match(/(\d+)\s*h/);
+    const minuteMatch = trimmed.match(/(\d+)\s*m/);
+
+    if (!hourMatch && !minuteMatch) {
+      return null;
+    }
+
+    let totalMinutes = 0;
+
+    if (hourMatch) {
+      totalMinutes += parseInt(hourMatch[1], 10) * 60;
+    }
+
+    if (minuteMatch) {
+      totalMinutes += parseInt(minuteMatch[1], 10);
+    }
+
+    return totalMinutes > 0 ? totalMinutes : null;
+  }
+
   async function handleSubmit() {
-    if (!durationMinutes || durationMinutes <= 0) return;
+    const durationMinutes = parseDuration(durationInput);
+
+    if (!durationMinutes) {
+      durationError = "فرمت زمان نامعتبر است (مثال: 2h 15m)";
+      return;
+    }
+
+    durationError = "";
 
     await timeLogs.create(task.id, {
       date: new Date(date).toISOString(),
@@ -23,7 +63,7 @@
       note: note.trim() || null,
     });
 
-    durationMinutes = 30;
+    durationInput = "30m";
     note = "";
   }
 
@@ -51,13 +91,17 @@
         placeholder="1403/10/10"
       />
     </div>
-    <input
-      type="number"
-      bind:value={durationMinutes}
-      min="1"
-      placeholder="دقیقه"
-      class="w-full md:w-24 px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
+    <div class="w-full md:w-32">
+      <input
+        type="text"
+        bind:value={durationInput}
+        placeholder="مثال: 2h 15m"
+        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      {#if durationError}
+        <p class="text-red-500 text-xs mt-1">{durationError}</p>
+      {/if}
+    </div>
     <input
       type="text"
       bind:value={note}
@@ -66,7 +110,7 @@
     />
     <button
       type="submit"
-      disabled={!durationMinutes || durationMinutes <= 0}
+      disabled={!durationInput || durationInput.trim() === ""}
       class="w-full md:w-auto min-h-[44px] bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
     >
       افزودن

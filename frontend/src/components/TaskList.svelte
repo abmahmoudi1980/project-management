@@ -141,7 +141,7 @@
               {task.title}
             </h3>
             {#if task.description}
-              <p class="text-xs md:text-sm text-slate-600 mt-1 line-clamp-2 md:line-clamp-none">{task.description}</p>
+              <p class="text-xs md:text-sm text-slate-600 mt-1 line-clamp-2">{task.description}</p>
             {/if}
             <div class="flex flex-wrap items-center gap-1.5 md:gap-3 mt-2 text-xs text-slate-500">
               {#if task.category}
