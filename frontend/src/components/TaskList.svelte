@@ -6,6 +6,7 @@
   import TaskForm from "./TaskForm.svelte";
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
+  import Modal from "./Modal.svelte";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
@@ -15,6 +16,8 @@
   let showForm = $state(false);
   let selectedTask = $state(null);
   let showCommentsForTask = $state(null);
+  let showDeleteModal = $state(false);
+  let taskToDelete = $state(null);
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
@@ -40,12 +43,24 @@
     await tasks.toggleComplete(task.id);
   }
 
-  async function handleTaskDelete(taskId) {
-    if (confirm("آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟")) {
+  function confirmDelete(task) {
+    showDeleteModal = true;
+    taskToDelete = task;
+  }
+
+  async function handleDelete() {
+    if (!taskToDelete) return;
+
+    try {
+      const taskId = taskToDelete.id;
       await tasks.delete(taskId);
+      showDeleteModal = false;
+      taskToDelete = null;
       if (selectedTask?.id === taskId) {
         selectedTask = null;
       }
+    } catch (error) {
+      alert(error.message);
     }
   }
 </script>
@@ -225,7 +240,7 @@
               </svg>
             </button>
             <button
-              onclick={() => handleTaskDelete(task.id)}
+              onclick={() => confirmDelete(task)}
               class="p-1.5 hover:bg-rose-50 rounded-lg transition-colors"
               title="Delete task"
             >
@@ -289,3 +304,29 @@
     {/if}
   </div>
 </div>
+
+<Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
+    <div class="p-6">
+      <h3 class="text-lg font-semibold text-slate-900 mb-2">
+        حذف وظیفه
+      </h3>
+      <p class="text-slate-600 mb-4">
+        آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟
+      </p>
+      <div class="flex gap-3 justify-end">
+        <button
+          onclick={() => { showDeleteModal = false; taskToDelete = null; }}
+          class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+        >
+          لغو
+        </button>
+        <button
+          onclick={handleDelete}
+          class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700"
+        >
+          حذف
+        </button>
+      </div>
+    </div>
+  </Modal>
+

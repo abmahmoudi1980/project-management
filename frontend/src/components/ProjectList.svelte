@@ -8,6 +8,8 @@
   const dispatch = createEventDispatcher();
 
   let showModal = $state(false);
+  let showDeleteModal = $state(false);
+  let projectToDelete = $state(null);
 
   function openModal() {
     showModal = true;
@@ -22,13 +24,25 @@
     dispatch("select", project);
   }
 
-  async function handleProjectDelete(projectId) {
-    if (confirm("آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟")) {
+  function confirmDelete(project) {
+    showDeleteModal = true;
+    projectToDelete = project;
+  }
+
+  async function handleDelete() {
+    if (!projectToDelete) return;
+
+    try {
+      const projectId = projectToDelete.id;
       await projects.delete(projectId);
+      showDeleteModal = false;
+      projectToDelete = null;
       if (selectedProject?.id === projectId) {
         selectedProject = null;
         dispatch("select", null);
       }
+    } catch (error) {
+      alert(error.message);
     }
   }
 </script>
@@ -106,7 +120,7 @@
           </div>
         </button>
         <button
-          onclick={(e) => { e.stopPropagation(); handleProjectDelete(project.id); }}
+          onclick={(e) => { e.stopPropagation(); confirmDelete(project); }}
           class="absolute left-2 top-2 opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-200 rounded transition-opacity"
           title="Delete project"
         >
@@ -147,3 +161,29 @@
     />
   {/snippet}
 </Modal>
+
+<Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; projectToDelete = null; }}>
+    <div class="p-6">
+      <h3 class="text-lg font-semibold text-slate-900 mb-2">
+        حذف پروژه
+      </h3>
+      <p class="text-slate-600 mb-4">
+        آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟
+      </p>
+      <div class="flex gap-3 justify-end">
+        <button
+          onclick={() => { showDeleteModal = false; projectToDelete = null; }}
+          class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+        >
+          لغو
+        </button>
+        <button
+          onclick={handleDelete}
+          class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700"
+        >
+          حذف
+        </button>
+      </div>
+    </div>
+  </Modal>
+

@@ -171,8 +171,7 @@
   </div>
 </div>
 
-{#if showDeleteModal && commentToDelete}
-  <Modal on:close={() => { showDeleteModal = false; commentToDelete = null; }}>
+<Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; commentToDelete = null; }}>
     <div class="p-6">
       <h3 class="text-lg font-semibold text-slate-900 mb-2">
         حذف کامنت
@@ -196,4 +195,3 @@
       </div>
     </div>
   </Modal>
-{/if}
