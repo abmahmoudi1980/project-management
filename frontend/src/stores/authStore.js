@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { projects } from './projectStore';
 
 // Authentication store state
 function createAuthStore() {
@@ -65,6 +66,18 @@ function createAuthStore() {
           isAuthenticated: true,
           isLoading: false,
         });
+        console.debug('[authStore] login successful, user:', data.data.user);
+        console.debug('[authStore] document.cookie after login:', document.cookie);
+        // Trigger project load immediately after login
+        (async () => {
+          try {
+            console.debug('[authStore] loading projects after login');
+            await projects.load();
+            console.debug('[authStore] projects loaded after login');
+          } catch (err) {
+            console.error('[authStore] failed to load projects after login:', err);
+          }
+        })();
 
         return { success: true };
       } catch (error) {
@@ -81,8 +94,10 @@ function createAuthStore() {
 
         if (response.ok) {
           const data = await response.json();
+          // Support two shapes: { data: { user: { ... } } } or { data: { user_id, role } }
+          const user = data.data.user || (data.data.user_id ? { id: data.data.user_id, role: data.data.role } : null);
           set({
-            user: data.data.user,
+            user,
             isAuthenticated: true,
             isLoading: false,
           });

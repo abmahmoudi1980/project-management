@@ -52,7 +52,7 @@ func (s *ProjectService) GetProjectByID(ctx context.Context, id uuid.UUID) (*mod
 	return s.repo.GetByID(ctx, id)
 }
 
-func (s *ProjectService) CreateProject(ctx context.Context, req models.CreateProjectRequest) (*models.Project, error) {
+func (s *ProjectService) CreateProject(ctx context.Context, req models.CreateProjectRequest, createdBy *uuid.UUID) (*models.Project, error) {
 	if req.Title == "" {
 		return nil, models.ErrValidation
 	}
@@ -70,7 +70,7 @@ func (s *ProjectService) CreateProject(ctx context.Context, req models.CreatePro
 		return nil, err
 	}
 
-	return s.repo.Create(ctx, req)
+	return s.repo.Create(ctx, req, createdBy)
 }
 
 func (s *ProjectService) UpdateProject(ctx context.Context, id uuid.UUID, req models.UpdateProjectRequest) (*models.Project, error) {

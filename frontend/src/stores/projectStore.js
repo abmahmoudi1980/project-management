@@ -7,8 +7,16 @@ function createProjectStore() {
   return {
     subscribe,
     load: async () => {
-      const projects = await api.projects.getAll();
-      set(projects || []);
+      try {
+        console.debug('[projectStore] loading projects...');
+        const projects = await api.projects.getAll();
+        console.debug('[projectStore] projects loaded:', projects);
+        set(projects || []);
+      } catch (err) {
+        console.error('[projectStore] failed to load projects:', err);
+        set([]);
+        throw err;
+      }
     },
     create: async (projectData) => {
       const project = await api.projects.create(projectData);

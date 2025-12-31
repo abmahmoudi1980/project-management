@@ -38,7 +38,13 @@ func (h *ProjectHandler) CreateProject(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	project, err := h.service.CreateProject(c.Context(), req)
+	// Get authenticated user to set created_by
+	userContext, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	project, err := h.service.CreateProject(c.Context(), req, &userContext.UserID)
 	if err != nil {
 		if err == models.ErrValidation {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
