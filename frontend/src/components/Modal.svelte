@@ -37,7 +37,7 @@
 
 {#if show}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black bg-opacity-50"
+    class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-center bg-black bg-opacity-50"
     onclick={handleBackdropClick}
     onkeydown={handleKeydown}
     tabindex="-1"
@@ -49,8 +49,8 @@
       class="bg-white sm:rounded-lg shadow-xl w-full sm:w-full {maxWidthClasses[
         maxWidth
       ]} {fullScreen
-        ? 'h-full sm:max-h-[90vh] sm:flex sm:flex-col'
-        : 'max-h-[90vh] sm:max-h-[90vh] my-auto'} sm:m-0"
+        ? 'h-full max-h-full flex flex-col sm:max-h-[90vh]'
+        : 'max-h-[90vh] sm:max-h-[90vh] my-auto flex flex-col'} sm:m-0 overflow-hidden"
       transition:scale={{ duration: 200, start: 0.95 }}
     >
       <!-- Modal Header -->
