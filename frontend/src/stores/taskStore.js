@@ -2,70 +2,94 @@ import { writable, derived } from 'svelte/store';
 import { api } from '../lib/api.js';
 
 function createTaskStore() {
-  const { subscribe, set, update } = writable([]);
+  const initialState = {
+    tasks: [],
+    currentPage: 1,
+    pageSize: 10,
+    total: 0,
+    hasMore: false,
+    currentProjectId: null,
+    loadingMore: false
+  };
 
-  let currentPage = 1;
-  let pageSize = 10;
-  let total = 0;
-  let hasMore = false;
-  let currentProjectId = null;
-  let loadingMore = false;
+  const { subscribe, set, update } = writable(initialState);
 
   const load = async (projectId, reset = false) => {
     try {
       if (reset) {
-        currentPage = 1;
-        currentProjectId = projectId;
+        update(state => ({ ...state, currentPage: 1, currentProjectId: projectId, loadingMore: true }));
+      } else {
+        update(state => ({ ...state, loadingMore: true }));
       }
 
-      const response = await api.tasks.getByProject(projectId, currentPage, pageSize);
-      set(Array.isArray(response.tasks) ? response.tasks : []);
+      const currentPage = reset ? 1 : initialState.currentPage;
+      const response = await api.tasks.getByProject(projectId, currentPage, initialState.pageSize);
+      console.log('Initial load response:', { projectId, currentPage, pageSize: initialState.pageSize, response });
 
-      total = response.total || 0;
-      hasMore = response.has_more || false;
+      update(state => ({
+        ...state,
+        tasks: Array.isArray(response.tasks) ? response.tasks : [],
+        total: response.total || 0,
+        hasMore: response.has_more || false,
+        loadingMore: false
+      }));
+      console.log('After initial load:', { total: initialState.total, hasMore: initialState.hasMore });
     } catch (error) {
       console.error('Failed to load tasks:', error);
-      set([]);
-      hasMore = false;
+      update(state => ({
+        ...state,
+        tasks: [],
+        hasMore: false,
+        loadingMore: false
+      }));
     }
   };
 
   const loadMore = async () => {
-    if (loadingMore || !hasMore || !currentProjectId) return;
+    update(state => {
+      console.log('loadMore called from state:', { loadingMore: state.loadingMore, hasMore: state.hasMore, currentProjectId: state.currentProjectId, currentPage: state.currentPage });
+      if (state.loadingMore || !state.hasMore || !state.currentProjectId) return state;
+      return { ...state, loadingMore: true };
+    });
 
-    loadingMore = true;
+    let currentState;
+    subscribe(state => currentState = state)();
+
+    if (!currentState || currentState.loadingMore || !currentState.hasMore || !currentState.currentProjectId) {
+      return;
+    }
+
     try {
-      currentPage += 1;
-      const response = await api.tasks.getByProject(currentProjectId, currentPage, pageSize);
+      const nextPage = currentState.currentPage + 1;
+      console.log('Fetching page:', nextPage);
+      const response = await api.tasks.getByProject(currentState.currentProjectId, nextPage, currentState.pageSize);
       const newTasks = Array.isArray(response.tasks) ? response.tasks : [];
+      console.log('Response:', response);
 
-      update(currentTasks => [...currentTasks, ...newTasks]);
-
-      hasMore = response.has_more || false;
+      update(state => ({
+        ...state,
+        tasks: [...state.tasks, ...newTasks],
+        currentPage: nextPage,
+        hasMore: response.has_more || false,
+        loadingMore: false
+      }));
     } catch (error) {
       console.error('Failed to load more tasks:', error);
-      currentPage -= 1;
-    } finally {
-      loadingMore = false;
+      update(state => ({ ...state, loadingMore: false }));
     }
   };
 
   const reset = () => {
-    currentPage = 1;
-    total = 0;
-    hasMore = false;
-    currentProjectId = null;
-    loadingMore = false;
-    set([]);
+    set(initialState);
   };
 
   return {
     subscribe,
-    currentPage: derived(subscribe, () => currentPage),
-    pageSize: derived(subscribe, () => pageSize),
-    total: derived(subscribe, () => total),
-    hasMore: derived(subscribe, () => hasMore),
-    loadingMore: derived(subscribe, () => loadingMore),
+    currentPage: derived(subscribe, s => s.currentPage),
+    pageSize: derived(subscribe, s => s.pageSize),
+    total: derived(subscribe, s => s.total),
+    hasMore: derived(subscribe, s => s.hasMore),
+    loadingMore: derived(subscribe, s => s.loadingMore),
     load,
     loadMore,
     reset,

@@ -26,17 +26,63 @@
   let previousProjectId = $state(null);
 
   onMount(() => {
+    console.log('TaskList mounted, project:', project);
     if (project) {
       tasks.load(project.id, true);
       previousProjectId = project.id;
     }
 
+    // Create IntersectionObserver once
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        console.log('IntersectionObserver triggered:', {
+          isIntersecting: entries[0].isIntersecting,
+          hasMore: $tasks.hasMore,
+          loadingMore: $tasks.loadingMore,
+          currentTasksLength: $tasks.tasks.length
+        });
+        if (entries[0].isIntersecting) {
+          if ($tasks.hasMore && !$tasks.loadingMore) {
+            console.log('Calling tasks.loadMore()');
+            tasks.loadMore();
+          } else {
+            console.log('Not loading more - hasMore:', $tasks.hasMore, 'loadingMore:', $tasks.loadingMore);
+          }
+        }
+      },
+      {
+        rootMargin: "100px",
+        threshold: 0.1
+      }
+    );
+    console.log('IntersectionObserver created');
+
     return () => {
+      console.log('TaskList unmounting');
       tasks.reset();
       if (intersectionObserver) {
         intersectionObserver.disconnect();
+        intersectionObserver = null;
       }
     };
+  });
+
+  // Watch for hasMore/loadingMore changes
+  $effect(() => {
+    console.log('Store state changed:', {
+      hasMore: $tasks.hasMore,
+      loadingMore: $tasks.loadingMore,
+      total: $tasks.total,
+      tasksLength: $tasks.tasks.length
+    });
+  });
+
+  // Observe sentinel when it's available (runs only once when sentinelRef is set)
+  $effect(() => {
+    if (sentinelRef && intersectionObserver) {
+      console.log('Observing sentinel element');
+      intersectionObserver.observe(sentinelRef);
+    }
   });
 
   $effect(() => {
@@ -44,35 +90,6 @@
       tasks.load(project.id, true);
       previousProjectId = project.id;
     }
-  });
-
-  $effect(() => {
-    untrack(() => {
-      if (sentinelRef && !intersectionObserver) {
-        intersectionObserver = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting) {
-              if ($tasks.hasMore && !$tasks.loadingMore) {
-                tasks.loadMore();
-              }
-            }
-          },
-          {
-            rootMargin: "100px",
-            threshold: 0.1
-          }
-        );
-
-        intersectionObserver.observe(sentinelRef);
-      }
-    });
-
-    return () => {
-      if (intersectionObserver) {
-        intersectionObserver.disconnect();
-        intersectionObserver = null;
-      }
-    };
   });
 
   function formatJalaliDate(dateString) {
@@ -156,7 +173,7 @@
 
   <!-- Task List -->
   <div class="space-y-3">
-    {#each $tasks || [] as task}
+    {#each $tasks.tasks || [] as task}
       <div
         class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
       >
@@ -366,7 +383,7 @@
       </div>
     {/each}
 
-    {#if ($tasks || []).length === 0 && !$tasks.loadingMore}
+    {#if ($tasks.tasks || []).length === 0 && !$tasks.loadingMore}
       <div class="text-center py-8 md:py-12 px-4">
         <svg
           class="w-10 h-10 md:w-12 md:h-12 mx-auto text-slate-300 mb-2 md:mb-3"
@@ -421,7 +438,7 @@
     {/if}
 
     <!-- Sentinel Element for Infinite Scroll -->
-    <div bind:this={sentinelRef} class="h-20"></div>
+    <div bind:this={sentinelRef} class="h-20 w-full"></div>
   </div>
 </div>
 
