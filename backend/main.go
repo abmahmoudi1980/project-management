@@ -57,6 +57,8 @@ func main() {
 	sessionRepo := repositories.NewSessionRepository(config.DB)
 	passwordResetRepo := repositories.NewPasswordResetRepository(config.DB)
 	commentRepo := repositories.NewCommentRepository(config.DB)
+	dashboardRepo := repositories.NewDashboardRepository(config.DB)
+	meetingRepo := repositories.NewMeetingRepository(config.DB)
 
 	// Initialize services
 	emailService := services.NewEmailService()
@@ -66,6 +68,8 @@ func main() {
 	authService := services.NewAuthService(userRepo, sessionRepo, passwordResetRepo, emailService)
 	userService := services.NewUserService(userRepo)
 	commentService := services.NewCommentService(commentRepo, taskRepo)
+	dashboardService := services.NewDashboardService(dashboardRepo, meetingRepo)
+	meetingService := services.NewMeetingService(meetingRepo, userRepo)
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(projectService)
@@ -74,8 +78,10 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authService)
 	userHandler := handlers.NewUserHandler(userService)
 	commentHandler := handlers.NewCommentHandler(commentService)
+	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
+	meetingHandler := handlers.NewMeetingHandler(meetingService)
 
-	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler)
+	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler, dashboardHandler, meetingHandler)
 
 	log.Println("Server starting on port 3000")
 	if err := app.Listen(":3000"); err != nil {

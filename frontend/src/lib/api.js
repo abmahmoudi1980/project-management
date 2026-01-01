@@ -67,4 +67,13 @@ export const api = {
     updateRole: (id, role) => apiCall(`/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
     updateActivation: (id, isActive) => apiCall(`/users/${id}/activate`, { method: 'PUT', body: JSON.stringify({ is_active: isActive }) }),
   },
+  dashboard: {
+    get: () => apiCall('/dashboard'),
+  },
+  meetings: {
+    getNext: () => apiCall('/meetings/next'),
+    create: (data) => apiCall('/meetings', { method: 'POST', body: JSON.stringify(data) }),
+    getAll: () => apiCall('/meetings'),
+    getById: (id) => apiCall(`/meetings/${id}`),
+  },
 };

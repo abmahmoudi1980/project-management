@@ -10,11 +10,13 @@ A high-performance Project Management application built with Go (Fiber + pgx) an
 
 ## Features
 
+- **Dashboard** - Real-time project statistics, recent projects, pending tasks, and upcoming meetings
 - Project Management (CRUD with status tracking)
 - Task Management within projects
 - Priority levels (Low, Medium, High)
 - Task completion tracking
 - Time logging for tasks
+- Meeting scheduling and attendee management
 - User Authentication (Registration, Login, Password Reset)
 - Role-based Access Control (Admin/User)
 - Responsive UI with Persian language support

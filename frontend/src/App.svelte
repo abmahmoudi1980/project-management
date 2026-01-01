@@ -5,6 +5,7 @@
   import { tasks } from "./stores/taskStore";
   import ProjectList from "./components/ProjectList.svelte";
   import TaskList from "./components/TaskList.svelte";
+  import Dashboard from "./components/Dashboard.svelte";
   import RegisterForm from "./components/RegisterForm.svelte";
   import LoginForm from "./components/LoginForm.svelte";
   import ForgotPasswordForm from "./components/ForgotPasswordForm.svelte";
@@ -17,6 +18,7 @@
   let resetToken = $state("");
   let showUserManagement = $state(false);
   let showMobileMenu = $state(false);
+  let showDashboard = $state(false);
 
   onMount(async () => {
     handleRoute();
@@ -42,11 +44,15 @@
       currentRoute = "register";
     } else if (hash === "/login") {
       currentRoute = "login";
+    } else if (hash === "/dashboard") {
+      showDashboard = true;
+      currentRoute = "app";
     } else if (hash === "/users") {
       showUserManagement = true;
       currentRoute = "app";
     } else {
       showUserManagement = false;
+      showDashboard = false;
     }
   }
 
@@ -215,10 +221,23 @@
           <div class="mt-2 space-y-1">
             <button
               onclick={() => {
+                showDashboard = true;
+                showUserManagement = false;
+                window.location.hash = "#/dashboard";
+              }}
+              class="w-full text-right px-3 py-2 text-sm rounded {showDashboard
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-slate-700 hover:bg-slate-100'}"
+            >
+              داشبورد
+            </button>
+            <button
+              onclick={() => {
+                showDashboard = false;
                 showUserManagement = false;
                 window.location.hash = "";
               }}
-              class="w-full text-right px-3 py-2 text-sm rounded {!showUserManagement
+              class="w-full text-right px-3 py-2 text-sm rounded {!showUserManagement && !showDashboard
                 ? 'bg-blue-50 text-blue-700'
                 : 'text-slate-700 hover:bg-slate-100'}"
             >
@@ -226,6 +245,7 @@
             </button>
             <button
               onclick={() => {
+                showDashboard = false;
                 showUserManagement = true;
                 window.location.hash = "#/users";
               }}
@@ -234,6 +254,31 @@
                 : 'text-slate-700 hover:bg-slate-100'}"
             >
               مدیریت کاربران
+            </button>
+          </div>
+        {:else}
+          <div class="mt-2 space-y-1">
+            <button
+              onclick={() => {
+                showDashboard = true;
+                window.location.hash = "#/dashboard";
+              }}
+              class="w-full text-right px-3 py-2 text-sm rounded {showDashboard
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-slate-700 hover:bg-slate-100'}"
+            >
+              داشبورد
+            </button>
+            <button
+              onclick={() => {
+                showDashboard = false;
+                window.location.hash = "";
+              }}
+              class="w-full text-right px-3 py-2 text-sm rounded {!showDashboard
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-slate-700 hover:bg-slate-100'}"
+            >
+              پروژه‌ها
             </button>
           </div>
         {/if}
@@ -248,7 +293,9 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto">
-      {#if showUserManagement}
+      {#if showDashboard}
+        <Dashboard />
+      {:else if showUserManagement}
         <UserManagement />
       {:else if selectedProject}
         <div class="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">

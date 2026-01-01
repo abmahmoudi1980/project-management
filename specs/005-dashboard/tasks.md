@@ -23,14 +23,14 @@
 
 **Purpose**: Prepare project structure and dependencies for dashboard implementation
 
-- [ ] T001 Create feature branch `005-dashboard` (already done: verify with `git branch --show-current`)
-- [ ] T002 [P] Create spec directory structure in `/specs/005-dashboard/` (already done: verify with `ls -la specs/005-dashboard/`)
-- [ ] T003 Review and understand existing backend structure in `/backend/` (handlers, services, repositories, models)
-- [ ] T004 Review and understand existing frontend structure in `/frontend/src/` (components, stores, lib)
-- [ ] T005 Ensure PostgreSQL is running and accessible (`psql -U your_user -d your_database`)
-- [ ] T006 Verify Go version >= 1.21 with `go version`
-- [ ] T007 Verify Node.js version >= 18 with `node --version`
-- [ ] T008 Review AGENTS.md for project conventions and patterns
+- [X] T001 Create feature branch `005-dashboard` (already done: verify with `git branch --show-current`)
+- [X] T002 [P] Create spec directory structure in `/specs/005-dashboard/` (already done: verify with `ls -la specs/005-dashboard/`)
+- [X] T003 Review and understand existing backend structure in `/backend/` (handlers, services, repositories, models)
+- [X] T004 Review and understand existing frontend structure in `/frontend/src/` (components, stores, lib)
+- [X] T005 Ensure PostgreSQL is running and accessible (`psql -U your_user -d your_database`)
+- [X] T006 Verify Go version >= 1.21 with `go version`
+- [X] T007 Verify Node.js version >= 18 with `node --version`
+- [X] T008 Review AGENTS.md for project conventions and patterns
 
 ---
 
@@ -40,16 +40,16 @@
 
 **⚠️ CRITICAL**: No backend work can begin until database migration is complete
 
-- [ ] T009 Create migration file `backend/migration/005_add_dashboard_meetings.sql` with SQL from data-model.md
+- [X] T009 Create migration file `backend/migration/005_add_dashboard_meetings.sql` with SQL from data-model.md
   - Include: meetings table, meeting_attendees junction table, 8 indexes
   - Reference: data-model.md Database Migration section
-- [ ] T010 Run migration with `cd backend && go run ./cmd/migrate`
-- [ ] T011 Verify migration success:
+- [X] T010 Run migration with `cd backend && go run ./cmd/migrate`
+- [X] T011 Verify migration success:
   - Connect to database: `psql -U user -d database`
   - Check tables: `\dt meetings*` and `\dt meeting_attendees*`
   - Check indexes: `\di idx_meetings*` and `\di idx_meeting_attendees*`
   - Check indexes on existing tables: `\di idx_projects_status*`, `\di idx_tasks_assigned*`
-- [ ] T012 Document any migration issues or deviations in implementation notes
+- [X] T012 Document any migration issues or deviations in implementation notes
 
 **Checkpoint**: Database schema ready - all tables and indexes created successfully
 
@@ -59,16 +59,16 @@
 
 **Purpose**: Define Go structs representing dashboard data
 
-- [ ] T013 Create `backend/models/meeting.go` with Meeting and MeetingAttendee structs
+- [X] T013 Create `backend/models/meeting.go` with Meeting and MeetingAttendee structs
   - Fields: id (UUID), title, description, meeting_date, duration_minutes, project_id, created_by, timestamps
   - Follow existing struct patterns (PascalCase fields, json tags, pgx types)
   - Reference: data-model.md Entity Definitions section
-- [ ] T014 Create `backend/models/dashboard.go` with Dashboard DTOs:
+- [X] T014 Create `backend/models/dashboard.go` with Dashboard DTOs:
   - DashboardResponse, DashboardStatistics, StatValue, ProjectCard, TaskSummary
   - Follow existing model patterns and conventions
   - Reference: data-model.md Dashboard Aggregate Data section
-- [ ] T015 Verify models compile: `cd backend && go build ./models`
-- [ ] T016 Review models for consistency with existing patterns
+- [X] T015 Verify models compile: `cd backend && go build ./models`
+- [X] T016 Review models for consistency with existing patterns
 
 ---
 
@@ -76,13 +76,13 @@
 
 **Purpose**: Create data access layer for dashboard and meeting queries
 
-- [ ] T017 Create `backend/repositories/dashboard_repository.go`:
+- [X] T017 Create `backend/repositories/dashboard_repository.go`:
   - NewDashboardRepository(db) constructor
   - GetStatistics(ctx, userID, userRole) → DashboardStatistics
   - GetRecentProjects(ctx, userID, userRole, limit) → []ProjectCard
   - GetUserTasks(ctx, userID, limit) → []TaskSummary
   - Reference: plan.md Phase 4 Backend Services section for query logic
-- [ ] T018 Create `backend/repositories/meeting_repository.go`:
+- [X] T018 Create `backend/repositories/meeting_repository.go`:
   - NewMeetingRepository(db) constructor
   - CreateMeeting(ctx, meeting) error
   - GetNextMeetingForUser(ctx, userID) → *MeetingWithAttendees
@@ -90,11 +90,11 @@
   - AddAttendees(ctx, meetingID, userIDs) error
   - ListMeetings(ctx, userID, from, to, limit, offset) → ([]Meeting, error)
   - Reference: data-model.md Entity Definitions for repository methods
-- [ ] T019 [P] Add indexes on existing tables in repositories if not in migration:
+- [X] T019 [P] Add indexes on existing tables in repositories if not in migration:
   - Verify: idx_projects_status_updated, idx_tasks_assigned_status, idx_tasks_due_date, idx_users_active
   - Add to dashboard queries WHERE/ORDER BY clauses if missing
-- [ ] T020 Test repository methods compile and build: `cd backend && go build ./repositories`
-- [ ] T021 Review repository queries for SQL injection prevention (use parameterized queries)
+- [X] T020 Test repository methods compile and build: `cd backend && go build ./repositories`
+- [X] T021 Review repository queries for SQL injection prevention (use parameterized queries)
 
 ---
 
@@ -102,13 +102,13 @@
 
 **Purpose**: Implement business logic and validation for dashboard and meetings
 
-- [ ] T022 Create `backend/services/dashboard_service.go`:
+- [X] T022 Create `backend/services/dashboard_service.go`:
   - NewDashboardService(dashboardRepo, meetingRepo) constructor
   - GetDashboardData(ctx, userID, userRole) → *DashboardResponse
   - Calls 4 repository methods and aggregates into DashboardResponse
   - Handles nil/empty responses gracefully
   - Reference: plan.md Data Flow Dashboard Load Sequence
-- [ ] T023 Create `backend/services/meeting_service.go`:
+- [X] T023 Create `backend/services/meeting_service.go`:
   - NewMeetingService(meetingRepo, userRepo) constructor
   - GetNextMeetingForUser(ctx, userID) → *MeetingWithAttendees
   - CreateMeeting(ctx, userID, input) → *MeetingWithAttendees
@@ -117,18 +117,18 @@
   - Verify attendees exist before creating
   - Add meeting creator to attendees automatically
   - Reference: data-model.md Validation Rules section
-- [ ] T024 Implement validation functions:
+- [X] T024 Implement validation functions:
   - Meeting title: 1-200 characters
   - Description: 0-5000 characters
   - Duration: 1-1440 minutes
   - Meeting date: must be in future
   - At least 1 attendee required
-- [ ] T025 Implement error handling:
+- [X] T025 Implement error handling:
   - Return descriptive error messages
   - Wrap errors with context when needed
   - Handle pgx.ErrNoRows gracefully
-- [ ] T026 Test service methods compile: `cd backend && go build ./services`
-- [ ] T027 Review services for business logic correctness
+- [X] T026 Test service methods compile: `cd backend && go build ./services`
+- [X] T027 Review services for business logic correctness
 
 ---
 
@@ -136,7 +136,7 @@
 
 **Purpose**: Create HTTP endpoints for dashboard and meetings
 
-- [ ] T028 Create `backend/handlers/dashboard_handler.go`:
+- [X] T028 Create `backend/handlers/dashboard_handler.go`:
   - NewDashboardHandler(dashboardService) constructor
   - GetDashboard(c *fiber.Ctx) error handler
   - Extract user from JWT (c.Locals("user"))
@@ -144,7 +144,7 @@
   - Return JSON response with proper error handling
   - HTTP status: 200 OK or 500 Internal Server Error
   - Reference: api-contract.md GET /api/dashboard section
-- [ ] T029 Create `backend/handlers/meeting_handler.go`:
+- [X] T029 Create `backend/handlers/meeting_handler.go`:
   - NewMeetingHandler(meetingService) constructor
   - GetNextMeeting(c *fiber.Ctx) - GET /api/meetings/next
   - CreateMeeting(c *fiber.Ctx) - POST /api/meetings
@@ -152,12 +152,12 @@
   - GetMeeting(c *fiber.Ctx) - GET /api/meetings/:id
   - Parse JSON body, validate input, handle errors
   - Reference: api-contract.md Meeting Endpoints sections
-- [ ] T030 Implement error response formatting:
+- [X] T030 Implement error response formatting:
   - Consistent error format: {error, message, field}
   - Proper HTTP status codes (400, 401, 403, 404, 500)
   - Reference: api-contract.md Error Handling section
-- [ ] T031 Test handlers compile: `cd backend && go build ./handlers`
-- [ ] T032 Review handlers for HTTP concern separation
+- [X] T031 Test handlers compile: `cd backend && go build ./handlers`
+- [X] T032 Review handlers for HTTP concern separation
 
 ---
 
@@ -165,7 +165,7 @@
 
 **Purpose**: Register new endpoints and wire dependencies
 
-- [ ] T033 Update `backend/routes/routes.go`:
+- [X] T033 Update `backend/routes/routes.go`:
   - Create dashboardHandler and meetingHandler instances
   - Register GET /api/dashboard with auth middleware
   - Register GET /api/meetings/next with auth middleware
@@ -173,15 +173,15 @@
   - Register GET /api/meetings with auth middleware
   - Register GET /api/meetings/:id with auth middleware
   - Reference: plan.md Phase 7 Backend Handlers & Routes section
-- [ ] T034 Update `backend/main.go`:
+- [X] T034 Update `backend/main.go`:
   - Initialize DashboardRepository with db pool
   - Initialize MeetingRepository with db pool
   - Initialize DashboardService with repositories
   - Initialize MeetingService with repositories
   - Pass to SetupRoutes() function
   - Verify all dependencies injected correctly
-- [ ] T035 Build backend: `cd backend && go build`
-- [ ] T036 Verify backend starts: `cd backend && go run main.go` (CTRL+C to stop)
+- [X] T035 Build backend: `cd backend && go build`
+- [X] T036 Verify backend starts: `cd backend && go run main.go` (CTRL+C to stop)
   - Check for startup errors in console
   - Verify "Server started on :3000" message
 
@@ -227,24 +227,24 @@
 
 **Purpose**: Create JavaScript functions to call backend endpoints
 
-- [ ] T041 Create `frontend/src/lib/api/dashboard.js`:
+- [X] T041 Create `frontend/src/lib/api/dashboard.js`:
   - getDashboardData() → Promise<DashboardResponse>
   - Fetch GET /api/dashboard with credentials: 'include'
   - Return parsed JSON
   - Reference: api-contract.md GET /api/dashboard section
-- [ ] T042 Create `frontend/src/lib/api/meetings.js`:
+- [X] T042 Create `frontend/src/lib/api/meetings.js`:
   - getNextMeeting() → Promise<Meeting|null>
   - createMeeting(data) → Promise<Meeting>
   - Fetch with proper headers and body
   - Handle 204 No Content response
   - Reference: api-contract.md Meeting Endpoints sections
-- [ ] T043 Update `frontend/src/lib/utils.js`:
+- [X] T043 Update `frontend/src/lib/utils.js`:
   - Add formatJalaliDate(date, format) function
   - Use jalali-moment library
   - Formats: 'full' (jYYYY/jMM/jDD), 'short' (jMM/jDD), 'time' (HH:mm)
   - Handle special cases: "امروز" (today), "فردا" (tomorrow)
   - Reference: quickstart.md Utility Functions section
-- [ ] T044 Test API clients load without errors:
+- [X] T044 Test API clients load without errors:
   - Import in browser console to verify syntax
   - Check for missing dependencies (jalali-moment)
 
@@ -254,37 +254,37 @@
 
 **Purpose**: Create Svelte 5 components with runes
 
-- [ ] T045 [P] Create `frontend/src/components/Avatar.svelte`:
+- [X] T045 [P] Create `frontend/src/components/Avatar.svelte`:
   - Props: user object, size (sm|md|lg)
   - Extract initials from user.full_name
   - Generate color from user.id hash
   - Render: div with initials, background color, rounded shape
   - Reference: quickstart.md Step 7 Avatar component
-- [ ] T046 [P] Create `frontend/src/components/StatCard.svelte`:
+- [X] T046 [P] Create `frontend/src/components/StatCard.svelte`:
   - Props: title, value, change, icon, iconColor
   - Display: icon, value, title, change indicator
   - Change color: green (+), red (-), gray (0)
   - Reference: quickstart.md Step 7 StatCard component
-- [ ] T047 [P] Create `frontend/src/components/ProjectCard.svelte`:
+- [X] T047 [P] Create `frontend/src/components/ProjectCard.svelte`:
   - Props: project object, onclick callback
   - Display: status badge, name, client, progress bar, team avatars, deadline
   - Status colors: planning (gray), in progress (blue), on track (green), review (purple)
   - Team avatars: max 3 visible, "+N" if more
   - Reference: quickstart.md Step 7 ProjectCard component
-- [ ] T048 [P] Create `frontend/src/components/TaskListItem.svelte`:
+- [X] T048 [P] Create `frontend/src/components/TaskListItem.svelte`:
   - Props: task object, onComplete callback
   - Display: checkbox, title, project name, priority badge, due date
   - Priority colors: critical (red), high (orange), medium (blue), low (gray)
   - Checkbox triggers onComplete(taskId)
   - Completed state: strikethrough + fade out
   - Reference: quickstart.md Step 7 TaskListItem component
-- [ ] T049 [P] Create `frontend/src/components/MeetingCard.svelte`:
+- [X] T049 [P] Create `frontend/src/components/MeetingCard.svelte`:
   - Props: meeting object (nullable)
   - Display: title, description, time, attendee avatars (max 3)
   - Gradient background: indigo-600 to purple-700
   - Hidden if meeting is null
   - Reference: quickstart.md Step 7 MeetingCard component
-- [ ] T050 Test all components render without errors:
+- [X] T050 Test all components render without errors:
   - Import each in a test Svelte file
   - Check browser console for errors
   - Verify props are defined with $props()
@@ -295,7 +295,7 @@
 
 **Purpose**: Create main dashboard page component
 
-- [ ] T051 Create `frontend/src/components/Dashboard.svelte`:
+- [X] T051 Create `frontend/src/components/Dashboard.svelte`:
   - State: dashboardData, loading, error
   - $effect hook: calls loadDashboard() on mount and every 30 seconds
   - loadDashboard() function: calls getDashboardData(), handles errors
@@ -303,16 +303,16 @@
   - navigateToProject(projectId) function: navigates to project details
   - Render: statistics grid, projects grid, tasks list, meeting card
   - Reference: quickstart.md Step 8 Frontend Dashboard Page section
-- [ ] T052 Add error handling in Dashboard.svelte:
+- [X] T052 Add error handling in Dashboard.svelte:
   - Show error banner if loading fails
   - Don't block UI for partial failures
   - Allow auto-refresh to retry every 30 seconds
-- [ ] T053 Implement auto-refresh:
+- [X] T053 Implement auto-refresh:
   - $effect creates setInterval for 30 seconds
   - Cleanup: return function that clears interval
   - No loading spinner (subtle update)
   - Reference: quickstart.md Data Flow section
-- [ ] T054 Test Dashboard.svelte renders:
+- [X] T054 Test Dashboard.svelte renders:
   - No console errors
   - All child components render
   - Auto-refresh interval working (check developer tools)
@@ -323,19 +323,19 @@
 
 **Purpose**: Add dashboard to app routing and layout
 
-- [ ] T055 Update `frontend/src/App.svelte`:
+- [X] T055 Update `frontend/src/App.svelte`:
   - Add route for /dashboard pointing to Dashboard.svelte component
   - Make /dashboard the default route after login
   - Verify routing works with browser navigation
-- [ ] T056 Update `frontend/src/components/Navigation.svelte` (if exists):
+- [X] T056 Update `frontend/src/components/Navigation.svelte` (if exists):
   - Add "Dashboard" link in sidebar/menu
   - Highlight as active when on /dashboard
   - Point to /dashboard route
-- [ ] T057 Update frontend package.json if needed:
+- [X] T057 Update frontend package.json if needed:
   - Verify jalali-moment is installed: `npm ls jalali-moment`
   - Verify lucide-svelte (or lucide) is installed for icons
   - Run `npm install` if any dependencies missing
-- [ ] T058 Test frontend navigation:
+- [X] T058 Test frontend navigation:
   - Start dev server: `cd frontend && npm run dev`
   - Navigate to /dashboard
   - Dashboard loads without errors
@@ -347,21 +347,21 @@
 
 **Purpose**: Ensure dashboard looks correct and is responsive
 
-- [ ] T059 Verify Tailwind CSS classes used in components:
+- [X] T059 Verify Tailwind CSS classes used in components:
   - Check color classes: text-indigo-600, bg-blue-100, etc. match Tailwind docs
   - Grid layouts: grid-cols-1, grid-cols-4, gap-6
   - Responsive: md:grid-cols-2, lg:grid-cols-4
   - Reference: dashboard.html reference design for layout
-- [ ] T060 Test responsive design:
+- [X] T060 Test responsive design:
   - Desktop (1920px): All 4 stat cards in row, 2x2 projects grid
   - Tablet (768px): 2 stat cards per row, stacked projects
   - Mobile (320px): Stacked everything, single column
   - Use browser devtools responsive mode
-- [ ] T061 Verify Lucide icons render:
+- [X] T061 Verify Lucide icons render:
   - Icons appear with correct colors
   - Icons scale properly with size
   - Icons missing → fallback symbols work
-- [ ] T062 Test dark text on light backgrounds (accessibility):
+- [X] T062 Test dark text on light backgrounds (accessibility):
   - Color contrast ratios pass WCAG AA
   - White icons on colored backgrounds visible
   - All text readable
