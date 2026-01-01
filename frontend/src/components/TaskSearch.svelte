@@ -1,6 +1,6 @@
 <script>
   import JalaliDatePicker from './JalaliDatePicker.svelte';
-  import { jalaliStringToDate, dateToJalaliString } from '../lib/dateUtils.js';
+  import { jalaliStringToDate, dateToJalaliString } from '../lib/utils.js';
   import { hasActiveFilters, getActiveFilterCount } from '../lib/filterUtils.js';
 
   // Props

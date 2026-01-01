@@ -1,41 +1,40 @@
 <script>
-	let { user, size = 'md' } = $props();
+  let { user, size = 'md' } = $props();
 
-	const sizeClasses = {
-		sm: 'w-7 h-7 text-xs',
-		md: 'w-8 h-8 text-sm',
-		lg: 'w-10 h-10 text-base'
-	};
+  const sizes = {
+    sm: 'w-8 h-8 text-xs',
+    md: 'w-10 h-10 text-sm',
+    lg: 'w-12 h-12 text-base'
+  };
 
-	const colors = [
-		'bg-indigo-500',
-		'bg-purple-500',
-		'bg-blue-500',
-		'bg-pink-500',
-		'bg-orange-500',
-		'bg-green-500',
-		'bg-red-500',
-		'bg-teal-500'
-	];
+  const colors = [
+    'bg-indigo-100 text-indigo-700',
+    'bg-purple-100 text-purple-700',
+    'bg-blue-100 text-blue-700',
+    'bg-pink-100 text-pink-700',
+    'bg-orange-100 text-orange-700',
+    'bg-green-100 text-green-700',
+    'bg-red-100 text-red-700',
+    'bg-teal-100 text-teal-700'
+  ];
 
-	function getInitials(fullName) {
-		const parts = fullName.trim().split(' ');
-		if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-		return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-	}
+  function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 
-	function getColorClass(userId) {
-		const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-		return colors[hash % colors.length];
-	}
+  function getColor(id) {
+    if (!id) return colors[0];
+    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  }
 
-	const initials = $derived(getInitials(user.full_name));
-	const colorClass = $derived(getColorClass(user.id));
+  let initials = $derived(getInitials(user?.full_name || user?.username || user?.email));
+  let colorClass = $derived(getColor(user?.id));
 </script>
 
-<div
-	class="rounded-full {sizeClasses[size]} {colorClass} flex items-center justify-center text-white font-bold border-2 border-white"
-	title={user.full_name}
->
-	{initials}
+<div class="{sizes[size]} {colorClass} rounded-full flex items-center justify-center font-medium overflow-hidden flex-shrink-0" title={user?.full_name || user?.username}>
+  {initials}
 </div>

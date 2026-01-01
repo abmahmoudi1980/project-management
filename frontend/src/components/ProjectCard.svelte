@@ -1,65 +1,61 @@
 <script>
-	import Avatar from './Avatar.svelte';
-	import { dateToJalaliString } from '../lib/dateUtils';
+  import Avatar from './Avatar.svelte';
+  import { formatJalaliDate } from '../lib/utils';
+  
+  let { project, onclick } = $props();
 
-	let { project, onclick } = $props();
+  const statusColors = {
+    'Planning': 'bg-gray-100 text-gray-700',
+    'In Progress': 'bg-blue-100 text-blue-700',
+    'On Track': 'bg-green-100 text-green-700',
+    'Review': 'bg-purple-100 text-purple-700',
+    'active': 'bg-blue-100 text-blue-700'
+  };
 
-	const statusColors = {
-		Planning: 'bg-slate-100 text-slate-700',
-		'In Progress': 'bg-blue-100 text-blue-700',
-		'On Track': 'bg-green-100 text-green-700',
-		Review: 'bg-purple-100 text-purple-700',
-		Completed: 'bg-emerald-100 text-emerald-700'
-	};
-
-	const statusColor = $derived(statusColors[project.status] || 'bg-slate-100 text-slate-700');
-	const visibleMembers = $derived(project.team_members?.slice(0, 3) || []);
-	const remainingMembers = $derived(Math.max(0, (project.total_members || 0) - visibleMembers.length));
+  let statusClass = $derived(statusColors[project.status] || 'bg-gray-100 text-gray-700');
 </script>
 
-<button
-	on:click={() => onclick?.(project.id)}
-	class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-slate-200 transition-all duration-200 text-left w-full"
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div 
+  class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors cursor-pointer"
+  onclick={() => onclick(project.id)}
 >
-	<div class="flex items-start justify-between mb-3">
-		<h3 class="font-semibold text-slate-900 text-lg flex-1 truncate">{project.name}</h3>
-		<span class={`text-xs font-medium px-3 py-1 rounded-full ${statusColor} whitespace-nowrap ml-2`}>
-			{project.status}
-		</span>
-	</div>
+  <div class="flex justify-between items-start mb-4">
+    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {statusClass}">
+      {project.status}
+    </span>
+    <span class="text-xs text-gray-400">
+      {formatJalaliDate(project.due_date, 'short')}
+    </span>
+  </div>
 
-	{#if project.client}
-		<p class="text-sm text-slate-600 mb-3">{project.client}</p>
-	{/if}
+  <h4 class="text-lg font-bold text-gray-900 mb-1 truncate">{project.name}</h4>
+  <p class="text-sm text-gray-500 mb-4 truncate">{project.client}</p>
 
-	{#if project.progress !== undefined}
-		<div class="mb-4">
-			<div class="flex justify-between items-center mb-1">
-				<span class="text-xs font-medium text-slate-600">Progress</span>
-				<span class="text-xs font-bold text-slate-900">{project.progress}%</span>
-			</div>
-			<div class="w-full bg-slate-200 rounded-full h-2">
-				<div class="bg-blue-600 h-2 rounded-full" style="width: {project.progress}%" />
-			</div>
-		</div>
-	{/if}
+  <div class="mb-4">
+    <div class="flex justify-between text-xs mb-1">
+      <span class="text-gray-500">پیشرفت</span>
+      <span class="font-medium text-gray-900">{project.progress}%</span>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-1.5">
+      <div class="bg-indigo-600 h-1.5 rounded-full" style="width: {project.progress}%"></div>
+    </div>
+  </div>
 
-	<div class="flex items-center justify-between">
-		<div class="flex -space-x-2">
-			{#each visibleMembers as member}
-				<div class="relative z-0">
-					<Avatar user={member} size="sm" />
-				</div>
-			{/each}
-			{#if remainingMembers > 0}
-				<div class="w-7 h-7 rounded-full bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-700">
-					+{remainingMembers}
-				</div>
-			{/if}
-		</div>
-
-		{#if project.due_date}
-			<span class="text-xs text-slate-500">{dateToJalaliString(new Date(project.due_date))}</span>
-		{/if}
-	</div>
-</button>
+  <div class="flex items-center justify-between">
+    <div class="flex -space-x-2">
+      {#each project.team_members || [] as member}
+        <Avatar user={member} size="sm" />
+      {/each}
+      {#if project.total_members > 3}
+        <div class="w-8 h-8 rounded-full bg-gray-50 border-2 border-white flex items-center justify-center text-[10px] font-medium text-gray-500">
+          +{project.total_members - 3}
+        </div>
+      {/if}
+    </div>
+    <button class="text-indigo-600 text-sm font-medium hover:text-indigo-800">
+      مشاهده
+    </button>
+  </div>
+</div>

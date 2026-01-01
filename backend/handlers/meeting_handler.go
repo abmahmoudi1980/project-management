@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"project-management/middleware"
-	"project-management/models"
 	"project-management/services"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -17,9 +17,7 @@ func NewMeetingHandler(service *services.MeetingService) *MeetingHandler {
 	return &MeetingHandler{service: service}
 }
 
-// GetNextMeeting retrieves the next upcoming meeting for the authenticated user
 func (h *MeetingHandler) GetNextMeeting(c *fiber.Ctx) error {
-	// Get user from context (set by RequireAuth middleware)
 	userContext, err := middleware.GetUserFromContext(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
@@ -27,7 +25,7 @@ func (h *MeetingHandler) GetNextMeeting(c *fiber.Ctx) error {
 
 	meeting, err := h.service.GetNextMeetingForUser(c.Context(), userContext.UserID)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch meeting", "details": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch next meeting"})
 	}
 
 	if meeting == nil {
@@ -37,20 +35,18 @@ func (h *MeetingHandler) GetNextMeeting(c *fiber.Ctx) error {
 	return c.JSON(meeting)
 }
 
-// CreateMeeting creates a new meeting
 func (h *MeetingHandler) CreateMeeting(c *fiber.Ctx) error {
-	// Get user from context (set by RequireAuth middleware)
 	userContext, err := middleware.GetUserFromContext(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
 	}
 
-	var req models.CreateMeetingRequest
-	if err := c.BodyParser(&req); err != nil {
+	var input services.CreateMeetingInput
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	meeting, err := h.service.CreateMeeting(c.Context(), userContext.UserID, &req)
+	meeting, err := h.service.CreateMeeting(c.Context(), userContext.UserID, input)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -58,44 +54,54 @@ func (h *MeetingHandler) CreateMeeting(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(meeting)
 }
 
-// ListMeetings retrieves meetings for the authenticated user
 func (h *MeetingHandler) ListMeetings(c *fiber.Ctx) error {
-	// Get user from context (set by RequireAuth middleware)
 	userContext, err := middleware.GetUserFromContext(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
 	}
 
-	// For now, return next meeting via GetNextMeeting endpoint
-	// Full list implementation can be added later
-	meeting, err := h.service.GetNextMeetingForUser(c.Context(), userContext.UserID)
+	fromStr := c.Query("from")
+	toStr := c.Query("to")
+
+	from := time.Now().AddDate(0, 0, -30)
+	if fromStr != "" {
+		if f, err := time.Parse(time.RFC3339, fromStr); err == nil {
+			from = f
+		}
+	}
+
+	to := time.Now().AddDate(0, 0, 30)
+	if toStr != "" {
+		if t, err := time.Parse(time.RFC3339, toStr); err == nil {
+			to = t
+		}
+	}
+
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
+
+	meetings, err := h.service.ListMeetings(c.Context(), userContext.UserID, from, to, limit, offset)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch meetings"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch meetings"})
 	}
 
-	if meeting == nil {
-		return c.JSON([]interface{}{})
-	}
-
-	return c.JSON([]interface{}{meeting})
+	return c.JSON(meetings)
 }
 
-// GetMeeting retrieves a specific meeting by ID
 func (h *MeetingHandler) GetMeeting(c *fiber.Ctx) error {
-	// Get user from context (set by RequireAuth middleware)
-	_, err := middleware.GetUserFromContext(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
-	}
-
-	_, err = uuid.Parse(c.Params("id"))
+	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid meeting id"})
 	}
 
-	// Note: In production, you would have a proper method on the repository to expose this
-	// For now, we can use GetNextMeetingForUser or implement a separate method
-	// This is a temporary solution
+	meeting, err := h.service.GetMeetingByID(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch meeting"})
+	}
 
-	return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{"error": "not implemented"})
+	if meeting == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "meeting not found"})
+	}
+
+	return c.JSON(meeting)
 }

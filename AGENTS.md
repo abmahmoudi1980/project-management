@@ -15,33 +15,16 @@ project-management/
 ├── backend/            # Go API server (separate module)
 │   ├── config/       # DB & JWT config
 │   ├── handlers/     # HTTP request handlers
-│   │   ├── dashboard_handler.go  # NEW - Dashboard endpoint
-│   │   └── meeting_handler.go    # NEW - Meeting CRUD
 │   ├── services/     # Business logic layer
-│   │   ├── dashboard_service.go  # NEW - Dashboard aggregation
-│   │   └── meeting_service.go    # NEW - Meeting logic
 │   ├── repositories/ # Data access (pgx)
-│   │   ├── dashboard_repository.go # NEW - Dashboard queries
-│   │   └── meeting_repository.go   # NEW - Meeting data access
 │   ├── models/       # Domain entities
-│   │   ├── dashboard.go  # NEW - Dashboard DTOs
-│   │   └── meeting.go    # NEW - Meeting models
 │   ├── routes/       # Route definitions
-│   ├── migration/    # SQL migrations
-│   │   └── 005_add_dashboard_meetings.sql  # NEW - Meetings tables
-│   └── main.go       # Entry point (updated for dashboard)
+│   └── main.go       # Entry point
 ├── frontend/
 │   └── src/
-│       ├── components/ # Svelte 5 components (19)
-│       │   ├── Avatar.svelte       # NEW - User avatar with initials
-│       │   ├── Dashboard.svelte    # NEW - Main dashboard page
-│       │   ├── MeetingCard.svelte  # NEW - Meeting widget
-│       │   ├── ProjectCard.svelte  # NEW - Project card
-│       │   ├── StatCard.svelte     # NEW - Statistics card
-│       │   └── TaskListItem.svelte # NEW - Task item with checkbox
+│       ├── components/ # Svelte 5 components (13)
 │       ├── stores/     # State management
 │       └── lib/        # API client
-│           └── api.js  # Updated with dashboard/meeting endpoints
 ├── specs/             # Feature specifications
 └── .github/           # Agents & prompts
 ```
@@ -108,16 +91,8 @@ npm run build               # Production build
 
 - Backend is separate Go module (`backend/go.mod`), import paths reflect this
 - No test files currently (manual testing only)
-- Svelte components: 19 total (includes 6 new dashboard components)
+- Svelte components: 13+ total (includes dashboard components)
 - Persian language support via `jalali-moment` library
 - Default admin: `admin@example.com` / `Admin123!` (change after first login)
-- **New in 005-dashboard**: 
-  - Meetings entity with meeting_attendees junction table
-  - Dashboard aggregations (statistics, projects, tasks, next meeting)
-  - 30-second auto-refresh pattern on Dashboard component
-  - Single `/api/dashboard` endpoint for efficiency
-  - Client-side Jalali date formatting using `dateToJalaliString()`
-  - Generated avatars with user initials and color-coded backgrounds
-  - 6 new Svelte 5 components: Avatar, Dashboard, MeetingCard, ProjectCard, StatCard, TaskListItem
-  - Dashboard API methods added to `api.js`
-  - Dashboard route added to App.svelte navigation
+- **New in 005-dashboard**: Meetings entity, dashboard aggregations, 30-second auto-refresh pattern
+- **Dashboard tech**: Single `/api/dashboard` endpoint for efficiency, client-side Jalali date formatting, generated avatars with initials

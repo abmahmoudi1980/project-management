@@ -20,40 +20,33 @@ func NewDashboardService(dashboardRepo *repositories.DashboardRepository, meetin
 	}
 }
 
-// GetDashboardData aggregates all dashboard information
 func (s *DashboardService) GetDashboardData(ctx context.Context, userID uuid.UUID, userRole string) (*models.DashboardResponse, error) {
-	response := &models.DashboardResponse{
-		RecentProjects: make([]models.ProjectCard, 0),
-		UserTasks:      make([]models.TaskSummary, 0),
-	}
+	var resp models.DashboardResponse
+	var err error
 
-	// Get statistics
-	stats, err := s.dashboardRepo.GetStatistics(ctx, userID, userRole)
+	// 1. Get Statistics
+	resp.Statistics, err = s.dashboardRepo.GetStatistics(ctx, userID, userRole)
 	if err != nil {
 		return nil, err
 	}
-	response.Statistics = *stats
 
-	// Get recent projects (up to 4)
-	projects, err := s.dashboardRepo.GetRecentProjects(ctx, userID, userRole, 4)
+	// 2. Get Recent Projects (limit 4)
+	resp.RecentProjects, err = s.dashboardRepo.GetRecentProjects(ctx, userID, userRole, 4)
 	if err != nil {
 		return nil, err
 	}
-	response.RecentProjects = projects
 
-	// Get user's tasks (up to 5)
-	tasks, err := s.dashboardRepo.GetUserTasks(ctx, userID, 5)
+	// 3. Get User Tasks (limit 5)
+	resp.UserTasks, err = s.dashboardRepo.GetUserTasks(ctx, userID, 5)
 	if err != nil {
 		return nil, err
 	}
-	response.UserTasks = tasks
 
-	// Get next meeting
-	meeting, err := s.meetingRepo.GetNextMeetingForUser(ctx, userID)
+	// 4. Get Next Meeting
+	resp.NextMeeting, err = s.meetingRepo.GetNextMeetingForUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	response.NextMeeting = meeting
 
-	return response, nil
+	return &resp, nil
 }

@@ -5,32 +5,37 @@ import (
 	"errors"
 	"project-management/models"
 	"project-management/repositories"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type MeetingService struct {
-	repo     *repositories.MeetingRepository
-	userRepo repositories.UserRepository
+type CreateMeetingInput struct {
+	Title           string      `json:"title"`
+	Description     *string     `json:"description"`
+	MeetingDate     time.Time   `json:"meeting_date"`
+	DurationMinutes int         `json:"duration_minutes"`
+	ProjectID       *uuid.UUID  `json:"project_id"`
+	AttendeeIDs     []uuid.UUID `json:"attendee_ids"`
 }
 
-func NewMeetingService(repo *repositories.MeetingRepository, userRepo repositories.UserRepository) *MeetingService {
+type MeetingService struct {
+	meetingRepo *repositories.MeetingRepository
+	userRepo    repositories.UserRepository
+}
+
+func NewMeetingService(meetingRepo *repositories.MeetingRepository, userRepo repositories.UserRepository) *MeetingService {
 	return &MeetingService{
-		repo:     repo,
-		userRepo: userRepo,
+		meetingRepo: meetingRepo,
+		userRepo:    userRepo,
 	}
 }
 
-// GetNextMeetingForUser returns the next upcoming meeting for a user
 func (s *MeetingService) GetNextMeetingForUser(ctx context.Context, userID uuid.UUID) (*models.MeetingWithAttendees, error) {
-	return s.repo.GetNextMeetingForUser(ctx, userID)
+	return s.meetingRepo.GetNextMeetingForUser(ctx, userID)
 }
 
-// CreateMeeting validates and creates a new meeting
-func (s *MeetingService) CreateMeeting(ctx context.Context, userID uuid.UUID, input *models.CreateMeetingRequest) (*models.MeetingWithAttendees, error) {
-	// Validate input
+func (s *MeetingService) CreateMeeting(ctx context.Context, userID uuid.UUID, input CreateMeetingInput) (*models.MeetingWithAttendees, error) {
 	if err := s.validateMeetingInput(input); err != nil {
 		return nil, err
 	}
@@ -42,81 +47,68 @@ func (s *MeetingService) CreateMeeting(ctx context.Context, userID uuid.UUID, in
 			return nil, err
 		}
 		if user == nil {
-			return nil, errors.New("attendee not found: " + attendeeID.String())
+			return nil, errors.New("one or more attendees not found")
 		}
 	}
 
-	// Create meeting
 	meeting := &models.Meeting{
-		ID:              uuid.New(),
 		Title:           input.Title,
 		Description:     input.Description,
 		MeetingDate:     input.MeetingDate,
 		DurationMinutes: input.DurationMinutes,
 		ProjectID:       input.ProjectID,
 		CreatedBy:       userID,
-		CreatedAt:       time.Now().UTC(),
-		UpdatedAt:       time.Now().UTC(),
 	}
 
-	if err := s.repo.CreateMeeting(ctx, meeting); err != nil {
+	err := s.meetingRepo.CreateMeeting(ctx, meeting)
+	if err != nil {
 		return nil, err
 	}
 
 	// Add attendees (including creator)
-	attendeeIDs := input.AttendeeIDs
-	if !containsUUID(attendeeIDs, userID) {
-		attendeeIDs = append(attendeeIDs, userID)
+	attendees := input.AttendeeIDs
+	creatorIncluded := false
+	for _, id := range attendees {
+		if id == userID {
+			creatorIncluded = true
+			break
+		}
+	}
+	if !creatorIncluded {
+		attendees = append(attendees, userID)
 	}
 
-	if err := s.repo.AddAttendees(ctx, meeting.ID, attendeeIDs); err != nil {
+	err = s.meetingRepo.AddAttendees(ctx, meeting.ID, attendees)
+	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the created meeting with attendees
-	return s.repo.GetMeetingByID(ctx, meeting.ID)
+	return s.meetingRepo.GetMeetingByID(ctx, meeting.ID)
 }
 
-// validateMeetingInput validates meeting creation input
-func (s *MeetingService) validateMeetingInput(input *models.CreateMeetingRequest) error {
-	// Title validation
-	title := strings.TrimSpace(input.Title)
-	if len(title) < 1 || len(title) > 200 {
+func (s *MeetingService) validateMeetingInput(input CreateMeetingInput) error {
+	if input.Title == "" || len(input.Title) > 200 {
 		return errors.New("title must be between 1 and 200 characters")
 	}
-
-	// Description validation
-	if input.Description != nil {
-		desc := strings.TrimSpace(*input.Description)
-		if len(desc) > 5000 {
-			return errors.New("description must not exceed 5000 characters")
-		}
+	if input.Description != nil && len(*input.Description) > 5000 {
+		return errors.New("description must be less than 5000 characters")
 	}
-
-	// Duration validation
-	if input.DurationMinutes < 1 || input.DurationMinutes > 1440 {
-		return errors.New("duration must be between 1 and 1440 minutes")
-	}
-
-	// Meeting date validation - must be in future
-	if input.MeetingDate.Before(time.Now().UTC()) {
+	if input.MeetingDate.Before(time.Now()) {
 		return errors.New("meeting date must be in the future")
 	}
-
-	// Attendees validation
-	if len(input.AttendeeIDs) == 0 {
-		return errors.New("at least one attendee required")
+	if input.DurationMinutes <= 0 || input.DurationMinutes > 1440 {
+		return errors.New("duration must be between 1 and 1440 minutes")
 	}
-
+	if len(input.AttendeeIDs) == 0 {
+		return errors.New("at least one attendee is required")
+	}
 	return nil
 }
 
-// Helper function to check if UUID exists in slice
-func containsUUID(slice []uuid.UUID, id uuid.UUID) bool {
-	for _, item := range slice {
-		if item == id {
-			return true
-		}
-	}
-	return false
+func (s *MeetingService) ListMeetings(ctx context.Context, userID uuid.UUID, from, to time.Time, limit, offset int) ([]models.Meeting, error) {
+	return s.meetingRepo.ListMeetings(ctx, userID, from, to, limit, offset)
+}
+
+func (s *MeetingService) GetMeetingByID(ctx context.Context, meetingID uuid.UUID) (*models.MeetingWithAttendees, error) {
+	return s.meetingRepo.GetMeetingByID(ctx, meetingID)
 }

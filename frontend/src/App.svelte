@@ -5,20 +5,19 @@
   import { tasks } from "./stores/taskStore";
   import ProjectList from "./components/ProjectList.svelte";
   import TaskList from "./components/TaskList.svelte";
-  import Dashboard from "./components/Dashboard.svelte";
   import RegisterForm from "./components/RegisterForm.svelte";
   import LoginForm from "./components/LoginForm.svelte";
   import ForgotPasswordForm from "./components/ForgotPasswordForm.svelte";
   import ResetPasswordForm from "./components/ResetPasswordForm.svelte";
   import UserManagement from "./components/UserManagement.svelte";
   import MobileNav from "./components/MobileNav.svelte";
+  import Dashboard from "./components/Dashboard.svelte";
 
   let selectedProject = $state(null);
   let currentRoute = $state("login");
   let resetToken = $state("");
   let showUserManagement = $state(false);
   let showMobileMenu = $state(false);
-  let showDashboard = $state(false);
 
   onMount(async () => {
     handleRoute();
@@ -26,7 +25,9 @@
 
     await authStore.checkAuth();
     if ($authStore.isAuthenticated) {
-      currentRoute = "app";
+      if (window.location.hash === "" || window.location.hash === "#/") {
+        window.location.hash = "#/dashboard";
+      }
       await projects.load();
     }
   });
@@ -45,14 +46,18 @@
     } else if (hash === "/login") {
       currentRoute = "login";
     } else if (hash === "/dashboard") {
-      showDashboard = true;
-      currentRoute = "app";
+      currentRoute = "dashboard";
+      showUserManagement = false;
     } else if (hash === "/users") {
       showUserManagement = true;
       currentRoute = "app";
     } else {
       showUserManagement = false;
-      showDashboard = false;
+      if (hash === "") {
+        currentRoute = "dashboard";
+      } else {
+        currentRoute = "app";
+      }
     }
   }
 
@@ -217,35 +222,32 @@
           </button>
         </div>
 
-        {#if $authStore.user?.role === "admin"}
-          <div class="mt-2 space-y-1">
+        <div class="mt-2 space-y-1">
+          <button
+            onclick={() => {
+              showUserManagement = false;
+              window.location.hash = "#/dashboard";
+            }}
+            class="w-full text-right px-3 py-2 text-sm rounded {currentRoute === 'dashboard'
+              ? 'bg-blue-50 text-blue-700'
+              : 'text-slate-700 hover:bg-slate-100'}"
+          >
+            داشبورد
+          </button>
+          <button
+            onclick={() => {
+              showUserManagement = false;
+              window.location.hash = "#/app";
+            }}
+            class="w-full text-right px-3 py-2 text-sm rounded {currentRoute === 'app' && !showUserManagement
+              ? 'bg-blue-50 text-blue-700'
+              : 'text-slate-700 hover:bg-slate-100'}"
+          >
+            پروژه‌ها
+          </button>
+          {#if $authStore.user?.role === "admin"}
             <button
               onclick={() => {
-                showDashboard = true;
-                showUserManagement = false;
-                window.location.hash = "#/dashboard";
-              }}
-              class="w-full text-right px-3 py-2 text-sm rounded {showDashboard
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-slate-700 hover:bg-slate-100'}"
-            >
-              داشبورد
-            </button>
-            <button
-              onclick={() => {
-                showDashboard = false;
-                showUserManagement = false;
-                window.location.hash = "";
-              }}
-              class="w-full text-right px-3 py-2 text-sm rounded {!showUserManagement && !showDashboard
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-slate-700 hover:bg-slate-100'}"
-            >
-              پروژه‌ها
-            </button>
-            <button
-              onclick={() => {
-                showDashboard = false;
                 showUserManagement = true;
                 window.location.hash = "#/users";
               }}
@@ -255,36 +257,11 @@
             >
               مدیریت کاربران
             </button>
-          </div>
-        {:else}
-          <div class="mt-2 space-y-1">
-            <button
-              onclick={() => {
-                showDashboard = true;
-                window.location.hash = "#/dashboard";
-              }}
-              class="w-full text-right px-3 py-2 text-sm rounded {showDashboard
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-slate-700 hover:bg-slate-100'}"
-            >
-              داشبورد
-            </button>
-            <button
-              onclick={() => {
-                showDashboard = false;
-                window.location.hash = "";
-              }}
-              class="w-full text-right px-3 py-2 text-sm rounded {!showDashboard
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-slate-700 hover:bg-slate-100'}"
-            >
-              پروژه‌ها
-            </button>
-          </div>
-        {/if}
+          {/if}
+        </div>
       </div>
 
-      {#if !showUserManagement}
+      {#if currentRoute === "app" && !showUserManagement}
         <div class="flex-1 overflow-y-auto">
           <ProjectList bind:selectedProject on:select={handleProjectSelect} />
         </div>
@@ -293,7 +270,7 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto">
-      {#if showDashboard}
+      {#if currentRoute === "dashboard"}
         <Dashboard />
       {:else if showUserManagement}
         <UserManagement />

@@ -61,6 +61,37 @@ export function dateToJalaliString(date) {
 }
 
 /**
+ * Format a date into a Jalali string with various formats
+ * @param {Date|string} date - Date object or ISO string
+ * @param {string} formatType - 'full', 'short', 'time', or 'relative'
+ * @returns {string} Formatted Jalali date string
+ */
+export function formatJalaliDate(date, formatType = 'full') {
+  if (!date) return '';
+  const m = moment(date);
+  if (!m.isValid()) return '';
+
+  m.locale('fa');
+
+  switch (formatType) {
+    case 'full':
+      return m.format('jYYYY/jMM/jDD');
+    case 'short':
+      return m.format('jMM/jDD');
+    case 'time':
+      return m.format('HH:mm');
+    case 'relative':
+      const now = moment();
+      if (m.isSame(now, 'day')) return 'امروز';
+      if (m.isSame(now.clone().add(1, 'day'), 'day')) return 'فردا';
+      if (m.isSame(now.clone().subtract(1, 'day'), 'day')) return 'دیروز';
+      return m.format('jDD jMMMM');
+    default:
+      return m.format('jYYYY/jMM/jDD');
+  }
+}
+
+/**
  * Normalize a date to start of day (00:00:00) for accurate range comparison
  * @param {Date} date - JavaScript Date object
  * @returns {Date} Date at start of day (midnight)

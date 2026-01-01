@@ -73,7 +73,10 @@ export const api = {
   meetings: {
     getNext: () => apiCall('/meetings/next'),
     create: (data) => apiCall('/meetings', { method: 'POST', body: JSON.stringify(data) }),
-    getAll: () => apiCall('/meetings'),
-    getById: (id) => apiCall(`/meetings/${id}`),
+    list: (params = {}) => {
+      const query = new URLSearchParams(params).toString();
+      return apiCall(`/meetings?${query}`);
+    },
+    get: (id) => apiCall(`/meetings/${id}`),
   },
 };

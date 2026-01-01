@@ -77,20 +77,20 @@ func SetupRoutes(
 	comments.Put("/:id", commentHandler.UpdateComment)
 	comments.Delete("/:id", commentHandler.DeleteComment)
 
-	// Dashboard route
-	api.Get("/dashboard", middleware.RequireAuth, dashboardHandler.GetDashboard)
-
-	// Meeting routes
-	meetings := api.Group("/meetings", middleware.RequireAuth)
-	meetings.Get("/next", meetingHandler.GetNextMeeting)
-	meetings.Post("/", meetingHandler.CreateMeeting)
-	meetings.Get("/", meetingHandler.ListMeetings)
-	meetings.Get("/:id", meetingHandler.GetMeeting)
-
 	// Admin user management routes (admin only)
 	users := api.Group("/users", middleware.RequireAuth, middleware.RequireRole("admin"))
 	users.Get("/", userHandler.GetUsers)
 	users.Get("/:id", userHandler.GetUserByID)
 	users.Put("/:id/role", userHandler.UpdateUserRole)
 	users.Put("/:id/activate", userHandler.UpdateUserActivation)
+
+	// Dashboard route
+	api.Get("/dashboard", middleware.RequireAuth, dashboardHandler.GetDashboard)
+
+	// Meeting routes
+	meetings := api.Group("/meetings", middleware.RequireAuth)
+	meetings.Get("/", meetingHandler.ListMeetings)
+	meetings.Post("/", meetingHandler.CreateMeeting)
+	meetings.Get("/next", meetingHandler.GetNextMeeting)
+	meetings.Get("/:id", meetingHandler.GetMeeting)
 }

@@ -16,6 +16,7 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
-    "jalali-moment": "^3.3.11"
+    "jalali-moment": "^3.3.11",
+    "lucide-svelte": "^0.562.0"
   }
 }

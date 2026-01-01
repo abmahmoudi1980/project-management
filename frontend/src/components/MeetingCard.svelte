@@ -1,67 +1,43 @@
 <script>
-	import Avatar from './Avatar.svelte';
-	import { dateToJalaliString } from '../lib/dateUtils';
-
-	let { meeting } = $props();
-
-	if (!meeting) {
-		// Component is hidden when meeting is null
-	}
-
-	const visibleAttendees = $derived(meeting?.attendees?.slice(0, 3) || []);
-	const remainingAttendees = $derived(
-		meeting ? Math.max(0, (meeting.total_attendees || 0) - visibleAttendees.length) : 0
-	);
-
-	function formatMeetingTime(dateString) {
-		const date = new Date(dateString);
-		return dateToJalaliString(date) + ' ' + date.toLocaleTimeString('en-US', {
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
+  import Avatar from './Avatar.svelte';
+  import { formatJalaliDate } from '../lib/utils';
+  
+  let { meeting } = $props();
 </script>
 
 {#if meeting}
-	<div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-2xl text-white shadow-lg">
-		<h3 class="font-semibold text-lg mb-1">{meeting.title}</h3>
+<div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-xl shadow-lg text-white">
+  <div class="flex justify-between items-start mb-6">
+    <div>
+      <h3 class="text-lg font-bold mb-1">جلسه بعدی</h3>
+      <p class="text-indigo-100 text-sm">{formatJalaliDate(meeting.meeting_date, 'relative')} ساعت {formatJalaliDate(meeting.meeting_date, 'time')}</p>
+    </div>
+    <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    </div>
+  </div>
 
-		{#if meeting.description}
-			<p class="text-indigo-100 text-sm mb-4">{meeting.description}</p>
-		{/if}
+  <h4 class="text-xl font-bold mb-2">{meeting.title}</h4>
+  <p class="text-indigo-100 text-sm mb-6 line-clamp-2">{meeting.description || 'بدون توضیحات'}</p>
 
-		<div class="flex items-center gap-2 mb-4 text-indigo-100">
-			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-				/>
-			</svg>
-			<span class="text-sm">{formatMeetingTime(meeting.meeting_date)}</span>
-			<span class="text-sm">({meeting.duration_minutes} min)</span>
-		</div>
-
-		<div class="flex items-center justify-between">
-			<div class="flex -space-x-2">
-				{#each visibleAttendees as attendee}
-					<div class="relative z-0">
-						<Avatar user={attendee} size="sm" />
-					</div>
-				{/each}
-				{#if remainingAttendees > 0}
-					<div class="w-7 h-7 rounded-full bg-indigo-500 bg-opacity-75 flex items-center justify-center text-xs font-bold text-white">
-						+{remainingAttendees}
-					</div>
-				{/if}
-			</div>
-
-			<button
-				class="text-xs bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-1 rounded-full transition-all"
-			>
-				Join
-			</button>
-		</div>
-	</div>
+  <div class="flex items-center justify-between">
+    <div class="flex -space-x-2">
+      {#each meeting.attendees || [] as attendee}
+        <div class="border-2 border-indigo-600 rounded-full">
+          <Avatar user={attendee} size="sm" />
+        </div>
+      {/each}
+      {#if meeting.total_attendees > 3}
+        <div class="w-8 h-8 rounded-full bg-white/20 border-2 border-indigo-600 flex items-center justify-center text-[10px] font-medium backdrop-blur-sm">
+          +{meeting.total_attendees - 3}
+        </div>
+      {/if}
+    </div>
+    <button class="bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-50 transition-colors">
+      ورود به جلسه
+    </button>
+  </div>
+</div>
 {/if}

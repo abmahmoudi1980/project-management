@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"project-management/models"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,151 +17,147 @@ func NewDashboardRepository(db *pgxpool.Pool) *DashboardRepository {
 	return &DashboardRepository{db: db}
 }
 
-// GetStatistics retrieves dashboard statistics
-func (r *DashboardRepository) GetStatistics(ctx context.Context, userID uuid.UUID, userRole string) (*models.DashboardStatistics, error) {
-	stats := &models.DashboardStatistics{}
+func (r *DashboardRepository) GetStatistics(ctx context.Context, userID uuid.UUID, userRole string) (models.DashboardStatistics, error) {
+	var stats models.DashboardStatistics
 
-	// Get active projects count (current and 7 days ago)
-	var currentProjects, previousProjects int
-	err := r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM projects 
-		 WHERE status IN ('active', 'in_progress') 
-		 AND updated_at >= CURRENT_DATE`,
-	).Scan(&currentProjects)
+	// 1. Active Projects
+	// Current
+	err := r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM projects 
+		WHERE status IN ('active', 'In Progress', 'On Track')
+		AND (user_id = $1 OR created_by = $1 OR is_public = true OR $2 = 'admin')
+	`, userID, userRole).Scan(&stats.ActiveProjects.Current)
 	if err != nil {
-		return nil, err
+		return stats, err
 	}
 
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM projects 
-		 WHERE status IN ('active', 'in_progress') 
-		 AND updated_at >= CURRENT_DATE - INTERVAL '7 days'
-		 AND updated_at < CURRENT_DATE`,
-	).Scan(&previousProjects)
+	// Previous (7 days ago)
+	err = r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM projects 
+		WHERE status IN ('active', 'In Progress', 'On Track')
+		AND (user_id = $1 OR created_by = $1 OR is_public = true OR $2 = 'admin')
+		AND (updated_at <= NOW() - INTERVAL '7 days' OR created_at <= NOW() - INTERVAL '7 days')
+	`, userID, userRole).Scan(&stats.ActiveProjects.Previous)
 	if err != nil {
-		return nil, err
+		return stats, err
 	}
+	stats.ActiveProjects.Change = stats.ActiveProjects.Current - stats.ActiveProjects.Previous
 
-	stats.ActiveProjects = models.StatValue{
-		Current:  currentProjects,
-		Previous: previousProjects,
-		Change:   currentProjects - previousProjects,
-	}
-
-	// Get pending tasks count (current and 7 days ago)
-	var currentTasks, previousTasks int
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM tasks 
-		 WHERE completed = false 
-		 AND created_at >= CURRENT_DATE`,
-	).Scan(&currentTasks)
+	// 2. Pending Tasks
+	// Current
+	err = r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM tasks 
+		WHERE completed = false
+		AND (assignee_id = $1 OR created_by = $1 OR $2 = 'admin')
+	`, userID, userRole).Scan(&stats.PendingTasks.Current)
 	if err != nil {
-		return nil, err
+		return stats, err
 	}
 
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM tasks 
-		 WHERE completed = false 
-		 AND created_at >= CURRENT_DATE - INTERVAL '7 days'
-		 AND created_at < CURRENT_DATE`,
-	).Scan(&previousTasks)
+	// Previous (7 days ago)
+	err = r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM tasks 
+		WHERE completed = false
+		AND (assignee_id = $1 OR created_by = $1 OR $2 = 'admin')
+		AND (updated_at <= NOW() - INTERVAL '7 days' OR created_at <= NOW() - INTERVAL '7 days')
+	`, userID, userRole).Scan(&stats.PendingTasks.Previous)
 	if err != nil {
-		return nil, err
+		return stats, err
+	}
+	stats.PendingTasks.Change = stats.PendingTasks.Current - stats.PendingTasks.Previous
+
+	// 3. Team Members (Admin only)
+	if userRole == "admin" {
+		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM users WHERE is_active = true`).Scan(&stats.TeamMembers.Current)
+		if err != nil {
+			return stats, err
+		}
+		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM users WHERE is_active = true AND created_at <= NOW() - INTERVAL '7 days'`).Scan(&stats.TeamMembers.Previous)
+		if err != nil {
+			return stats, err
+		}
+		stats.TeamMembers.Change = stats.TeamMembers.Current - stats.TeamMembers.Previous
 	}
 
-	stats.PendingTasks = models.StatValue{
-		Current:  currentTasks,
-		Previous: previousTasks,
-		Change:   currentTasks - previousTasks,
-	}
-
-	// Get active team members count
-	var currentMembers, previousMembers int
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM users 
-		 WHERE is_active = true 
-		 AND created_at >= CURRENT_DATE`,
-	).Scan(&currentMembers)
+	// 4. Upcoming Deadlines (next 7 days)
+	err = r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM (
+			SELECT id FROM tasks 
+			WHERE completed = false AND due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
+			AND (assignee_id = $1 OR created_by = $1 OR $2 = 'admin')
+			UNION ALL
+			SELECT id FROM projects 
+			WHERE status != 'Completed' AND due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
+			AND (user_id = $1 OR created_by = $1 OR is_public = true OR $2 = 'admin')
+		) AS deadlines
+	`, userID, userRole).Scan(&stats.UpcomingDeadlines.Current)
 	if err != nil {
-		return nil, err
+		return stats, err
 	}
 
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM users 
-		 WHERE is_active = true 
-		 AND created_at >= CURRENT_DATE - INTERVAL '7 days'
-		 AND created_at < CURRENT_DATE`,
-	).Scan(&previousMembers)
+	err = r.db.QueryRow(ctx, `
+		SELECT COUNT(*) FROM (
+			SELECT id FROM tasks 
+			WHERE completed = false AND due_date BETWEEN CURRENT_DATE - INTERVAL '7 days' AND CURRENT_DATE
+			AND (assignee_id = $1 OR created_by = $1 OR $2 = 'admin')
+			UNION ALL
+			SELECT id FROM projects 
+			WHERE status != 'Completed' AND due_date BETWEEN CURRENT_DATE - INTERVAL '7 days' AND CURRENT_DATE
+			AND (user_id = $1 OR created_by = $1 OR is_public = true OR $2 = 'admin')
+		) AS deadlines
+	`, userID, userRole).Scan(&stats.UpcomingDeadlines.Previous)
 	if err != nil {
-		return nil, err
+		return stats, err
 	}
-
-	stats.TeamMembers = models.StatValue{
-		Current:  currentMembers,
-		Previous: previousMembers,
-		Change:   currentMembers - previousMembers,
-	}
-
-	// Get upcoming deadlines (next 7 days)
-	var currentDeadlines, previousDeadlines int
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM tasks 
-		 WHERE due_date IS NOT NULL
-		 AND due_date >= CURRENT_DATE 
-		 AND due_date <= CURRENT_DATE + INTERVAL '7 days'`,
-	).Scan(&currentDeadlines)
-	if err != nil {
-		return nil, err
-	}
-
-	err = r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM tasks 
-		 WHERE due_date IS NOT NULL
-		 AND due_date >= CURRENT_DATE - INTERVAL '7 days'
-		 AND due_date < CURRENT_DATE`,
-	).Scan(&previousDeadlines)
-	if err != nil {
-		return nil, err
-	}
-
-	stats.UpcomingDeadlines = models.StatValue{
-		Current:  currentDeadlines,
-		Previous: previousDeadlines,
-		Change:   currentDeadlines - previousDeadlines,
-	}
+	stats.UpcomingDeadlines.Change = stats.UpcomingDeadlines.Current - stats.UpcomingDeadlines.Previous
 
 	return stats, nil
 }
 
-// GetRecentProjects retrieves the most recently updated projects
 func (r *DashboardRepository) GetRecentProjects(ctx context.Context, userID uuid.UUID, userRole string, limit int) ([]models.ProjectCard, error) {
-	rows, err := r.db.Query(ctx,
-		`SELECT id, title, description, updated_at
-		 FROM projects
-		 WHERE status IN ('active', 'in_progress')
-		 ORDER BY updated_at DESC
-		 LIMIT $1`,
-		limit)
+	rows, err := r.db.Query(ctx, `
+		SELECT 
+			p.id, p.title, p.status, p.updated_at,
+			COALESCE(p.due_date, (p.created_at + INTERVAL '30 days')::date) as due_date,
+			COUNT(t.id) as total_tasks,
+			COUNT(CASE WHEN t.completed = true THEN 1 END) as completed_tasks
+		FROM projects p
+		LEFT JOIN tasks t ON t.project_id = p.id
+		WHERE (p.user_id = $1 OR p.created_by = $1 OR p.is_public = true OR $2 = 'admin')
+		AND p.status IN ('active', 'Planning', 'In Progress', 'On Track', 'Review')
+		GROUP BY p.id, p.title, p.status, p.updated_at, p.due_date, p.created_at
+		ORDER BY p.updated_at DESC
+		LIMIT $3
+	`, userID, userRole, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var projects []models.ProjectCard
+	projects := []models.ProjectCard{}
 	for rows.Next() {
 		var p models.ProjectCard
-		var desc *string
-		if err := rows.Scan(&p.ID, &p.Name, &desc, &p.UpdatedAt); err != nil {
+		var totalTasks, completedTasks int
+		var updatedAt time.Time
+		var dueDate *time.Time
+		if err := rows.Scan(&p.ID, &p.Name, &p.Status, &updatedAt, &dueDate, &totalTasks, &completedTasks); err != nil {
 			return nil, err
 		}
-
-		p.Client = p.Name // Default to project name
-		if desc != nil && *desc != "" {
-			p.Client = *desc
+		p.Client = p.Name // Default to project name as per spec
+		if dueDate != nil {
+			p.DueDate = *dueDate
 		}
-		p.Status = "In Progress"
-		p.Progress = 0
-		p.TeamMembers = make([]models.UserInfo, 0)
+		if totalTasks > 0 {
+			p.Progress = (completedTasks * 100) / totalTasks
+		} else {
+			p.Progress = 0
+		}
+
+		// Get team members (max 3)
+		p.TeamMembers, p.TotalMembers, err = r.getProjectTeamMembers(ctx, p.ID)
+		if err != nil {
+			return nil, err
+		}
 
 		projects = append(projects, p)
 	}
@@ -168,50 +165,97 @@ func (r *DashboardRepository) GetRecentProjects(ctx context.Context, userID uuid
 	return projects, nil
 }
 
-// GetUserTasks retrieves the user's top pending tasks
+func (r *DashboardRepository) getProjectTeamMembers(ctx context.Context, projectID uuid.UUID) ([]models.User, int, error) {
+	// Total count
+	var total int
+	err := r.db.QueryRow(ctx, `
+		SELECT COUNT(DISTINCT u.id)
+		FROM users u
+		JOIN tasks t ON t.assignee_id = u.id
+		WHERE t.project_id = $1
+	`, projectID).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Top 3
+	rows, err := r.db.Query(ctx, `
+		SELECT DISTINCT u.id, u.username, u.email, u.role, u.is_active, u.created_at, u.updated_at
+		FROM users u
+		JOIN tasks t ON t.assignee_id = u.id
+		WHERE t.project_id = $1
+		LIMIT 3
+	`, projectID)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var members []models.User
+	for rows.Next() {
+		var u models.User
+		if err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.IsActive, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, 0, err
+		}
+		members = append(members, u)
+	}
+
+	return members, total, nil
+}
+
 func (r *DashboardRepository) GetUserTasks(ctx context.Context, userID uuid.UUID, limit int) ([]models.TaskSummary, error) {
-	rows, err := r.db.Query(ctx,
-		`SELECT t.id, t.title, p.title, t.priority, t.due_date, t.completed, t.created_at
-		 FROM tasks t
-		 JOIN projects p ON t.project_id = p.id
-		 WHERE t.assignee_id = $1 AND t.completed = false
-		 ORDER BY t.priority DESC, t.due_date ASC, t.created_at ASC
-		 LIMIT $2`,
-		userID, limit)
+	rows, err := r.db.Query(ctx, `
+		SELECT t.id, t.title, p.title as project_name, t.project_id, t.priority, COALESCE(t.due_date, (t.created_at + INTERVAL '7 days')::date), t.completed
+		FROM tasks t
+		JOIN projects p ON t.project_id = p.id
+		WHERE (t.assignee_id = $1 OR t.created_by = $1)
+		AND t.completed = false
+		ORDER BY 
+			CASE 
+				WHEN t.priority = 'Critical' THEN 4
+				WHEN t.priority = 'High' THEN 3
+				WHEN t.priority = 'Medium' THEN 2
+				WHEN t.priority = 'Low' THEN 1
+				ELSE 0
+			END DESC,
+			t.due_date ASC NULLS LAST
+		LIMIT $2
+	`, userID, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var tasks []models.TaskSummary
+	tasks := []models.TaskSummary{}
 	for rows.Next() {
 		var t models.TaskSummary
+		var priorityStr string
 		var completed bool
-		if err := rows.Scan(&t.ID, &t.Title, &t.ProjectName, &t.Priority, &t.DueDate, &completed, &t.CreatedAt); err != nil {
+		var dueDate *time.Time
+		if err := rows.Scan(&t.ID, &t.Title, &t.ProjectName, &t.ProjectID, &priorityStr, &dueDate, &completed); err != nil {
 			return nil, err
 		}
-
-		// Map priority to label
-		switch t.Priority {
-		case 4:
-			t.PriorityLabel = "Critical"
-		case 3:
-			t.PriorityLabel = "High"
-		case 2:
-			t.PriorityLabel = "Medium"
-		case 1:
-			t.PriorityLabel = "Low"
-		default:
-			t.PriorityLabel = "Medium"
+		if dueDate != nil {
+			t.DueDate = *dueDate
 		}
-
-		t.Status = "to_do"
+		t.PriorityLabel = priorityStr
+		switch priorityStr {
+		case "Critical":
+			t.Priority = 4
+		case "High":
+			t.Priority = 3
+		case "Medium":
+			t.Priority = 2
+		case "Low":
+			t.Priority = 1
+		default:
+			t.Priority = 0
+		}
 		if completed {
 			t.Status = "done"
+		} else {
+			t.Status = "todo"
 		}
-
-		t.ProjectID = uuid.Nil // Will be populated properly in service
-
 		tasks = append(tasks, t)
 	}
 

@@ -16,26 +16,32 @@ type Project struct {
 	IsPublic    bool       `json:"is_public"`
 	UserID      *uuid.UUID `json:"user_id,omitempty"`
 	CreatedBy   *uuid.UUID `json:"created_by,omitempty"`
+	StartDate   *time.Time `json:"start_date,omitempty"`
+	DueDate     *time.Time `json:"due_date,omitempty"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type CreateProjectRequest struct {
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Status      string  `json:"status"`
-	Identifier  string  `json:"identifier"`
-	Homepage    *string `json:"homepage,omitempty"`
-	IsPublic    bool    `json:"is_public"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Status      string     `json:"status"`
+	Identifier  string     `json:"identifier"`
+	Homepage    *string    `json:"homepage,omitempty"`
+	IsPublic    bool       `json:"is_public"`
+	StartDate   *time.Time `json:"start_date,omitempty"`
+	DueDate     *time.Time `json:"due_date,omitempty"`
 }
 
 type UpdateProjectRequest struct {
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Status      string  `json:"status"`
-	Identifier  string  `json:"identifier"`
-	Homepage    *string `json:"homepage,omitempty"`
-	IsPublic    bool    `json:"is_public"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Status      string     `json:"status"`
+	Identifier  string     `json:"identifier"`
+	Homepage    *string    `json:"homepage,omitempty"`
+	IsPublic    bool       `json:"is_public"`
+	StartDate   *time.Time `json:"start_date,omitempty"`
+	DueDate     *time.Time `json:"due_date,omitempty"`
 }
 
 var (

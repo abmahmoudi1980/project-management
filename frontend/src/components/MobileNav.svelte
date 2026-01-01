@@ -93,6 +93,21 @@
 
       <!-- Navigation -->
       <div class="flex-1 overflow-y-auto">
+        <div class="px-4 py-3 border-b border-slate-200">
+          <button
+            onclick={() => {
+              window.location.hash = "#/dashboard";
+              closeDrawer();
+            }}
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            <span class="text-sm font-medium">داشبورد</span>
+          </button>
+        </div>
+
         <!-- Admin Menu -->
         {#if isAdmin}
           <div class="px-4 py-3 border-b border-slate-200">
