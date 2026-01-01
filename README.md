@@ -68,7 +68,7 @@ psql -U postgres -d project_management -f schema.sql
 
 3. Run the authentication migration:
 ```bash
-cd backend && go run run_migration.go
+cd backend && go run ./cmd/migrate
 ```
 
 ### Authentication Setup
@@ -110,6 +110,10 @@ go mod tidy
 ```bash
 # Default connection: postgres://postgres:postgres@localhost:5432/project_management?sslmode=disable
 export DATABASE_URL="postgres://user:password@localhost:5432/project_management?sslmode=disable"
+
+# Optional: log SQL queries to backend terminal (very verbose)
+export DB_LOG_SQL=true
+
 ```
 
 4. Run the server:

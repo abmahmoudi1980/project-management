@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -40,6 +41,13 @@ func main() {
 
 	// Security headers
 	app.Use(helmet.New())
+
+	// Request logging (helps verify frontend API calls)
+	app.Use(logger.New(logger.Config{
+		Format:     "${time} | ${status} | ${latency} | ${ip} | ${method} ${path}\n",
+		TimeFormat: "2006-01-02 15:04:05",
+		TimeZone:   "Local",
+	}))
 
 	// Initialize repositories
 	projectRepo := repositories.NewProjectRepository(config.DB)

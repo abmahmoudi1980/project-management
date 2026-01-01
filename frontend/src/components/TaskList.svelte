@@ -9,7 +9,8 @@
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
   import Modal from "./Modal.svelte";
-  import TaskSearch from "./TaskSearch.svelte";
+  import SearchBox from "./SearchBox.svelte";
+  import AdvancedTaskSearch from "./AdvancedTaskSearch.svelte";
   import { evaluateAllFilters } from "../lib/filterUtils.js";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
@@ -28,8 +29,8 @@
   let previousProjectId = $state(null);
   
   // Search and filter state
-  let filters = $state({
-    text: '',
+  let searchText = $state('');
+  let dateFilters = $state({
     start_date_from: null,
     start_date_to: null,
     due_date_from: null,
@@ -111,7 +112,15 @@
   // Derived filtered task list based on active filters
   let filteredTasks = $derived.by(() => {
     return ($tasks.tasks || []).filter(task => {
-      return evaluateAllFilters(task, filters);
+      // Combine search text with date filters for evaluation
+      const combinedFilters = { 
+        text: searchText,
+        start_date_from: dateFilters.start_date_from,
+        start_date_to: dateFilters.start_date_to,
+        due_date_from: dateFilters.due_date_from,
+        due_date_to: dateFilters.due_date_to
+      };
+      return evaluateAllFilters(task, combinedFilters);
     });
   });
 
@@ -164,8 +173,11 @@
 </script>
 
 <div class="space-y-6">
-  <!-- Search and Filter Panel -->
-  <TaskSearch bind:filters />
+  <!-- Quick Search Box -->
+  <SearchBox bind:searchText />
+
+  <!-- Advanced Search Button & Panel -->
+  <AdvancedTaskSearch bind:filters={dateFilters} />
 
   <!-- Toolbar -->
   <div class="flex items-center justify-between gap-3">

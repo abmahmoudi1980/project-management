@@ -57,7 +57,7 @@ Each user story is independently testable and can be delivered as an increment.
 - [X] T012 In migration: ALTER TABLE projects ADD COLUMN created_by UUID REFERENCES users(id)
 - [X] T013 In migration: ALTER TABLE tasks ADD COLUMN created_by UUID REFERENCES users(id)
 - [X] T014 In migration: Insert seed admin user (email: admin@example.com, password: Admin123!, role: admin)
-- [X] T015 Run migration: `cd backend && go run run_migration.go` and verify tables created
+- [X] T015 Run migration: `cd backend && go run ./cmd/migrate` and verify tables created
 
 ### Core Models
 

@@ -59,7 +59,7 @@ backend/
 ```bash
 cd backend
 go run main.go              # Start API (port 3000)
-go run run_migration.go     # Run DB migrations
+go run ./cmd/migrate         # Run DB migrations
 go build                   # Build binary
 go mod tidy                # Clean dependencies
 ```

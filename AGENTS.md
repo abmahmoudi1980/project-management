@@ -60,7 +60,7 @@ project-management/
 
 ### Database
 - **Migration**: SQL files in `backend/migration/`
-- **Runner**: `go run run_migration.go`
+- **Runner**: `go run ./cmd/migrate`
 - **Naming**: snake_case columns, PascalCase structs
 
 ## ANTI-PATTERNS
@@ -77,7 +77,7 @@ project-management/
 # Backend
 cd backend
 go run main.go              # Start server (port 3000)
-go run run_migration.go     # Run migrations
+go run ./cmd/migrate         # Run migrations
 go build                   # Build binary
 
 # Frontend

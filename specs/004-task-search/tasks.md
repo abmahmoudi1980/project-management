@@ -218,6 +218,8 @@
 
 - [ ] T031 Update TaskList.svelte imports and structure:
   - Remove test/console.log statements
+
+- [X] T032 Fix AdvancedTaskSearch date filter apply (JalaliDatePicker emits Gregorian, ensure handlers parse and apply filters) (`frontend/src/components/AdvancedTaskSearch.svelte`)
   - Clean up any unused variables
   - Ensure consistent code formatting
 
