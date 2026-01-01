@@ -1,12 +1,12 @@
 # Project Knowledge Base
 
-**Generated:** 2025-12-31
-**Commit:** 39fed23
-**Branch:** master
+**Generated:** 2026-01-01
+**Commit:** dashboard-feature
+**Branch:** 005-dashboard
 
 ## OVERVIEW
 
-Go + Svelte 5 project management system with PostgreSQL backend. Layered Go architecture (handlers→services→repositories), Svelte 5 with runes, Tailwind CSS.
+Go + Svelte 5 project management system with PostgreSQL backend. Layered Go architecture (handlers→services→repositories), Svelte 5 with runes, Tailwind CSS. Dashboard provides real-time project statistics, task management, and meeting tracking.
 
 ## STRUCTURE
 
@@ -91,6 +91,8 @@ npm run build               # Production build
 
 - Backend is separate Go module (`backend/go.mod`), import paths reflect this
 - No test files currently (manual testing only)
-- Svelte components: 13 total (updated from 8 in previous docs)
+- Svelte components: 13+ total (includes dashboard components)
 - Persian language support via `jalali-moment` library
 - Default admin: `admin@example.com` / `Admin123!` (change after first login)
+- **New in 005-dashboard**: Meetings entity, dashboard aggregations, 30-second auto-refresh pattern
+- **Dashboard tech**: Single `/api/dashboard` endpoint for efficiency, client-side Jalali date formatting, generated avatars with initials

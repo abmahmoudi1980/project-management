@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projex - Project Manager Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <div class="flex min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="folder-kanban" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-xl text-slate-800">Projex</span>
+            </div>
+
+            <nav class="flex-1 px-4 py-4 space-y-1">
+                <!-- Active Item -->
+                <a href="#" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-indigo-50 text-indigo-600">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-indigo-600"></i>
+                    Dashboard
+                </a>
+                
+                <!-- Inactive Items -->
+                <a href="#" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="folder-kanban" class="w-5 h-5 text-slate-400"></i>
+                    Projects
+                </a>
+                <a href="#" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="check-square" class="w-5 h-5 text-slate-400"></i>
+                    My Tasks
+                </a>
+                <a href="#" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
+                    Team
+                </a>
+                <a href="#" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i>
+                    Settings
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-100">
+                <div class="bg-slate-50 rounded-xl p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                            JD
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-700">Jane Doe</p>
+                            <p class="text-xs text-slate-500">Project Lead</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-slate-200 sticky top-0 z-20 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4 flex-1">
+                    <h2 class="text-xl font-bold text-slate-800 hidden md:block">Overview</h2>
+                    <div class="relative w-full max-w-md">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                        <input 
+                            type="text" 
+                            placeholder="Search projects, tasks, or team..." 
+                            class="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-lg text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all"
+                        >
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <button class="hidden sm:flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-indigo-200">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        New Project
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+                <div class="max-w-7xl mx-auto space-y-8">
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Stat 1 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-xl bg-blue-50">
+                                    <i data-lucide="folder-kanban" class="w-6 h-6 text-blue-600"></i>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600">+2</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">12</h3>
+                                <p class="text-sm text-slate-500 font-medium">Active Projects</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stat 2 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-xl bg-orange-50">
+                                    <i data-lucide="check-square" class="w-6 h-6 text-orange-600"></i>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-red-50 text-red-600">-5</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">48</h3>
+                                <p class="text-sm text-slate-500 font-medium">Pending Tasks</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Stat 3 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-xl bg-purple-50">
+                                    <i data-lucide="users" class="w-6 h-6 text-purple-600"></i>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-50 text-green-600">+4</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">24</h3>
+                                <p class="text-sm text-slate-500 font-medium">Team Members</p>
+                            </div>
+                        </div>
+
+                        <!-- Stat 4 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-xl bg-red-50">
+                                    <i data-lucide="calendar" class="w-6 h-6 text-red-600"></i>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-600">This Week</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">7</h3>
+                                <p class="text-sm text-slate-500 font-medium">Upcoming Deadlines</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Projects Section -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-bold text-slate-800">Recent Projects</h3>
+                                <button class="text-sm text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1">
+                                    View All <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- Project Card 1 -->
+                                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors group">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-blue-100 text-blue-700">In Progress</span>
+                                        <button class="text-slate-300 hover:text-slate-600">
+                                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                    <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition-colors">Website Redesign</h3>
+                                    <p class="text-sm text-slate-500 mb-4">Acme Corp</p>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                                            <span>Progress</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div class="flex -space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U1</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U2</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U3</div>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-slate-400 text-xs font-medium">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                            Oct 24, 2023
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Project Card 2 -->
+                                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors group">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-green-100 text-green-700">On Track</span>
+                                        <button class="text-slate-300 hover:text-slate-600">
+                                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                    <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition-colors">Mobile App Alpha</h3>
+                                    <p class="text-sm text-slate-500 mb-4">TechStart</p>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                                            <span>Progress</span>
+                                            <span>30%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div class="flex -space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U4</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U5</div>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-slate-400 text-xs font-medium">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                            Nov 12, 2023
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Project Card 3 -->
+                                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors group">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 text-purple-700">Review</span>
+                                        <button class="text-slate-300 hover:text-slate-600">
+                                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                    <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition-colors">Marketing Campaign</h3>
+                                    <p class="text-sm text-slate-500 mb-4">Global Goods</p>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                                            <span>Progress</span>
+                                            <span>90%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div class="flex -space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U1</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U4</div>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-slate-400 text-xs font-medium">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                            Oct 15, 2023
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Project Card 4 -->
+                                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-100 transition-colors group">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">Planning</span>
+                                        <button class="text-slate-300 hover:text-slate-600">
+                                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                    <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition-colors">Internal Audit</h3>
+                                    <p class="text-sm text-slate-500 mb-4">Internal</p>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                                            <span>Progress</span>
+                                            <span>10%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div class="flex -space-x-2">
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U2</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">U3</div>
+                                            <div class="w-7 h-7 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-500">+1</div>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-slate-400 text-xs font-medium">
+                                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                            Dec 01, 2023
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Tasks & Team -->
+                        <div class="lg:col-span-1 space-y-6">
+                            
+                            <!-- Tasks Section -->
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-bold text-slate-800">Your Tasks</h3>
+                                <button class="p-1 hover:bg-slate-200 rounded text-slate-500">
+                                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-2">
+                                
+                                <!-- Task 1 -->
+                                <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-50 last:border-0">
+                                    <div class="flex items-center gap-4">
+                                        <button class="text-slate-300 hover:text-indigo-600 transition-colors">
+                                            <div class="w-5 h-5 border-2 border-slate-300 rounded-md hover:border-indigo-600"></div>
+                                        </button>
+                                        <div>
+                                            <p class="text-sm font-semibold text-slate-700">Design Homepage Mockups</p>
+                                            <p class="text-xs text-slate-400">Website Redesign</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-700">High</span>
+                                        <span class="text-xs text-slate-500 w-16 text-right">Today</span>
+                                    </div>
+                                </div>
+
+                                <!-- Task 2 -->
+                                <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-50 last:border-0">
+                                    <div class="flex items-center gap-4">
+                                        <button class="text-slate-300 hover:text-indigo-600 transition-colors">
+                                            <div class="w-5 h-5 border-2 border-slate-300 rounded-md hover:border-indigo-600"></div>
+                                        </button>
+                                        <div>
+                                            <p class="text-sm font-semibold text-slate-700">Fix Navigation Bug</p>
+                                            <p class="text-xs text-slate-400">Mobile App Alpha</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700">Critical</span>
+                                        <span class="text-xs text-slate-500 w-16 text-right">Tomorrow</span>
+                                    </div>
+                                </div>
+
+                                <!-- Task 3 -->
+                                <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-50 last:border-0">
+                                    <div class="flex items-center gap-4">
+                                        <button class="text-slate-300 hover:text-indigo-600 transition-colors">
+                                            <div class="w-5 h-5 border-2 border-slate-300 rounded-md hover:border-indigo-600"></div>
+                                        </button>
+                                        <div>
+                                            <p class="text-sm font-semibold text-slate-700">Content Review</p>
+                                            <p class="text-xs text-slate-400">Marketing Campaign</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700">Medium</span>
+                                        <span class="text-xs text-slate-500 w-16 text-right">Oct 15</span>
+                                    </div>
+                                </div>
+
+                                <button class="w-full py-3 text-sm text-slate-500 hover:text-indigo-600 font-medium flex items-center justify-center gap-2 transition-colors border-t border-slate-50 mt-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    Add New Task
+                                </button>
+                            </div>
+
+                            <!-- Team Section -->
+                            <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200">
+                                <h4 class="font-bold text-lg mb-2">Team Meeting</h4>
+                                <p class="text-indigo-100 text-sm mb-6">Weekly sync with the design team.</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex -space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-indigo-400 border-2 border-indigo-600"></div>
+                                        <div class="w-8 h-8 rounded-full bg-purple-400 border-2 border-indigo-600"></div>
+                                        <div class="w-8 h-8 rounded-full bg-pink-400 border-2 border-indigo-600"></div>
+                                    </div>
+                                    <span class="text-sm font-bold bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm">10:00 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Initialize Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
