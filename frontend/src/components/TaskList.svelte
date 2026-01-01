@@ -9,6 +9,8 @@
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
   import Modal from "./Modal.svelte";
+  import TaskSearch from "./TaskSearch.svelte";
+  import { evaluateAllFilters } from "../lib/filterUtils.js";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
@@ -24,6 +26,15 @@
   let sentinelRef = $state(null);
   let intersectionObserver = $state(null);
   let previousProjectId = $state(null);
+  
+  // Search and filter state
+  let filters = $state({
+    text: '',
+    start_date_from: null,
+    start_date_to: null,
+    due_date_from: null,
+    due_date_to: null
+  });
 
   onMount(() => {
     console.log('TaskList mounted, project:', project);
@@ -97,6 +108,16 @@
     return moment(dateString).locale("fa").format("YYYY/MM/DD");
   }
 
+  // Derived filtered task list based on active filters
+  let filteredTasks = $derived.by(() => {
+    return ($tasks.tasks || []).filter(task => {
+      return evaluateAllFilters(task, filters);
+    });
+  });
+
+  // Derived count of filtered results
+  let resultCount = $derived(filteredTasks.length);
+
   function toggleForm() {
     showForm = !showForm;
   }
@@ -143,11 +164,13 @@
 </script>
 
 <div class="space-y-6">
+  <!-- Search and Filter Panel -->
+  <TaskSearch bind:filters />
+
   <!-- Toolbar -->
   <div class="flex items-center justify-between gap-3">
     <div class="text-sm text-slate-500">
-      {$tasks.total}
-      {$tasks.total === 1 ? "وظیفه" : "وظیفه"}
+      نتایج: {resultCount} / {$tasks.total}
     </div>
     <button
       onclick={toggleForm}
@@ -173,10 +196,19 @@
 
   <!-- Task List -->
   <div class="space-y-3">
-    {#each $tasks.tasks || [] as task}
-      <div
-        class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
-      >
+    {#if filteredTasks.length === 0 && $tasks.tasks.length > 0}
+      <div class="text-center py-8">
+        <p class="text-slate-500 mb-4">هیچ وظیفه‌ای یافت نشد</p>
+      </div>
+    {:else if filteredTasks.length === 0 && $tasks.tasks.length === 0}
+      <div class="text-center py-8">
+        <p class="text-slate-400">هیچ وظیفه‌ای وجود ندارد</p>
+      </div>
+    {:else}
+      {#each filteredTasks as task}
+        <div
+          class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
+        >
         <!-- Task Row -->
         <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 p-3 md:p-4">
           <!-- Checkbox -->
@@ -381,7 +413,8 @@
           </div>
         {/if}
       </div>
-    {/each}
+      {/each}
+    {/if}
 
     {#if ($tasks.tasks || []).length === 0 && !$tasks.loadingMore}
       <div class="text-center py-8 md:py-12 px-4">
