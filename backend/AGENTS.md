@@ -5,7 +5,7 @@
 
 ## OVERVIEW
 
-Go 1.21+ API server with Fiber v2, PostgreSQL (pgx), layered architecture.
+Go 1.25+ API server with Fiber v2, PostgreSQL (pgx), layered architecture.
 
 ## STRUCTURE
 
@@ -26,15 +26,15 @@ backend/
 
 ## WHERE TO LOOK
 
-| Task | Location | Notes |
-|------|----------|-------|
-| Add new model | `models/` | Use UUID primary keys, JSON tags |
-| Add repository methods | `repositories/` | Use pgx directly, no ORMs |
-| Add business logic | `services/` | Call repositories, return domain objects |
-| Add HTTP endpoint | `handlers/` | Receive request → call service → respond |
-| Register new route | `routes/routes.go` | Add to existing router |
-| Add middleware | `middleware/` | Fiber middleware functions |
-| Database changes | `migration/` | SQL files with version prefix (XXX_) |
+| Task                   | Location           | Notes                                    |
+| ---------------------- | ------------------ | ---------------------------------------- |
+| Add new model          | `models/`          | Use UUID primary keys, JSON tags         |
+| Add repository methods | `repositories/`    | Use pgx directly, no ORMs                |
+| Add business logic     | `services/`        | Call repositories, return domain objects |
+| Add HTTP endpoint      | `handlers/`        | Receive request → call service → respond |
+| Register new route     | `routes/routes.go` | Add to existing router                   |
+| Add middleware         | `middleware/`      | Fiber middleware functions               |
+| Database changes       | `migration/`       | SQL files with version prefix (XXX\_)    |
 
 ## CONVENTIONS
 
