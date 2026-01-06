@@ -21,17 +21,25 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
 # Final stage
 FROM alpine:latest
 
-# Install ca-certificates for HTTPS
-RUN apk --no-cache add ca-certificates
+# Install runtime deps (ca-certs for HTTPS, wget for HEALTHCHECK)
+RUN apk --no-cache add ca-certificates wget
 
-WORKDIR /root/
+# Create non-root user
+RUN addgroup -S app && adduser -S -G app app
+
+WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/server .
+COPY --from=builder /app/server ./server
 
 # Create .env file location (will be mounted or provided at runtime)
 # Copy migration files if needed for initialization
 COPY migration/ ./migration/
+
+# Upload storage (can be mounted as a named volume)
+RUN mkdir -p /app/uploads && chown -R app:app /app
+
+USER app
 
 # Expose port
 EXPOSE 3000

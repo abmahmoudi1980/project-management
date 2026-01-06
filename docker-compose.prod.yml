@@ -22,6 +22,9 @@ services:
       - ./backend/migration/001_enhance_entities.sql:/docker-entrypoint-initdb.d/02-enhance_entities.sql
       - ./backend/migration/002_add_user_authentication.sql:/docker-entrypoint-initdb.d/03-user_authentication.sql
       - ./backend/migration/003_add_comments.sql:/docker-entrypoint-initdb.d/04-comments.sql
+      - ./backend/migration/005_add_dashboard_meetings.sql:/docker-entrypoint-initdb.d/05-dashboard_meetings.sql
+      - ./backend/migration/006_add_task_attachments.sql:/docker-entrypoint-initdb.d/06-task_attachments.sql
+      - ./backend/migration/007_fix_tasks_priority_constraint.sql:/docker-entrypoint-initdb.d/07-fix_tasks_priority.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 10s
@@ -30,14 +33,6 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1G
-        reservations:
-          cpus: '1'
-          memory: 512M
 
   # Go Backend API
   backend:
@@ -51,6 +46,11 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       SERVER_PORT: 3000
       TZ: 'Asia/Tehran'
+      UPLOAD_PATH: ${UPLOAD_PATH:-/app/uploads}
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      MAX_TOTAL_SIZE: ${MAX_TOTAL_SIZE:-104857600}
+    volumes:
+      - backend_uploads:${UPLOAD_PATH:-/app/uploads}
     expose:
       - "3000"  # Only expose within network
     depends_on:
@@ -65,16 +65,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
     security_opt:
       - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
 
   # Svelte Frontend with Nginx
   frontend:
@@ -84,7 +79,8 @@ services:
     container_name: project-management-web-prod
     ports:
       - "80:80"
-      - "443:443"
+      # If terminating TLS in this container, map 443 and mount certs.
+      # - "443:443"
     depends_on:
       - backend
     volumes:
@@ -101,16 +97,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 256M
-        reservations:
-          cpus: '0.5'
-          memory: 128M
     security_opt:
       - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
 
   # Optional: Backup service for PostgreSQL
   # backup:
@@ -138,4 +130,6 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local
+  backend_uploads:
     driver: local
