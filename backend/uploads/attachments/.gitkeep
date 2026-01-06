@@ -1,0 +1,2 @@
+# This file ensures the attachments directory is tracked in git
+# Files uploaded here will be organized in year/month/day subdirectories

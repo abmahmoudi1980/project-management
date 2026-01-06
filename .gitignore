@@ -59,3 +59,10 @@ backend/backend
 backend/main
 dist/
 build/
+
+# Uploaded files (keep directory structure but ignore content)
+backend/uploads/attachments/*
+backend/uploads/thumbnails/*
+!backend/uploads/attachments/.gitkeep
+!backend/uploads/thumbnails/.gitkeep
+!backend/uploads/README.md
