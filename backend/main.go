@@ -63,9 +63,12 @@ func main() {
 	commentRepo := repositories.NewCommentRepository(config.DB)
 	dashboardRepo := repositories.NewDashboardRepository(config.DB)
 	meetingRepo := repositories.NewMeetingRepository(config.DB)
+	attachmentRepo := repositories.NewAttachmentRepository(config.DB)
 
 	// Initialize services
 	emailService := services.NewEmailService()
+	fileStorageService := services.NewFileStorageService()
+	fileValidationService := services.NewFileValidationService()
 	projectService := services.NewProjectService(projectRepo)
 	taskService := services.NewTaskService(taskRepo, projectRepo)
 	timeLogService := services.NewTimeLogService(timeLogRepo, taskRepo)
@@ -74,6 +77,7 @@ func main() {
 	commentService := services.NewCommentService(commentRepo, taskRepo)
 	dashboardService := services.NewDashboardService(dashboardRepo, meetingRepo)
 	meetingService := services.NewMeetingService(meetingRepo, userRepo)
+	attachmentService := services.NewAttachmentService(attachmentRepo, taskRepo, projectRepo, fileStorageService, fileValidationService)
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(projectService)
@@ -84,8 +88,9 @@ func main() {
 	commentHandler := handlers.NewCommentHandler(commentService)
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 	meetingHandler := handlers.NewMeetingHandler(meetingService)
+	attachmentHandler := handlers.NewAttachmentHandler(attachmentService)
 
-	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler, dashboardHandler, meetingHandler)
+	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler, dashboardHandler, meetingHandler, attachmentHandler)
 
 	log.Println("Server starting on port 3000")
 	if err := app.Listen(":3000"); err != nil {

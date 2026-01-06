@@ -18,6 +18,7 @@ func SetupRoutes(
 	commentHandler *handlers.CommentHandler,
 	dashboardHandler *handlers.DashboardHandler,
 	meetingHandler *handlers.MeetingHandler,
+	attachmentHandler *handlers.AttachmentHandler,
 ) {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json")
@@ -68,6 +69,10 @@ func SetupRoutes(
 	tasks.Get("/:taskId/comments", commentHandler.GetCommentsByTask)
 	tasks.Post("/:taskId/comments", commentHandler.CreateComment)
 
+	// Task attachment routes
+	tasks.Get("/:taskId/attachments", attachmentHandler.ListAttachments)
+	tasks.Post("/:taskId/attachments", attachmentHandler.UploadAttachments)
+
 	// Protected timelog routes
 	timelogs := api.Group("/timelogs", middleware.RequireAuth)
 	timelogs.Get("/:id", timeLogHandler.GetTimeLog)
@@ -76,6 +81,12 @@ func SetupRoutes(
 	comments := api.Group("/comments", middleware.RequireAuth)
 	comments.Put("/:id", commentHandler.UpdateComment)
 	comments.Delete("/:id", commentHandler.DeleteComment)
+
+	// Attachment routes
+	attachments := api.Group("/attachments", middleware.RequireAuth)
+	attachments.Get("/:id/download", attachmentHandler.DownloadAttachment)
+	attachments.Get("/:id/thumbnail", attachmentHandler.GetThumbnail)
+	attachments.Delete("/:id", attachmentHandler.DeleteAttachment)
 
 	// Admin user management routes (admin only)
 	users := api.Group("/users", middleware.RequireAuth, middleware.RequireRole("admin"))
