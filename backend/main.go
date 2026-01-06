@@ -27,6 +27,10 @@ func main() {
 	}
 	defer config.CloseDB()
 
+	if err := config.InitFileStorage(); err != nil {
+		log.Fatalf("Failed to initialize file storage: %v", err)
+	}
+
 	app := fiber.New(fiber.Config{
 		AppName: "Project Management API",
 	})
