@@ -3,8 +3,10 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"project-management/models"
 	"project-management/repositories"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -99,9 +101,12 @@ func (s *TaskService) CreateTask(ctx context.Context, projectID uuid.UUID, req m
 	if req.Title == "" {
 		return nil, models.ErrValidation
 	}
-	if req.Priority == "" {
-		req.Priority = "Medium"
+
+	normalizedPriority, err := normalizeTaskPriority(req.Priority)
+	if err != nil {
+		return nil, err
 	}
+	req.Priority = normalizedPriority
 
 	// Validate dates
 	if err := s.ValidateTaskDates(req.StartDate, req.DueDate); err != nil {
@@ -125,6 +130,12 @@ func (s *TaskService) UpdateTask(ctx context.Context, id uuid.UUID, req models.U
 	if req.Title == "" {
 		return nil, models.ErrValidation
 	}
+
+	normalizedPriority, err := normalizeTaskPriority(req.Priority)
+	if err != nil {
+		return nil, err
+	}
+	req.Priority = normalizedPriority
 
 	// Validate dates
 	if err := s.ValidateTaskDates(req.StartDate, req.DueDate); err != nil {
@@ -193,4 +204,33 @@ func (s *TaskService) ValidateEstimatedHours(estimatedHours *float64) error {
 		return errors.New("estimated hours must be greater than or equal to 0")
 	}
 	return nil
+}
+
+func normalizeTaskPriority(priority string) (string, error) {
+	p := strings.TrimSpace(priority)
+	if p == "" {
+		return "Medium", nil
+	}
+
+	// Allow Persian aliases from older clients/UI.
+	// DB constraint expects English values: Low | Medium | High
+	switch p {
+	case "کم":
+		p = "Low"
+	case "متوسط":
+		p = "Medium"
+	case "زیاد", "بالا":
+		p = "High"
+	}
+
+	switch strings.ToLower(p) {
+	case "low":
+		return "Low", nil
+	case "medium":
+		return "Medium", nil
+	case "high":
+		return "High", nil
+	default:
+		return "", fmt.Errorf("invalid priority: must be one of Low, Medium, High")
+	}
 }
