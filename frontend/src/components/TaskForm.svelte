@@ -1,7 +1,9 @@
 <script>
   import { tasks } from "../stores/taskStore";
+  import { api } from "../lib/api.js";
   import { createEventDispatcher } from "svelte";
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
+  import AttachmentFormUploader from "./AttachmentFormUploader.svelte";
 
   let { project } = $props();
   const dispatch = createEventDispatcher();
@@ -14,10 +16,12 @@
   let due_date = $state("");
   let estimated_hours = $state("");
   let done_ratio = $state(0);
+  let attachmentFiles = $state([]);
   let error = $state("");
   let dateError = $state("");
   let doneRatioError = $state("");
   let estimatedHoursError = $state("");
+  let attachmentError = $state("");
 
   // Validate date range
   function validateDates() {
@@ -56,6 +60,7 @@
 
   async function handleSubmit() {
     error = "";
+    attachmentError = "";
 
     if (!title.trim()) {
       error = "عنوان الزامی است";
@@ -71,7 +76,8 @@
     }
 
     try {
-      await tasks.create(project.id, {
+      // Create the task first
+      const newTask = await tasks.create(project.id, {
         title: title.trim(),
         description: description.trim(),
         priority,
@@ -82,6 +88,17 @@
         done_ratio: parseInt(done_ratio),
       });
 
+      // Upload attachments if any
+      if (attachmentFiles.length > 0) {
+        try {
+          await api.attachments.upload(newTask.id, attachmentFiles);
+        } catch (attachmentErr) {
+          console.error('Attachment upload error:', attachmentErr);
+          attachmentError = "وظیفه ایجاد شد اما آپلود فایل‌ها با خطا مواجه شد: " + (attachmentErr.message || "خطای نامشخص");
+          // Don't return here - task was created successfully
+        }
+      }
+
       // Reset form
       title = "";
       description = "";
@@ -91,15 +108,33 @@
       due_date = "";
       estimated_hours = "";
       done_ratio = 0;
+      attachmentFiles = [];
       error = "";
       dateError = "";
       doneRatioError = "";
       estimatedHoursError = "";
+      attachmentError = "";
 
       dispatch("created");
     } catch (err) {
       error = err.message || "ایجاد وظیفه با خطا مواجه شد";
     }
+  }
+
+  // Attachment event handlers
+  function handleFilesAdded(event) {
+    const newFiles = event.detail.files;
+    attachmentFiles = [...attachmentFiles, ...newFiles];
+    attachmentError = "";
+  }
+
+  function handleFileRemoved(event) {
+    const index = event.detail.index;
+    attachmentFiles = attachmentFiles.filter((_, i) => i !== index);
+  }
+
+  function handleAttachmentError(event) {
+    attachmentError = event.detail.message;
   }
 </script>
 
@@ -112,6 +147,12 @@
   {#if error}
     <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
       {error}
+    </div>
+  {/if}
+
+  {#if attachmentError}
+    <div class="p-3 bg-amber-100 text-amber-700 rounded-lg text-sm">
+      {attachmentError}
     </div>
   {/if}
 
@@ -248,6 +289,18 @@
         <p class="text-red-500 text-xs mt-1">{doneRatioError}</p>
       {/if}
     </div>
+  </div>
+
+  <!-- Attachments Section -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">فایل‌های پیوست (اختیاری)</label>
+    <AttachmentFormUploader
+      bind:files={attachmentFiles}
+      maxFiles={5}
+      on:filesAdded={handleFilesAdded}
+      on:fileRemoved={handleFileRemoved}
+      on:error={handleAttachmentError}
+    />
   </div>
 
   <button

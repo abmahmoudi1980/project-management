@@ -8,6 +8,8 @@
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
   import AttachmentManager from "./AttachmentManager.svelte";
+  import AttachmentFormUploader from "./AttachmentFormUploader.svelte";
+  import { api } from "../lib/api.js";
   import moment from "jalali-moment";
 
   let { task, project } = $props();
@@ -27,12 +29,14 @@
   let due_date = $state("");
   let estimated_hours = $state("");
   let done_ratio = $state(0);
+  let attachmentFiles = $state([]);
 
   // Validation errors
   let error = $state("");
   let dateError = $state("");
   let doneRatioError = $state("");
   let estimatedHoursError = $state("");
+  let attachmentError = $state("");
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
@@ -54,19 +58,23 @@
     due_date = task.due_date ? task.due_date.split('T')[0] : "";
     estimated_hours = task.estimated_hours ? task.estimated_hours.toString() : "";
     done_ratio = task.done_ratio;
+    attachmentFiles = [];
     isEditing = true;
     error = "";
     dateError = "";
     doneRatioError = "";
     estimatedHoursError = "";
+    attachmentError = "";
   }
 
   function cancelEdit() {
     isEditing = false;
+    attachmentFiles = [];
     error = "";
     dateError = "";
     doneRatioError = "";
     estimatedHoursError = "";
+    attachmentError = "";
   }
 
   // Validate date range
@@ -105,6 +113,7 @@
 
   async function handleSave() {
     error = "";
+    attachmentError = "";
 
     if (!title.trim()) {
       error = "عنوان الزامی است";
@@ -120,6 +129,7 @@
     }
 
     try {
+      // Update the task first
       await tasks.update(task.id, {
         title: title.trim(),
         description: description.trim(),
@@ -132,6 +142,17 @@
         completed: task.completed,
       });
 
+      // Upload new attachments if any
+      if (attachmentFiles.length > 0) {
+        try {
+          await api.attachments.upload(task.id, attachmentFiles);
+        } catch (attachmentErr) {
+          console.error('Attachment upload error:', attachmentErr);
+          attachmentError = "وظیفه به‌روزرسانی شد اما آپلود فایل‌ها با خطا مواجه شد: " + (attachmentErr.message || "خطای نامشخص");
+          // Don't return here - task was updated successfully
+        }
+      }
+
       // Refresh task data
       const updatedTask = await tasks.getById(task.id);
       if (updatedTask) {
@@ -139,10 +160,27 @@
       }
 
       isEditing = false;
+      attachmentFiles = [];
       dispatch("updated");
     } catch (err) {
       error = err.message || "به‌روزرسانی وظیفه با خطا مواجه شد";
     }
+  }
+
+  // Attachment event handlers for edit mode
+  function handleFilesAdded(event) {
+    const newFiles = event.detail.files;
+    attachmentFiles = [...attachmentFiles, ...newFiles];
+    attachmentError = "";
+  }
+
+  function handleFileRemoved(event) {
+    const index = event.detail.index;
+    attachmentFiles = attachmentFiles.filter((_, i) => i !== index);
+  }
+
+  function handleAttachmentError(event) {
+    attachmentError = event.detail.message;
   }
 
   function toggleComments() {
@@ -177,6 +215,12 @@
     {#if error}
       <div class="p-3 bg-rose-100 text-rose-700 rounded-lg text-sm">
         {error}
+      </div>
+    {/if}
+
+    {#if attachmentError}
+      <div class="p-3 bg-amber-100 text-amber-700 rounded-lg text-sm">
+        {attachmentError}
       </div>
     {/if}
 
@@ -292,6 +336,23 @@
           <p class="text-rose-500 text-xs mt-1">{doneRatioError}</p>
         {/if}
       </div>
+    </div>
+
+    <!-- Attachments Section in Edit Mode -->
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-2">افزودن فایل‌های پیوست جدید</label>
+      <AttachmentFormUploader
+        bind:files={attachmentFiles}
+        maxFiles={5}
+        on:filesAdded={handleFilesAdded}
+        on:fileRemoved={handleFileRemoved}
+        on:error={handleAttachmentError}
+      />
+      {#if attachmentFiles.length === 0}
+        <p class="text-xs text-slate-500 mt-2">
+          برای مشاهده فایل‌های موجود، از حالت ویرایش خارج شوید و بخش "فایل‌های پیوست" را باز کنید
+        </p>
+      {/if}
     </div>
 
     <div class="flex gap-3">
