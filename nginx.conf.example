@@ -1,16 +1,16 @@
 server {
   listen 80;
-  server_name your-domain.com;
+  server_name task.mahmoudi.cloud;
   return 301 https://$host$request_uri;
 }
 
 server {
   listen 443 ssl http2;
-  server_name your-domain.com;
+  server_name task.mahmoudi.cloud;
 
   # cert paths (letsencrypt)
-  ssl_certificate     /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+  ssl_certificate     /etc/letsencrypt/live/task.mahmoudi.cloud/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/task.mahmoudi.cloud/privkey.pem;
 
   client_max_body_size 20m;
 
@@ -19,7 +19,7 @@ server {
   add_header Referrer-Policy no-referrer-when-downgrade always;
 
   location /api/ {
-    proxy_pass http://127.0.0.1:8081/api/;  # backend published locally (recommended)
+    proxy_pass http://127.0.0.1:9090/api/;
     proxy_http_version 1.1;
 
     proxy_set_header Host $host;
@@ -33,7 +33,7 @@ server {
   }
 
   location / {
-    proxy_pass http://127.0.0.1:8080/;      # frontend published locally OR use unix socket
+    proxy_pass http://127.0.0.1:9090/;
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;
   }
