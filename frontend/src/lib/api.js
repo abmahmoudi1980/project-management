@@ -18,7 +18,7 @@ async function apiCall(endpoint, options = {}) {
       window.location.reload();
       return;
     }
-    
+
     const error = await response.json().catch(() => ({ error: 'An error occurred' }));
     throw new Error(error.error || 'An error occurred');
   }
@@ -78,5 +78,42 @@ export const api = {
       return apiCall(`/meetings?${query}`);
     },
     get: (id) => apiCall(`/meetings/${id}`),
+  },
+  attachments: {
+    getByTask: (taskId) => apiCall(`/tasks/${taskId}/attachments`),
+    upload: async (taskId, files) => {
+      const formData = new FormData();
+
+      // Add files to FormData
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+
+      const response = await fetch(`${API_BASE}/tasks/${taskId}/attachments`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.reload();
+          return;
+        }
+        const error = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(error.error || 'Upload failed');
+      }
+
+      return response.json();
+    },
+    download: (attachmentId) => {
+      // Return the download URL for direct use
+      return `${API_BASE}/attachments/${attachmentId}/download`;
+    },
+    getThumbnail: (attachmentId) => {
+      // Return the thumbnail URL for direct use
+      return `${API_BASE}/attachments/${attachmentId}/thumbnail`;
+    },
+    delete: (attachmentId) => apiCall(`/attachments/${attachmentId}`, { method: 'DELETE' }),
   },
 };

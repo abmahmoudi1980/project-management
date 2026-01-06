@@ -7,6 +7,7 @@
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
+  import AttachmentManager from "./AttachmentManager.svelte";
   import moment from "jalali-moment";
 
   let { task, project } = $props();
@@ -15,6 +16,7 @@
   let isEditing = $state(false);
   let showComments = $state(false);
   let showTimeLogs = $state(false);
+  let showAttachments = $state(false);
 
   // Local state for editing
   let title = $state("");
@@ -155,6 +157,10 @@
     if (showTimeLogs) {
       timeLogs.load(task.id);
     }
+  }
+
+  function toggleAttachments() {
+    showAttachments = !showAttachments;
   }
 </script>
 
@@ -466,6 +472,39 @@
       {#if showTimeLogs}
         <div class="border-t border-slate-200 pt-4">
           <TimeLogForm {task} on:logged={() => {}} />
+        </div>
+      {/if}
+
+      <button
+        onclick={toggleAttachments}
+        class="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+      >
+        <span class="font-medium text-slate-700">فایل‌های پیوست</span>
+        <svg
+          class="w-5 h-5 text-slate-600 transition-transform {showAttachments
+            ? 'rotate-180'
+            : ''}"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {#if showAttachments}
+        <div class="border-t border-slate-200 pt-4">
+          <AttachmentManager
+            taskId={task.id}
+            currentUser={$authStore.user}
+            canUpload={true}
+            canDelete={$authStore.user?.role === 'admin' || task.author_id === $authStore.user?.id || task.assignee_id === $authStore.user?.id}
+          />
         </div>
       {/if}
     </div>
