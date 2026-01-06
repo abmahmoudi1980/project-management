@@ -78,7 +78,7 @@ services:
       dockerfile: Dockerfile
     container_name: project-management-web-prod
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-8080}:80"
       # If terminating TLS in this container, map 443 and mount certs.
       # - "443:443"
     depends_on:
