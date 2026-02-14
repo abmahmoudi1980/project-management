@@ -18,6 +18,9 @@ services:
       - ./backend/migration/001_enhance_entities.sql:/docker-entrypoint-initdb.d/02-enhance_entities.sql
       - ./backend/migration/002_add_user_authentication.sql:/docker-entrypoint-initdb.d/03-user_authentication.sql
       - ./backend/migration/003_add_comments.sql:/docker-entrypoint-initdb.d/04-comments.sql
+      - ./backend/migration/005_add_dashboard_meetings.sql:/docker-entrypoint-initdb.d/05-dashboard_meetings.sql
+      - ./backend/migration/006_add_task_attachments.sql:/docker-entrypoint-initdb.d/06-task_attachments.sql
+      - ./backend/migration/007_fix_tasks_priority_constraint.sql:/docker-entrypoint-initdb.d/07-fix_tasks_priority.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 10s
