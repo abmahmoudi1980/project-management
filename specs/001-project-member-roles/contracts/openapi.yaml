@@ -17,20 +17,17 @@ paths:
         - $ref: '#/components/parameters/ProjectId'
       responses:
         '200':
-          description: Project members returned
+          description: Project members returned as array
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  members:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ProjectMember'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectMemberResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/ProjectNotFound'
 
     post:
       summary: Add a user as project member with predefined role (admin only)
@@ -49,25 +46,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectMember'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: member added successfully
         '400':
-          description: Validation error
+          description: Validation error (invalid role, ineligible user)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  error:
+                    type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/components/responses/ProjectNotFound'
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: project not found
         '409':
           description: Duplicate project membership
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: user is already a member of this project
 
   /projects/{projectId}/members/eligible-users:
     get:
@@ -75,30 +89,19 @@ paths:
       tags: [Project Members]
       parameters:
         - $ref: '#/components/parameters/ProjectId'
-        - name: q
-          in: query
-          required: false
-          description: Optional search by username/email.
-          schema:
-            type: string
       responses:
         '200':
-          description: Eligible users returned
+          description: Eligible users returned as array
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/UserSummary'
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/ProjectNotFound'
 
   /project-roles:
     get:
@@ -106,16 +109,13 @@ paths:
       tags: [Project Roles]
       responses:
         '200':
-          description: Roles returned
+          description: Active roles returned as array (sorted by hierarchy)
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  roles:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ProjectRole'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectRole'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -147,17 +147,18 @@ components:
           type: string
           format: uuid
 
-    ProjectMember:
+    ProjectMemberResponse:
       type: object
-      required: [project_id, user, role, joined_at]
       properties:
         project_id:
           type: string
           format: uuid
-        user:
-          $ref: '#/components/schemas/UserSummary'
-        role:
-          $ref: '#/components/schemas/ProjectRole'
+        user_id:
+          type: string
+          format: uuid
+        project_role_id:
+          type: string
+          format: uuid
         joined_at:
           type: string
           format: date-time
@@ -165,10 +166,19 @@ components:
           type: string
           format: uuid
           nullable: true
+        username:
+          type: string
+        email:
+          type: string
+        role_name:
+          type: string
+          example: manager
+        role_display:
+          type: string
+          example: مدیر
 
     UserSummary:
       type: object
-      required: [id, username, email]
       properties:
         id:
           type: string
@@ -181,7 +191,6 @@ components:
 
     ProjectRole:
       type: object
-      required: [id, name, display_name, is_active]
       properties:
         id:
           type: string
@@ -191,42 +200,34 @@ components:
           example: manager
         display_name:
           type: string
-          example: Manager
+          example: مدیر
         is_active:
           type: boolean
-
-    ErrorResponse:
-      type: object
-      required: [success, error]
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          required: [message, code]
-          properties:
-            message:
-              type: string
-            code:
-              type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 
   responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: invalid project ID
     Unauthorized:
       description: Authentication required
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Forbidden:
-      description: Admin role required
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ProjectNotFound:
-      description: Project does not exist
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            type: object
+            properties:
+              error:
+                type: string
+                example: unauthorized

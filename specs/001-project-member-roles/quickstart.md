@@ -74,6 +74,14 @@ go run ./cmd/migrate
 4. Confirm member appears with correct role.
 5. Retry adding same user; confirm duplicate is blocked.
 6. Try invalid role ID; confirm validation error.
+7. Verify eligible users list only shows:
+   - Active users (is_active = true)
+   - Users who are NOT already members of the project
+8. Add a member and verify they disappear from the eligible users list.
+9. Verify role dropdown shows only predefined active roles (owner, manager, contributor, viewer).
+10. Try submitting an invalid/non-existent role ID via API; confirm 400 error with "invalid or inactive project role" message.
+11. Verify saved members display their role name (e.g., "مدیر" for manager) in the members list.
+12. Disable a role in database (set is_active = false) and confirm it no longer appears in the role dropdown.
 
 ## 5) API smoke checks (example)
 
@@ -88,4 +96,25 @@ curl -i -X GET http://localhost:3000/api/projects/<project-id>/members/eligible-
 curl -i -X POST http://localhost:3000/api/projects/<project-id>/members \
   -H "Content-Type: application/json" \
   -d '{"user_id":"<user-id>","project_role_id":"<role-id>"}'
+```
+
+## 6) Implementation Notes
+
+**Validation Summary**:
+- ✅ Duplicate membership prevention (409 error)
+- ✅ Ineligible user filtering (400 error for inactive users)
+- ✅ Invalid role rejection (400 error for inactive/non-existent roles)
+- ✅ Role ordering by hierarchy in dropdown
+- ✅ Persian display names for roles
+- ✅ Real-time eligible users refresh after adding member
+
+**API Response Formats**:
+- List endpoints return arrays directly (not wrapped objects)
+- POST /members returns `{ message: "member added successfully" }`
+- All error responses include `{ error: "message" }`
+
+**Build Verification**:
+```bash
+cd backend && go build main.go          # ✅ Compiles successfully
+cd frontend && npm run build           # ✅ Builds successfully
 ```

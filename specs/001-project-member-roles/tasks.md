@@ -70,13 +70,13 @@
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Implement repository query for eligible users by project in `backend/repositories/project_member_repository.go`
-- [ ] T025 [US2] Implement service method for eligible-user search/filter in `backend/services/project_member_service.go`
-- [ ] T026 [US2] Implement handler for `GET /api/projects/:projectId/members/eligible-users` in `backend/handlers/project_member_handler.go`
-- [ ] T027 [US2] Register eligible-users route in `backend/routes/routes.go`
-- [ ] T028 [US2] Add `getEligibleProjectUsers` API function in `frontend/src/lib/api/projectMembers.js`
-- [ ] T029 [US2] Replace raw user-id input with eligible-user selector in `frontend/src/components/ProjectMembersPanel.svelte`
-- [ ] T030 [US2] Validate eligible-user filtering behavior (active only, non-members only) in `specs/001-project-member-roles/quickstart.md`
+- [x] T024 [US2] Implement repository query for eligible users by project in `backend/repositories/project_member_repository.go`
+- [x] T025 [US2] Implement service method for eligible-user search/filter in `backend/services/project_member_service.go`
+- [x] T026 [US2] Implement handler for `GET /api/projects/:projectId/members/eligible-users` in `backend/handlers/project_member_handler.go`
+- [x] T027 [US2] Register eligible-users route in `backend/routes/routes.go`
+- [x] T028 [US2] Add `getEligibleProjectUsers` API function in `frontend/src/lib/api/projectMembers.js`
+- [x] T029 [US2] Replace raw user-id input with eligible-user selector in `frontend/src/components/ProjectMembersPanel.svelte`
+- [x] T030 [US2] Validate eligible-user filtering behavior (active only, non-members only) in `specs/001-project-member-roles/quickstart.md`
 
 **Checkpoint**: US2 is independently functional and testable on top of MVP.
 
@@ -90,14 +90,14 @@
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Implement repository query for active predefined roles in `backend/repositories/project_member_repository.go`
-- [ ] T032 [US3] Enforce active predefined role validation in add-member service flow in `backend/services/project_member_service.go`
-- [ ] T033 [US3] Implement handler for `GET /api/project-roles` in `backend/handlers/project_member_handler.go`
-- [ ] T034 [US3] Register project-roles route in `backend/routes/routes.go`
-- [ ] T035 [US3] Add `getProjectRoles` API function in `frontend/src/lib/api/projectMembers.js`
-- [ ] T036 [US3] Replace raw role-id input with predefined-role selector in `frontend/src/components/ProjectMembersPanel.svelte`
-- [ ] T037 [US3] Render role display names in project member list UI in `frontend/src/components/ProjectMembersPanel.svelte`
-- [ ] T038 [US3] Validate invalid-role rejection and predefined-role-only selection in `specs/001-project-member-roles/quickstart.md`
+- [x] T031 [US3] Implement repository query for active predefined roles in `backend/repositories/project_member_repository.go`
+- [x] T032 [US3] Enforce active predefined role validation in add-member service flow in `backend/services/project_member_service.go`
+- [x] T033 [US3] Implement handler for `GET /api/project-roles` in `backend/handlers/project_member_handler.go`
+- [x] T034 [US3] Register project-roles route in `backend/routes/routes.go`
+- [x] T035 [US3] Add `getProjectRoles` API function in `frontend/src/lib/api/projectMembers.js`
+- [x] T036 [US3] Replace raw role-id input with predefined-role selector in `frontend/src/components/ProjectMembersPanel.svelte`
+- [x] T037 [US3] Render role display names in project member list UI in `frontend/src/components/ProjectMembersPanel.svelte`
+- [x] T038 [US3] Validate invalid-role rejection and predefined-role-only selection in `specs/001-project-member-roles/quickstart.md`
 
 **Checkpoint**: US3 is independently functional and all story requirements are satisfied.
 
@@ -107,11 +107,11 @@
 
 **Purpose**: Final hardening and consistency checks across all stories.
 
-- [ ] T039 [P] Align API contract examples with implemented payloads in `specs/001-project-member-roles/contracts/openapi.yaml`
-- [ ] T040 [P] Align data model notes with final schema/query decisions in `specs/001-project-member-roles/data-model.md`
-- [ ] T041 Run backend build verification in `backend/main.go`
-- [ ] T042 Run frontend build verification in `frontend/package.json`
-- [ ] T043 Perform end-to-end quickstart validation and record final notes in `specs/001-project-member-roles/quickstart.md`
+- [x] T039 [P] Align API contract examples with implemented payloads in `specs/001-project-member-roles/contracts/openapi.yaml`
+- [x] T040 [P] Align data model notes with final schema/query decisions in `specs/001-project-member-roles/data-model.md`
+- [x] T041 Run backend build verification in `backend/main.go`
+- [x] T042 Run frontend build verification in `frontend/package.json`
+- [x] T043 Perform end-to-end quickstart validation and record final notes in `specs/001-project-member-roles/quickstart.md`
 
 ---
 

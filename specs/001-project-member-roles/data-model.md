@@ -2,11 +2,17 @@
 
 **Feature**: 001-project-member-roles  
 **Date**: 2026-02-26  
-**Status**: Phase 1 Design
+**Status**: ✅ Implemented
 
 ## Overview
 
 This feature adds explicit project membership and predefined project roles while reusing existing `users` and `projects` tables.
+
+## Implementation Notes
+
+- **Migration**: `backend/migration/008_add_project_members.sql`
+- **Run command**: `cd backend && go run ./cmd/migrate`
+- **Role ordering**: Custom CASE sort (owner=1, manager=2, contributor=3, viewer=4)
 
 ## New Entities
 
@@ -18,20 +24,20 @@ This feature adds explicit project membership and predefined project roles while
 |---|---|---|---|
 | id | UUID | PK, NOT NULL | Role identifier |
 | name | VARCHAR(50) | NOT NULL, UNIQUE | Internal role key (e.g., `manager`) |
-| display_name | VARCHAR(100) | NOT NULL | UI display label |
+| display_name | VARCHAR(100) | NOT NULL | UI display label (Persian: "مدیر") |
 | is_active | BOOLEAN | NOT NULL DEFAULT true | Whether role is assignable |
 | created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Creation timestamp |
 | updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Update timestamp |
 
 **Initial seed set**:
-- `owner`
-- `manager`
-- `contributor`
-- `viewer`
+- `owner` (مالک)
+- `manager` (مدیر)
+- `contributor` (مشارکت‌کننده)
+- `viewer` (بیننده)
 
 **Validation Rules**:
 - `name`: lowercase slug, unique, immutable after seed for MVP.
-- Only rows with `is_active = true` can be assigned.
+- Only rows with `is_active = true` can be assigned (enforced in service layer).
 
 ### 2) ProjectMember
 
@@ -54,8 +60,8 @@ This feature adds explicit project membership and predefined project roles while
 
 **Validation Rules**:
 - Membership must be unique per project/user pair.
-- `project_role_id` must reference active predefined role at add time.
-- `user_id` must reference active/eligible user.
+- `project_role_id` must reference active predefined role at add time (enforced in service).
+- `user_id` must reference active/eligible user (enforced in service).
 
 ## Existing Entity Dependencies
 
@@ -92,6 +98,7 @@ Constraint usage:
 
 1. **Not Member** → **Member Added**
    - Trigger: admin creates membership with valid role.
+   - Validation: project exists, user active, role active, not duplicate.
 2. **Member Added** → **Role Changed** (optional endpoint)
    - Trigger: admin updates member role to another active predefined role.
 3. **Member Added/Role Changed** → **Removed** (optional endpoint)
@@ -103,13 +110,42 @@ For MVP alignment with spec, required transition is **Not Member → Member Adde
 
 ### Eligible users for add-member flow
 
-Users where:
+Query filters:
 - `users.is_active = true`
-- not already in `project_members` for the selected project.
+- User ID not in `SELECT user_id FROM project_members WHERE project_id = $projectId`
+- Ordered by username ASC
 
 ### Project member list
 
-Return joined projection:
+Return joined projection (from `ProjectMemberResponse`):
 - user fields (`id`, `username`, `email`)
 - role fields (`project_role_id`, `project_roles.name`, `project_roles.display_name`)
 - membership metadata (`joined_at`, `added_by`)
+- Ordered by `joined_at DESC`
+
+### Active roles list
+
+Query filters:
+- `is_active = true`
+- Custom ordering by hierarchy (owner → manager → contributor → viewer)
+
+## API Response Formats
+
+All endpoints return arrays directly (not wrapped in object):
+- `GET /api/projects/{id}/members` → `ProjectMemberResponse[]`
+- `GET /api/projects/{id}/members/eligible-users` → `UserSummary[]`
+- `GET /api/project-roles` → `ProjectRole[]`
+- `POST /api/projects/{id}/members` → `{ message: string }`
+
+See `contracts/openapi.yaml` for full API specification.
+
+## Files
+
+- **Migration**: `backend/migration/008_add_project_members.sql`
+- **Models**: `backend/models/project_member.go`
+- **Repository**: `backend/repositories/project_member_repository.go`
+- **Service**: `backend/services/project_member_service.go`
+- **Handler**: `backend/handlers/project_member_handler.go`
+- **Routes**: `backend/routes/routes.go` (lines 61-66)
+- **Frontend API**: `frontend/src/lib/api/projectMembers.js`
+- **Frontend UI**: `frontend/src/components/ProjectMembersPanel.svelte`
