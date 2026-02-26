@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { get } from "svelte/store";
   import { authStore } from "./stores/authStore.js";
   import { projects } from "./stores/projectStore";
   import { tasks } from "./stores/taskStore";
@@ -18,6 +19,19 @@
   let resetToken = $state("");
   let showUserManagement = $state(false);
   let showMobileMenu = $state(false);
+  let requestedProjectId = $state(null);
+
+  // Select a project once the store is populated (handles direct URL navigation)
+  $effect(() => {
+    if (requestedProjectId && $projects.length > 0) {
+      const found = $projects.find(p => p.id === requestedProjectId);
+      if (found) {
+        selectedProject = found;
+        tasks.load(found.id);
+        requestedProjectId = null;
+      }
+    }
+  });
 
   onMount(async () => {
     handleRoute();
@@ -51,6 +65,19 @@
     } else if (hash === "/users") {
       showUserManagement = true;
       currentRoute = "app";
+    } else if (hash.startsWith("/projects/")) {
+      const projectId = hash.replace("/projects/", "");
+      currentRoute = "app";
+      showUserManagement = false;
+      const allProjects = get(projects);
+      const found = allProjects.find(p => p.id === projectId);
+      if (found) {
+        selectedProject = found;
+        tasks.load(found.id);
+      } else {
+        // Projects may not be loaded yet (e.g. direct URL navigation), defer selection
+        requestedProjectId = projectId;
+      }
     } else {
       showUserManagement = false;
       if (hash === "") {
