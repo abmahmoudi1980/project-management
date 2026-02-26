@@ -11,6 +11,7 @@
   let showCalendar = $state(false);
   let currentMonth = $state(moment());
   let calendarContainer = $state();
+  let calendarStyle = $state("");
 
   // Convert Gregorian to Jalali when value changes
   $effect(() => {
@@ -176,6 +177,31 @@
 
   function toggleCalendar() {
     showCalendar = !showCalendar;
+    if (showCalendar) {
+      // Use setTimeout to ensure the DOM is ready, then compute fixed position
+      setTimeout(updateCalendarPosition, 0);
+    }
+  }
+
+  function updateCalendarPosition() {
+    if (!inputElement) return;
+    const rect = inputElement.getBoundingClientRect();
+    const calendarHeight = 330;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const rightEdge = window.innerWidth - rect.right;
+
+    let verticalStyle;
+    if (spaceBelow >= calendarHeight || spaceBelow >= rect.top) {
+      verticalStyle = `top: ${rect.bottom + 4}px;`;
+    } else {
+      verticalStyle = `bottom: ${window.innerHeight - rect.top + 4}px;`;
+    }
+
+    calendarStyle = `position: fixed; ${verticalStyle} right: ${rightEdge}px; min-width: 280px; z-index: 9999;`;
+  }
+
+  function handleWindowReposition() {
+    if (showCalendar) updateCalendarPosition();
   }
 
   function handleClickOutside(event) {
@@ -185,7 +211,7 @@
   }
 </script>
 
-<svelte:window onclick={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} onscroll={handleWindowReposition} onresize={handleWindowReposition} />
 
 <div class="relative">
   <input
@@ -207,8 +233,8 @@
   {#if showCalendar}
     <div
       bind:this={calendarContainer}
-      class="absolute z-50 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4"
-      style="min-width: 280px; left: 0;"
+      class="bg-white border border-gray-300 rounded-lg shadow-lg p-4"
+      style={calendarStyle}
     >
       <!-- Calendar Header -->
       <div class="flex items-center justify-between mb-4">
