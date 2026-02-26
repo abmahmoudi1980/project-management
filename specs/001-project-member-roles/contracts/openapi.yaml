@@ -1,0 +1,232 @@
+openapi: 3.0.3
+info:
+  title: Project Member Role Assignment API
+  version: 1.0.0
+  description: API contracts for adding project members from system users with predefined roles.
+servers:
+  - url: /api
+security:
+  - cookieAuth: []
+
+paths:
+  /projects/{projectId}/members:
+    get:
+      summary: List project members with assigned predefined roles
+      tags: [Project Members]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Project members returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProjectMember'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+
+    post:
+      summary: Add a user as project member with predefined role (admin only)
+      tags: [Project Members]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProjectMemberRequest'
+      responses:
+        '201':
+          description: Member added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: Duplicate project membership
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /projects/{projectId}/members/eligible-users:
+    get:
+      summary: List eligible system users that can be added to the project
+      tags: [Project Members]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - name: q
+          in: query
+          required: false
+          description: Optional search by username/email.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Eligible users returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+
+  /project-roles:
+    get:
+      summary: List predefined active project roles
+      tags: [Project Roles]
+      responses:
+        '200':
+          description: Roles returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProjectRole'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    AddProjectMemberRequest:
+      type: object
+      required: [user_id, project_role_id]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        project_role_id:
+          type: string
+          format: uuid
+
+    ProjectMember:
+      type: object
+      required: [project_id, user, role, joined_at]
+      properties:
+        project_id:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserSummary'
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+        joined_at:
+          type: string
+          format: date-time
+        added_by:
+          type: string
+          format: uuid
+          nullable: true
+
+    UserSummary:
+      type: object
+      required: [id, username, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+
+    ProjectRole:
+      type: object
+      required: [id, name, display_name, is_active]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: manager
+        display_name:
+          type: string
+          example: Manager
+        is_active:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required: [message, code]
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Admin role required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ProjectNotFound:
+      description: Project does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
