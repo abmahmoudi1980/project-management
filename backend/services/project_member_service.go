@@ -14,6 +14,7 @@ var (
 	ErrInvalidRole         = errors.New("invalid or inactive project role")
 	ErrUserNotEligible     = errors.New("user is not eligible for this project")
 	ErrProjectNotFound     = errors.New("project not found")
+	ErrMemberNotFound      = errors.New("member not found in this project")
 )
 
 type ProjectMemberService struct {
@@ -94,4 +95,28 @@ func (s *ProjectMemberService) GetActiveRoles(ctx context.Context) ([]models.Pro
 // GetMember returns a specific membership by project and user
 func (s *ProjectMemberService) GetMember(ctx context.Context, projectID, userID uuid.UUID) (*models.ProjectMember, error) {
 	return s.memberRepo.GetMemberByProjectAndUser(ctx, projectID, userID)
+}
+
+// RemoveMember removes a user from a project
+func (s *ProjectMemberService) RemoveMember(ctx context.Context, projectID, userID uuid.UUID) error {
+	// Check if project exists
+	project, err := s.projectRepo.GetByID(ctx, projectID)
+	if err != nil {
+		return err
+	}
+	if project == nil {
+		return ErrProjectNotFound
+	}
+
+	// Check if member exists
+	member, err := s.memberRepo.GetMemberByProjectAndUser(ctx, projectID, userID)
+	if err != nil {
+		return err
+	}
+	if member == nil {
+		return ErrMemberNotFound
+	}
+
+	// Remove the member
+	return s.memberRepo.RemoveMember(ctx, projectID, userID)
 }

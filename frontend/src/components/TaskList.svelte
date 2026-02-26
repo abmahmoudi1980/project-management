@@ -11,6 +11,7 @@
   import Modal from "./Modal.svelte";
   import SearchBox from "./SearchBox.svelte";
   import AdvancedTaskSearch from "./AdvancedTaskSearch.svelte";
+  import ProjectMembersModal from "./ProjectMembersModal.svelte";
   import { evaluateAllFilters } from "../lib/filterUtils.js";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
@@ -24,6 +25,7 @@
   let showDeleteModal = $state(false);
   let taskToDelete = $state(null);
   let showTaskDetails = $state(null);
+  let showMembersModal = $state(false);
   let sentinelRef = $state(null);
   let intersectionObserver = $state(null);
   let previousProjectId = $state(null);
@@ -184,15 +186,23 @@
     <div class="text-sm text-slate-500">
       نتایج: {resultCount} / {$tasks.total}
     </div>
-    <button
-      onclick={toggleForm}
-      class="px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors
-        {showForm
-        ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-        : 'bg-slate-900 text-white hover:bg-slate-800'}"
-    >
-      {showForm ? "لغو" : "+ افزودن وظیفه"}
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        onclick={() => showMembersModal = true}
+        class="px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
+      >
+        + مدیریت اعضا
+      </button>
+      <button
+        onclick={toggleForm}
+        class="px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors
+          {showForm
+          ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          : 'bg-slate-900 text-white hover:bg-slate-800'}"
+      >
+        {showForm ? "لغو" : "+ افزودن وظیفه"}
+      </button>
+    </div>
   </div>
 
   {#if showForm}
@@ -527,6 +537,22 @@
         tasks.load(project.id);
         showTaskDetails = null;
       }}
+    />
+  </Modal>
+{/if}
+
+<!-- Members Management Modal -->
+{#if showMembersModal}
+  <Modal
+    show={true}
+    title="مدیریت اعضای پروژه"
+    maxWidth="2xl"
+    fullScreen={false}
+    on:close={() => { showMembersModal = false; }}
+  >
+    <ProjectMembersModal
+      projectId={project.id}
+      show={showMembersModal}
     />
   </Modal>
 {/if}

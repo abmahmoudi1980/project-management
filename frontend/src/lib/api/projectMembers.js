@@ -35,3 +35,13 @@ export async function getEligibleProjectUsers(projectId) {
 export async function getProjectRoles() {
   return api.projectRoles.getAll();
 }
+
+/**
+ * Remove a member from a project
+ * @param {string} projectId
+ * @param {string} userId
+ * @returns {Promise<Object>}
+ */
+export async function removeProjectMember(projectId, userId) {
+  return api.projectMembers.remove(projectId, userId);
+}

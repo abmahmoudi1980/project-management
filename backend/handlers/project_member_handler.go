@@ -94,3 +94,36 @@ func (h *ProjectMemberHandler) GetProjectRoles(c *fiber.Ctx) error {
 
 	return c.JSON(roles)
 }
+
+// RemoveMember handles DELETE /api/projects/:projectId/members/:userId
+func (h *ProjectMemberHandler) RemoveMember(c *fiber.Ctx) error {
+	projectID, err := uuid.Parse(c.Params("projectId"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid project ID"})
+	}
+
+	userID, err := uuid.Parse(c.Params("userId"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid user ID"})
+	}
+
+	// Get authenticated user (optional logging)
+	userContext, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	err = h.service.RemoveMember(c.Context(), projectID, userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrProjectNotFound):
+			return c.Status(404).JSON(fiber.Map{"error": "project not found"})
+		case errors.Is(err, services.ErrMemberNotFound):
+			return c.Status(404).JSON(fiber.Map{"error": "member not found in this project"})
+		default:
+			return c.Status(500).JSON(fiber.Map{"error": "failed to remove member"})
+		}
+	}
+
+	return c.JSON(fiber.Map{"message": "member removed successfully", "removed_by": userContext.UserID})
+}

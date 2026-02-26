@@ -120,6 +120,7 @@ export const api = {
     getAll: (projectId) => apiCall(`/projects/${projectId}/members`),
     add: (projectId, data) => apiCall(`/projects/${projectId}/members`, { method: 'POST', body: JSON.stringify(data) }),
     getEligibleUsers: (projectId) => apiCall(`/projects/${projectId}/members/eligible-users`),
+    remove: (projectId, userId) => apiCall(`/projects/${projectId}/members/${userId}`, { method: 'DELETE' }),
   },
   projectRoles: {
     getAll: () => apiCall('/project-roles'),

@@ -61,6 +61,7 @@ func SetupRoutes(
 	projects.Get("/:projectId/members", projectMemberHandler.ListMembers)
 	projects.Post("/:projectId/members", projectMemberHandler.AddMember)
 	projects.Get("/:projectId/members/eligible-users", projectMemberHandler.GetEligibleUsers)
+	projects.Delete("/:projectId/members/:userId", projectMemberHandler.RemoveMember)
 
 	// Project roles route
 	api.Get("/project-roles", middleware.RequireAuth, projectMemberHandler.GetProjectRoles)

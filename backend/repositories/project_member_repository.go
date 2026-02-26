@@ -205,3 +205,13 @@ func (r *ProjectMemberRepository) IsUserProjectMember(ctx context.Context, proje
 	err := r.db.QueryRow(ctx, query, projectID, userID).Scan(&exists)
 	return exists, err
 }
+
+// RemoveMember deletes a project membership by project_id and user_id
+func (r *ProjectMemberRepository) RemoveMember(ctx context.Context, projectID, userID uuid.UUID) error {
+	query := `
+		DELETE FROM project_members
+		WHERE project_id = $1 AND user_id = $2
+	`
+	_, err := r.db.Exec(ctx, query, projectID, userID)
+	return err
+}
