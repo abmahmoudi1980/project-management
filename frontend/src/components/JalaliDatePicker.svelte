@@ -224,7 +224,7 @@
     onclick={toggleCalendar}
     {placeholder}
     maxlength="10"
-    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+    class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
     class:border-red-500={error}
     dir="ltr"
     style="text-align: right; font-family: 'Vazirmatn', sans-serif;"
