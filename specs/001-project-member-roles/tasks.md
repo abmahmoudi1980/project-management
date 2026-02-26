@@ -12,13 +12,13 @@
 
 **Purpose**: Prepare implementation scaffolding and file structure for this feature.
 
-- [ ] T001 Create migration file scaffold in `backend/migration/008_add_project_members.sql`
-- [ ] T002 [P] Create model file scaffold in `backend/models/project_member.go`
-- [ ] T003 [P] Create repository file scaffold in `backend/repositories/project_member_repository.go`
-- [ ] T004 [P] Create service file scaffold in `backend/services/project_member_service.go`
-- [ ] T005 [P] Create handler file scaffold in `backend/handlers/project_member_handler.go`
-- [ ] T006 [P] Create frontend API client file scaffold in `frontend/src/lib/api/projectMembers.js`
-- [ ] T007 [P] Create frontend member panel file scaffold in `frontend/src/components/ProjectMembersPanel.svelte`
+- [x] T001 Create migration file scaffold in `backend/migration/008_add_project_members.sql`
+- [x] T002 [P] Create model file scaffold in `backend/models/project_member.go`
+- [x] T003 [P] Create repository file scaffold in `backend/repositories/project_member_repository.go`
+- [x] T004 [P] Create service file scaffold in `backend/services/project_member_service.go`
+- [x] T005 [P] Create handler file scaffold in `backend/handlers/project_member_handler.go`
+- [x] T006 [P] Create frontend API client file scaffold in `frontend/src/lib/api/projectMembers.js`
+- [x] T007 [P] Create frontend member panel file scaffold in `frontend/src/components/ProjectMembersPanel.svelte`
 
 ---
 
