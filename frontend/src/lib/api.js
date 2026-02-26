@@ -116,4 +116,12 @@ export const api = {
     },
     delete: (attachmentId) => apiCall(`/attachments/${attachmentId}`, { method: 'DELETE' }),
   },
+  projectMembers: {
+    getAll: (projectId) => apiCall(`/projects/${projectId}/members`),
+    add: (projectId, data) => apiCall(`/projects/${projectId}/members`, { method: 'POST', body: JSON.stringify(data) }),
+    getEligibleUsers: (projectId) => apiCall(`/projects/${projectId}/members/eligible-users`),
+  },
+  projectRoles: {
+    getAll: () => apiCall('/project-roles'),
+  },
 };

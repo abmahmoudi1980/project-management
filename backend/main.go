@@ -64,6 +64,7 @@ func main() {
 	dashboardRepo := repositories.NewDashboardRepository(config.DB)
 	meetingRepo := repositories.NewMeetingRepository(config.DB)
 	attachmentRepo := repositories.NewAttachmentRepository(config.DB)
+	projectMemberRepo := repositories.NewProjectMemberRepository(config.DB)
 
 	// Initialize services
 	emailService := services.NewEmailService()
@@ -78,6 +79,7 @@ func main() {
 	dashboardService := services.NewDashboardService(dashboardRepo, meetingRepo)
 	meetingService := services.NewMeetingService(meetingRepo, userRepo)
 	attachmentService := services.NewAttachmentService(attachmentRepo, taskRepo, projectRepo, fileStorageService, fileValidationService)
+	projectMemberService := services.NewProjectMemberService(projectMemberRepo, projectRepo, userRepo)
 
 	// Initialize handlers
 	projectHandler := handlers.NewProjectHandler(projectService)
@@ -89,8 +91,9 @@ func main() {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 	meetingHandler := handlers.NewMeetingHandler(meetingService)
 	attachmentHandler := handlers.NewAttachmentHandler(attachmentService)
+	projectMemberHandler := handlers.NewProjectMemberHandler(projectMemberService)
 
-	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler, dashboardHandler, meetingHandler, attachmentHandler)
+	routes.SetupRoutes(app, projectHandler, taskHandler, timeLogHandler, authHandler, userHandler, commentHandler, dashboardHandler, meetingHandler, attachmentHandler, projectMemberHandler)
 
 	log.Println("Server starting on port 3000")
 	if err := app.Listen(":3000"); err != nil {

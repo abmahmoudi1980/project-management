@@ -28,11 +28,11 @@
 
 **⚠️ CRITICAL**: No user story work can start until this phase is complete.
 
-- [ ] T008 Implement `project_roles` and `project_members` tables with constraints and indexes in `backend/migration/008_add_project_members.sql`
-- [ ] T009 Seed predefined active roles (`owner`, `manager`, `contributor`, `viewer`) in `backend/migration/008_add_project_members.sql`
-- [ ] T010 Run and verify migration using `backend/cmd/migrate/main.go`
-- [ ] T011 Define shared DTO/entity structs (role/member request-response types) in `backend/models/project_member.go`
-- [ ] T012 Add shared constructor wiring for project member repository/service/handler in `backend/main.go`
+- [x] T008 Implement `project_roles` and `project_members` tables with constraints and indexes in `backend/migration/008_add_project_members.sql`
+- [x] T009 Seed predefined active roles (`owner`, `manager`, `contributor`, `viewer`) in `backend/migration/008_add_project_members.sql`
+- [x] T010 Run and verify migration using `backend/cmd/migrate/main.go`
+- [x] T011 Define shared DTO/entity structs (role/member request-response types) in `backend/models/project_member.go`
+- [x] T012 Add shared constructor wiring for project member repository/service/handler in `backend/main.go`
 
 **Checkpoint**: Database schema and shared wiring are ready for story implementation.
 
@@ -46,17 +46,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement repository method to insert project membership in `backend/repositories/project_member_repository.go`
-- [ ] T014 [US1] Implement repository method to list project members with role join in `backend/repositories/project_member_repository.go`
-- [ ] T015 [US1] Implement service method for add-member workflow (project exists, duplicate check, persistence) in `backend/services/project_member_service.go`
-- [ ] T016 [US1] Implement service method to fetch project member list in `backend/services/project_member_service.go`
-- [ ] T017 [US1] Implement handler for `POST /api/projects/:projectId/members` in `backend/handlers/project_member_handler.go`
-- [ ] T018 [US1] Implement handler for `GET /api/projects/:projectId/members` in `backend/handlers/project_member_handler.go`
-- [ ] T019 [US1] Register member list/add routes in `backend/routes/routes.go`
-- [ ] T020 [US1] Add frontend API functions `addProjectMember` and `getProjectMembers` in `frontend/src/lib/api/projectMembers.js`
-- [ ] T021 [US1] Implement basic members panel (list + add submit flow) in `frontend/src/components/ProjectMembersPanel.svelte`
-- [ ] T022 [US1] Mount member panel in project view in `frontend/src/App.svelte`
-- [ ] T023 [US1] Verify MVP scenario and duplicate-member rejection via quickstart flow in `specs/001-project-member-roles/quickstart.md`
+- [x] T013 [US1] Implement repository method to insert project membership in `backend/repositories/project_member_repository.go`
+- [x] T014 [US1] Implement repository method to list project members with role join in `backend/repositories/project_member_repository.go`
+- [x] T015 [US1] Implement service method for add-member workflow (project exists, duplicate check, persistence) in `backend/services/project_member_service.go`
+- [x] T016 [US1] Implement service method to fetch project member list in `backend/services/project_member_service.go`
+- [x] T017 [US1] Implement handler for `POST /api/projects/:projectId/members` in `backend/handlers/project_member_handler.go`
+- [x] T018 [US1] Implement handler for `GET /api/projects/:projectId/members` in `backend/handlers/project_member_handler.go`
+- [x] T019 [US1] Register member list/add routes in `backend/routes/routes.go`
+- [x] T020 [US1] Add frontend API functions `addProjectMember` and `getProjectMembers` in `frontend/src/lib/api/projectMembers.js`
+- [x] T021 [US1] Implement basic members panel (list + add submit flow) in `frontend/src/components/ProjectMembersPanel.svelte`
+- [x] T022 [US1] Mount member panel in project view in `frontend/src/App.svelte`
+- [x] T023 [US1] Verify MVP scenario and duplicate-member rejection via quickstart flow in `specs/001-project-member-roles/quickstart.md`
 
 **Checkpoint**: US1 is independently functional and demonstrable as MVP.
 

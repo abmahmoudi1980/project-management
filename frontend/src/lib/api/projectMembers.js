@@ -6,7 +6,7 @@ import { api } from '../api.js';
  * @returns {Promise<Array>}
  */
 export async function getProjectMembers(projectId) {
-  return api.call(`/projects/${projectId}/members`);
+  return api.projectMembers.getAll(projectId);
 }
 
 /**
@@ -16,10 +16,7 @@ export async function getProjectMembers(projectId) {
  * @returns {Promise<Object>}
  */
 export async function addProjectMember(projectId, data) {
-  return api.call(`/projects/${projectId}/members`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  return api.projectMembers.add(projectId, data);
 }
 
 /**
@@ -28,7 +25,7 @@ export async function addProjectMember(projectId, data) {
  * @returns {Promise<Array>}
  */
 export async function getEligibleProjectUsers(projectId) {
-  return api.call(`/projects/${projectId}/members/eligible-users`);
+  return api.projectMembers.getEligibleUsers(projectId);
 }
 
 /**
@@ -36,5 +33,5 @@ export async function getEligibleProjectUsers(projectId) {
  * @returns {Promise<Array>}
  */
 export async function getProjectRoles() {
-  return api.call('/project-roles');
+  return api.projectRoles.getAll();
 }

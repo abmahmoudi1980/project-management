@@ -13,6 +13,7 @@
   import UserManagement from "./components/UserManagement.svelte";
   import MobileNav from "./components/MobileNav.svelte";
   import Dashboard from "./components/Dashboard.svelte";
+  import ProjectMembersPanel from "./components/ProjectMembersPanel.svelte";
 
   let selectedProject = $state(null);
   let currentRoute = $state("login");
@@ -314,6 +315,9 @@
             {/if}
           </div>
           <TaskList project={selectedProject} />
+          <div class="mt-8">
+            <ProjectMembersPanel projectId={selectedProject.id} />
+          </div>
         </div>
       {:else}
         <div class="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">

@@ -21,9 +21,11 @@
     loading = true;
     error = null;
     try {
-      members = await getProjectMembers(projectId);
+      const result = await getProjectMembers(projectId);
+      members = result || [];
     } catch (err) {
       error = err.message;
+      members = [];
     } finally {
       loading = false;
     }
@@ -33,17 +35,21 @@
     if (!projectId) return;
     
     try {
-      eligibleUsers = await getEligibleProjectUsers(projectId);
+      const result = await getEligibleProjectUsers(projectId);
+      eligibleUsers = result || [];
     } catch (err) {
       console.error('Failed to load eligible users:', err);
+      eligibleUsers = [];
     }
   }
 
   async function loadRoles() {
     try {
-      roles = await getProjectRoles();
+      const result = await getProjectRoles();
+      roles = result || [];
     } catch (err) {
       console.error('Failed to load roles:', err);
+      roles = [];
     }
   }
 
@@ -65,7 +71,7 @@
         project_role_id: selectedRoleId
       });
       
-      successMessage = 'Member added successfully';
+      successMessage = 'عضو با موفقیت اضافه شد';
       selectedUserId = '';
       selectedRoleId = '';
       

@@ -19,6 +19,7 @@ func SetupRoutes(
 	dashboardHandler *handlers.DashboardHandler,
 	meetingHandler *handlers.MeetingHandler,
 	attachmentHandler *handlers.AttachmentHandler,
+	projectMemberHandler *handlers.ProjectMemberHandler,
 ) {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json")
@@ -55,6 +56,14 @@ func SetupRoutes(
 
 	projects.Get("/:projectId/tasks", taskHandler.GetTasksByProject)
 	projects.Post("/:projectId/tasks", taskHandler.CreateTask)
+
+	// Project member routes
+	projects.Get("/:projectId/members", projectMemberHandler.ListMembers)
+	projects.Post("/:projectId/members", projectMemberHandler.AddMember)
+	projects.Get("/:projectId/members/eligible-users", projectMemberHandler.GetEligibleUsers)
+
+	// Project roles route
+	api.Get("/project-roles", middleware.RequireAuth, projectMemberHandler.GetProjectRoles)
 
 	// Protected task routes
 	tasks := api.Group("/tasks", middleware.RequireAuth)
