@@ -96,3 +96,10 @@ npm run build               # Production build
 - Default admin: `admin@example.com` / `Admin123!` (change after first login)
 - **New in 005-dashboard**: Meetings entity, dashboard aggregations, 30-second auto-refresh pattern
 - **Dashboard tech**: Single `/api/dashboard` endpoint for efficiency, client-side Jalali date formatting, generated avatars with initials
+
+## Active Technologies
+- Go 1.25+ (backend, per `backend/AGENTS.md`); JavaScript with Svelte 5 runes (frontend, per root `AGENTS.md`) + Fiber v2 (HTTP), pgx v5 (PostgreSQL driver), `github.com/google/uuid`; Svelte 5, Tailwind CSS, `jalali-moment` (frontend). No new external dependencies are introduced by this feature. (001-project-hierarchy)
+- PostgreSQL — one schema change: add nullable `parent_id UUID` to the existing `projects` table with a self-referential foreign key `ON DELETE SET NULL` and a B-tree index on `parent_id`. (001-project-hierarchy)
+
+## Recent Changes
+- 001-project-hierarchy: Added Go 1.25+ (backend, per `backend/AGENTS.md`); JavaScript with Svelte 5 runes (frontend, per root `AGENTS.md`) + Fiber v2 (HTTP), pgx v5 (PostgreSQL driver), `github.com/google/uuid`; Svelte 5, Tailwind CSS, `jalali-moment` (frontend). No new external dependencies are introduced by this feature.
