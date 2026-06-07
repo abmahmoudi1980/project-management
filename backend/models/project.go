@@ -52,6 +52,19 @@ var (
 	ErrNotFound   = &Error{Message: "resource not found", Code: 404}
 )
 
+// ProjectTreeNode is a project in the tree response. Children is left empty in
+// the wire payload — the client folds the flat list into a tree by parent_id.
+type ProjectTreeNode struct {
+	Project
+	Children []ProjectTreeNode `json:"children,omitempty"`
+}
+
+// ProjectTree is the response shape for GET /api/projects/tree.
+type ProjectTree struct {
+	Nodes []ProjectTreeNode `json:"nodes"`
+	Total int               `json:"total"`
+}
+
 type Error struct {
 	Message string `json:"message"`
 	Code    int    `json:"code"`

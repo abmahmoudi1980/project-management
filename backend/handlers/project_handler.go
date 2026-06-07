@@ -32,6 +32,19 @@ func (h *ProjectHandler) GetAllProjects(c *fiber.Ctx) error {
 	return c.JSON(projects)
 }
 
+func (h *ProjectHandler) GetProjectTree(c *fiber.Ctx) error {
+	userContext, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	}
+
+	tree, err := h.service.GetProjectTree(c.Context(), userContext.UserID, userContext.Role)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch project tree"})
+	}
+	return c.JSON(tree)
+}
+
 func (h *ProjectHandler) CreateProject(c *fiber.Ctx) error {
 	var req models.CreateProjectRequest
 	if err := c.BodyParser(&req); err != nil {

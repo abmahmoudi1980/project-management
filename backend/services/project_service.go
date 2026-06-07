@@ -52,6 +52,27 @@ func (s *ProjectService) GetProjectByID(ctx context.Context, id uuid.UUID) (*mod
 	return s.repo.GetByID(ctx, id)
 }
 
+// GetProjectTree returns the list of projects visible to the given user, wrapped
+// in a ProjectTree payload. The list is sorted by the repository for client-side
+// tree grouping. We do NOT return a pre-nested tree because the existing flat-list
+// callers (dashboard, list page) all consume []Project and we want a single shape.
+func (s *ProjectService) GetProjectTree(ctx context.Context, userID uuid.UUID, role string) (*models.ProjectTree, error) {
+	projects, err := s.GetProjectsByUser(ctx, userID, role)
+	if err != nil {
+		return nil, err
+	}
+
+	nodes := make([]models.ProjectTreeNode, 0, len(projects))
+	for _, p := range projects {
+		nodes = append(nodes, models.ProjectTreeNode{Project: p})
+	}
+
+	return &models.ProjectTree{
+		Nodes: nodes,
+		Total: len(nodes),
+	}, nil
+}
+
 func (s *ProjectService) CreateProject(ctx context.Context, req models.CreateProjectRequest, createdBy *uuid.UUID) (*models.Project, error) {
 	if req.Title == "" {
 		return nil, models.ErrValidation

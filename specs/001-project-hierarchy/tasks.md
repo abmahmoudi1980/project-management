@@ -71,14 +71,14 @@ This is a **Web app**: backend lives in `backend/`, frontend lives in `frontend/
 
 ### Implementation for User Story 2
 
-- [ ] T010 [P] [US2] Add `ProjectTree` (`{Nodes []ProjectTreeNode; Total int}`) and `ProjectTreeNode` (embeds `Project`; adds `Children []ProjectTreeNode` with `json:"children,omitempty"`) DTOs to `backend/models/project.go`
-- [ ] T011 [P] [US2] Add `ProjectRepository.ListTree(ctx) ([]Project, error)` in `backend/repositories/project_repository.go` returning every project the caller can see, ordered `ORDER BY parent_id NULLS FIRST, title ASC` (uses `idx_projects_parent_id`)
-- [ ] T012 [US2] Add `ProjectService.GetProjectTree(ctx) (*ProjectTree, error)` in `backend/services/project_service.go` that calls `repo.ListTree` and wraps the result in `ProjectTree{Nodes, Total: len(Nodes)}` — sorting is already done in the repository
-- [ ] T013 [US2] Add `ProjectHandler.GetProjectTree` in `backend/handlers/project_handler.go`: extract the user from the auth context, call `service.GetProjectsByUser` (or a new service method that reuses it for the role-based filter), and return the projects wrapped in a flat `ProjectTree` payload. JSON: `{"nodes": [...], "total": N}`
-- [ ] T014 [US2] Register `GET /api/projects/tree` in `backend/routes/routes.go`, inside the existing `projects := api.Group("/projects", middleware.RequireAuth)` group. **Order matters**: register `/tree` BEFORE `/:id` so Fiber does not capture `"tree"` as an `:id`
-- [ ] T015 [US2] Add `getProjectTree` to `frontend/src/lib/api.js` returning the parsed `{nodes, total}` object
-- [ ] T016 [US2] Create `frontend/src/components/ProjectTree.svelte`: accepts `let { projects = [] } = $props()` (flat list with `parent_id`); holds `let expanded = $state(new Set())`; uses `$derived` to group by `parent_id` into a tree; renders recursively with a chevron button (`aria-expanded`) per parent; first level is expanded by default via `$effect`
-- [ ] T017 [US2] Replace the body of `frontend/src/components/ProjectList.svelte` so it calls `getProjectTree()` on mount and renders `<ProjectTree {projects} />` instead of the flat list. Keep the empty state and the existing "New Project" CTA
+- [x] T010 [P] [US2] Add `ProjectTree` (`{Nodes []ProjectTreeNode; Total int}`) and `ProjectTreeNode` (embeds `Project`; adds `Children []ProjectTreeNode` with `json:"children,omitempty"`) DTOs to `backend/models/project.go`
+- [x] T011 [P] [US2] Add `ProjectRepository.ListTree(ctx) ([]Project, error)` in `backend/repositories/project_repository.go` returning every project the caller can see, ordered `ORDER BY parent_id NULLS FIRST, title ASC` (uses `idx_projects_parent_id`)
+- [x] T012 [US2] Add `ProjectService.GetProjectTree(ctx) (*ProjectTree, error)` in `backend/services/project_service.go` that calls `repo.ListTree` and wraps the result in `ProjectTree{Nodes, Total: len(Nodes)}` — sorting is already done in the repository
+- [x] T013 [US2] Add `ProjectHandler.GetProjectTree` in `backend/handlers/project_handler.go`: extract the user from the auth context, call `service.GetProjectsByUser` (or a new service method that reuses it for the role-based filter), and return the projects wrapped in a flat `ProjectTree` payload. JSON: `{"nodes": [...], "total": N}`
+- [x] T014 [US2] Register `GET /api/projects/tree` in `backend/routes/routes.go`, inside the existing `projects := api.Group("/projects", middleware.RequireAuth)` group. **Order matters**: register `/tree` BEFORE `/:id` so Fiber does not capture `"tree"` as an `:id`
+- [x] T015 [US2] Add `getProjectTree` to `frontend/src/lib/api.js` returning the parsed `{nodes, total}` object
+- [x] T016 [US2] Create `frontend/src/components/ProjectTree.svelte`: accepts `let { projects = [] } = $props()` (flat list with `parent_id`); holds `let expanded = $state(new Set())`; uses `$derived` to group by `parent_id` into a tree; renders recursively with a chevron button (`aria-expanded`) per parent; first level is expanded by default via `$effect`
+- [x] T017 [US2] Replace the body of `frontend/src/components/ProjectList.svelte` so it calls `getProjectTree()` on mount and renders `<ProjectTree {projects} />` instead of the flat list. Keep the empty state and the existing "New Project" CTA
 
 **Checkpoint**: US1 and US2 are both functional — a user can create sub-projects and see them nested in the tree. This is the **MVP**.
 

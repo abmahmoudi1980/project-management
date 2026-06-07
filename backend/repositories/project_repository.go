@@ -86,3 +86,24 @@ func (r *ProjectRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := r.db.Exec(ctx, "DELETE FROM projects WHERE id = $1", id)
 	return err
 }
+
+// ListTree returns every project, ordered for tree grouping on the client:
+// roots (parent_id IS NULL) first, then siblings sorted by title.
+func (r *ProjectRepository) ListTree(ctx context.Context) ([]models.Project, error) {
+	rows, err := r.db.Query(ctx, "SELECT id, title, description, status, identifier, homepage, is_public, user_id, created_by, parent_id, created_at, updated_at FROM projects ORDER BY parent_id NULLS FIRST, title ASC")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.Project
+	for rows.Next() {
+		var p models.Project
+		if err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.Identifier, &p.Homepage, &p.IsPublic, &p.UserID, &p.CreatedBy, &p.ParentID, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	return projects, nil
+}

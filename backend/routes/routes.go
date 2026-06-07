@@ -50,6 +50,8 @@ func SetupRoutes(
 	projects := api.Group("/projects", middleware.RequireAuth)
 	projects.Get("/", projectHandler.GetAllProjects)
 	projects.Post("/", projectHandler.CreateProject)
+	// IMPORTANT: /tree must be registered BEFORE /:id, otherwise Fiber captures "tree" as :id.
+	projects.Get("/tree", projectHandler.GetProjectTree)
 	projects.Get("/:id", projectHandler.GetProject)
 	projects.Put("/:id", projectHandler.UpdateProject)
 	projects.Delete("/:id", projectHandler.DeleteProject)

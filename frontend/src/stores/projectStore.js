@@ -18,6 +18,15 @@ function createProjectStore() {
         throw err;
       }
     },
+    tree: async () => {
+      try {
+        const tree = await api.projects.getTree();
+        return tree || { nodes: [], total: 0 };
+      } catch (err) {
+        console.error('[projectStore] failed to load project tree:', err);
+        throw err;
+      }
+    },
     create: async (projectData) => {
       const project = await api.projects.create(projectData);
       update(currentProjects => [project, ...(currentProjects || [])]);

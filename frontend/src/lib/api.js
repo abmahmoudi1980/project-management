@@ -39,6 +39,8 @@ export const api = {
     // `data` is forwarded as JSON; pass `parent_id` (string|null|undefined) to set/clear the parent on update.
     update: (id, data) => apiCall(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => apiCall(`/projects/${id}`, { method: 'DELETE' }),
+    // Returns {nodes: ProjectTreeNode[], total: number} sorted for client-side tree grouping.
+    getTree: () => apiCall('/projects/tree'),
   },
   tasks: {
     getByProject: (projectId, page = 1, limit = 10) => {
