@@ -16,6 +16,7 @@ type Project struct {
 	IsPublic    bool       `json:"is_public"`
 	UserID      *uuid.UUID `json:"user_id,omitempty"`
 	CreatedBy   *uuid.UUID `json:"created_by,omitempty"`
+	ParentID    *uuid.UUID `json:"parent_id,omitempty"`
 	StartDate   *time.Time `json:"start_date,omitempty"`
 	DueDate     *time.Time `json:"due_date,omitempty"`
 	CreatedAt   time.Time  `json:"created_at"`
@@ -29,6 +30,7 @@ type CreateProjectRequest struct {
 	Identifier  string     `json:"identifier"`
 	Homepage    *string    `json:"homepage,omitempty"`
 	IsPublic    bool       `json:"is_public"`
+	ParentID    *uuid.UUID `json:"parent_id,omitempty"`
 	StartDate   *time.Time `json:"start_date,omitempty"`
 	DueDate     *time.Time `json:"due_date,omitempty"`
 }
@@ -40,6 +42,7 @@ type UpdateProjectRequest struct {
 	Identifier  string     `json:"identifier"`
 	Homepage    *string    `json:"homepage,omitempty"`
 	IsPublic    bool       `json:"is_public"`
+	ParentID    *uuid.UUID `json:"parent_id,omitempty"`
 	StartDate   *time.Time `json:"start_date,omitempty"`
 	DueDate     *time.Time `json:"due_date,omitempty"`
 }
