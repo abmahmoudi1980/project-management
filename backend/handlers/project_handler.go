@@ -45,6 +45,22 @@ func (h *ProjectHandler) GetProjectTree(c *fiber.Ctx) error {
 	return c.JSON(tree)
 }
 
+func (h *ProjectHandler) GetProjectChildren(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid project id"})
+	}
+
+	children, err := h.service.GetProjectChildren(c.Context(), id)
+	if err != nil {
+		if err == models.ErrNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "project not found"})
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch project children"})
+	}
+	return c.JSON(children)
+}
+
 func (h *ProjectHandler) CreateProject(c *fiber.Ctx) error {
 	var req models.CreateProjectRequest
 	if err := c.BodyParser(&req); err != nil {

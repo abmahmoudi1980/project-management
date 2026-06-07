@@ -65,6 +65,14 @@ type ProjectTree struct {
 	Total int               `json:"total"`
 }
 
+// ProjectChildrenList is the response shape for GET /api/projects/:id/children.
+// Children contains only direct children, sorted by title ASC.
+type ProjectChildrenList struct {
+	ProjectID uuid.UUID `json:"project_id"`
+	Count     int       `json:"count"`
+	Children  []Project `json:"children"`
+}
+
 type Error struct {
 	Message string `json:"message"`
 	Code    int    `json:"code"`

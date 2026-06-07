@@ -5,6 +5,7 @@
   import { projects } from "./stores/projectStore";
   import { tasks } from "./stores/taskStore";
   import ProjectList from "./components/ProjectList.svelte";
+  import ProjectChildrenList from "./components/ProjectChildrenList.svelte";
   import TaskList from "./components/TaskList.svelte";
   import RegisterForm from "./components/RegisterForm.svelte";
   import LoginForm from "./components/LoginForm.svelte";
@@ -312,6 +313,15 @@
                 {selectedProject.description}
               </p>
             {/if}
+          </div>
+          <div class="mb-6">
+            <ProjectChildrenList
+              projectId={selectedProject.id}
+              onSelect={(child) => {
+                selectedProject = child;
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
           </div>
           <TaskList project={selectedProject} />
         </div>

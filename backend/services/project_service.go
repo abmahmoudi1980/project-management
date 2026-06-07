@@ -73,6 +73,33 @@ func (s *ProjectService) GetProjectTree(ctx context.Context, userID uuid.UUID, r
 	}, nil
 }
 
+// GetProjectChildren returns the direct children of the given project.
+// Returns models.ErrNotFound if the parent does not exist (so the handler can 404).
+// Returns an empty slice (with Count 0) when the parent exists but has no children.
+func (s *ProjectService) GetProjectChildren(ctx context.Context, parentID uuid.UUID) (*models.ProjectChildrenList, error) {
+	parent, err := s.repo.GetByID(ctx, parentID)
+	if err != nil {
+		return nil, err
+	}
+	if parent == nil {
+		return nil, models.ErrNotFound
+	}
+
+	children, err := s.repo.ListChildren(ctx, parentID)
+	if err != nil {
+		return nil, err
+	}
+	if children == nil {
+		children = []models.Project{}
+	}
+
+	return &models.ProjectChildrenList{
+		ProjectID: parentID,
+		Count:     len(children),
+		Children:  children,
+	}, nil
+}
+
 func (s *ProjectService) CreateProject(ctx context.Context, req models.CreateProjectRequest, createdBy *uuid.UUID) (*models.Project, error) {
 	if req.Title == "" {
 		return nil, models.ErrValidation

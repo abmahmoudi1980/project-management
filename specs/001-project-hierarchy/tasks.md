@@ -92,14 +92,14 @@ This is a **Web app**: backend lives in `backend/`, frontend lives in `frontend/
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Add `ProjectChildrenList` (`{ProjectID uuid.UUID; Count int; Children []Project}`) DTO to `backend/models/project.go`
-- [ ] T019 [P] [US3] Add `ProjectRepository.ListChildren(ctx, parentID uuid.UUID) ([]Project, error)` in `backend/repositories/project_repository.go` running `SELECT … FROM projects WHERE parent_id = $1 ORDER BY title ASC` (uses `idx_projects_parent_id`)
-- [ ] T020 [US3] Add `ProjectService.GetProjectChildren(ctx, id uuid.UUID) (*ProjectChildrenList, error)` in `backend/services/project_service.go`: call `repo.GetByID` first, return `ErrNotFound` (`models.ErrNotFound`) if the parent does not exist so the handler can return 404; otherwise call `repo.ListChildren` and wrap in `ProjectChildrenList`
-- [ ] T021 [US3] Add `ProjectHandler.GetProjectChildren` in `backend/handlers/project_handler.go`: parse `:id` as UUID, call the service, return 400 on bad UUID, 404 on `ErrNotFound`, 500 on other errors, 200 with the DTO on success
-- [ ] T022 [US3] Register `GET /api/projects/:id/children` in `backend/routes/routes.go` inside the existing projects group, after the existing `/:id` route (Fiber routes are matched in order, and `/:id/children` is unambiguous against `/:id`)
-- [ ] T023 [P] [US3] Add `getProjectChildren(id)` to `frontend/src/lib/api.js` returning the parsed `ProjectChildrenList`
-- [ ] T024 [P] [US3] Create `frontend/src/components/ProjectChildrenList.svelte`: accepts `let { projectId } = $props()`; on mount fetches `getProjectChildren(projectId)`; renders the populated list with each name as a link to that child's detail page; renders the empty-state message ("No sub-projects yet") when `count === 0`; renders the "project not found" state when the fetch returns 404
-- [ ] T025 [US3] Mount `<ProjectChildrenList {projectId} />` in `frontend/src/App.svelte` inside the `{:else if selectedProject}` branch, between the project header (title + description) and the existing `<TaskList project={selectedProject} />` element. Pass `selectedProject.id` as the `projectId` prop
+- [x] T018 [P] [US3] Add `ProjectChildrenList` (`{ProjectID uuid.UUID; Count int; Children []Project}`) DTO to `backend/models/project.go`
+- [x] T019 [P] [US3] Add `ProjectRepository.ListChildren(ctx, parentID uuid.UUID) ([]Project, error)` in `backend/repositories/project_repository.go` running `SELECT … FROM projects WHERE parent_id = $1 ORDER BY title ASC` (uses `idx_projects_parent_id`)
+- [x] T020 [US3] Add `ProjectService.GetProjectChildren(ctx, id uuid.UUID) (*ProjectChildrenList, error)` in `backend/services/project_service.go`: call `repo.GetByID` first, return `ErrNotFound` (`models.ErrNotFound`) if the parent does not exist so the handler can return 404; otherwise call `repo.ListChildren` and wrap in `ProjectChildrenList`
+- [x] T021 [US3] Add `ProjectHandler.GetProjectChildren` in `backend/handlers/project_handler.go`: parse `:id` as UUID, call the service, return 400 on bad UUID, 404 on `ErrNotFound`, 500 on other errors, 200 with the DTO on success
+- [x] T022 [US3] Register `GET /api/projects/:id/children` in `backend/routes/routes.go` inside the existing projects group, after the existing `/:id` route (Fiber routes are matched in order, and `/:id/children` is unambiguous against `/:id`)
+- [x] T023 [P] [US3] Add `getProjectChildren(id)` to `frontend/src/lib/api.js` returning the parsed `ProjectChildrenList`
+- [x] T024 [P] [US3] Create `frontend/src/components/ProjectChildrenList.svelte`: accepts `let { projectId } = $props()`; on mount fetches `getProjectChildren(projectId)`; renders the populated list with each name as a link to that child's detail page; renders the empty-state message ("No sub-projects yet") when `count === 0`; renders the "project not found" state when the fetch returns 404
+- [x] T025 [US3] Mount `<ProjectChildrenList {projectId} />` in `frontend/src/App.svelte` inside the `{:else if selectedProject}` branch, between the project header (title + description) and the existing `<TaskList project={selectedProject} />` element. Pass `selectedProject.id` as the `projectId` prop
 
 **Checkpoint**: US1, US2, US3 are all functional independently. The user can drill from the tree → parent detail → child detail.
 

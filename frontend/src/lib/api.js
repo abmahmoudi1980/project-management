@@ -41,6 +41,8 @@ export const api = {
     delete: (id) => apiCall(`/projects/${id}`, { method: 'DELETE' }),
     // Returns {nodes: ProjectTreeNode[], total: number} sorted for client-side tree grouping.
     getTree: () => apiCall('/projects/tree'),
+    // Returns {project_id, count, children: Project[]} of the project's direct children.
+    getChildren: (id) => apiCall(`/projects/${id}/children`),
   },
   tasks: {
     getByProject: (projectId, page = 1, limit = 10) => {

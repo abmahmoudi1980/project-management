@@ -53,6 +53,7 @@ func SetupRoutes(
 	// IMPORTANT: /tree must be registered BEFORE /:id, otherwise Fiber captures "tree" as :id.
 	projects.Get("/tree", projectHandler.GetProjectTree)
 	projects.Get("/:id", projectHandler.GetProject)
+	projects.Get("/:id/children", projectHandler.GetProjectChildren)
 	projects.Put("/:id", projectHandler.UpdateProject)
 	projects.Delete("/:id", projectHandler.DeleteProject)
 

@@ -107,3 +107,24 @@ func (r *ProjectRepository) ListTree(ctx context.Context) ([]models.Project, err
 
 	return projects, nil
 }
+
+// ListChildren returns the direct children of a project, sorted by title ASC.
+// Uses idx_projects_parent_id.
+func (r *ProjectRepository) ListChildren(ctx context.Context, parentID uuid.UUID) ([]models.Project, error) {
+	rows, err := r.db.Query(ctx, "SELECT id, title, description, status, identifier, homepage, is_public, user_id, created_by, parent_id, created_at, updated_at FROM projects WHERE parent_id = $1 ORDER BY title ASC", parentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.Project
+	for rows.Next() {
+		var p models.Project
+		if err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Status, &p.Identifier, &p.Homepage, &p.IsPublic, &p.UserID, &p.CreatedBy, &p.ParentID, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	return projects, nil
+}
