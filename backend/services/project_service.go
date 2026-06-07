@@ -70,6 +70,17 @@ func (s *ProjectService) CreateProject(ctx context.Context, req models.CreatePro
 		return nil, err
 	}
 
+	// Validate parent project exists (FR-001)
+	if req.ParentID != nil {
+		parent, err := s.repo.GetByID(ctx, *req.ParentID)
+		if err != nil {
+			return nil, err
+		}
+		if parent == nil {
+			return nil, errors.New("parent project not found")
+		}
+	}
+
 	return s.repo.Create(ctx, req, createdBy)
 }
 

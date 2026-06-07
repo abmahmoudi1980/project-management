@@ -33,8 +33,10 @@ async function apiCall(endpoint, options = {}) {
 export const api = {
   projects: {
     getAll: () => apiCall('/projects'),
+    // `data` is forwarded as JSON; pass `parent_id` (string|null|undefined) to set/clear the parent on create.
     create: (data) => apiCall('/projects', { method: 'POST', body: JSON.stringify(data) }),
     get: (id) => apiCall(`/projects/${id}`),
+    // `data` is forwarded as JSON; pass `parent_id` (string|null|undefined) to set/clear the parent on update.
     update: (id, data) => apiCall(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => apiCall(`/projects/${id}`, { method: 'DELETE' }),
   },
