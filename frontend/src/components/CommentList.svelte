@@ -60,10 +60,13 @@
   async function handleDelete() {
     if (!commentToDelete) return;
 
+    const id = commentToDelete.id;
+    showDeleteModal = false;
+    commentToDelete = null;
+
     try {
-      await comments.delete(commentToDelete.id);
+      await comments.delete(id);
       toasts.success('کامنت با موفقیت حذف شد');
-      commentToDelete = null;
     } catch (error) {
       toasts.error(error.message);
     }

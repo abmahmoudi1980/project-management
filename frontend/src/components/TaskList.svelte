@@ -135,11 +135,13 @@
   async function handleDelete() {
     if (!taskToDelete) return;
 
+    const taskId = taskToDelete.id;
+    showDeleteModal = false;
+    taskToDelete = null;
+
     try {
-      const taskId = taskToDelete.id;
       await tasks.delete(taskId);
       toasts.success('وظیفه با موفقیت حذف شد');
-      taskToDelete = null;
       if (selectedTask?.id === taskId) {
         selectedTask = null;
       }

@@ -60,11 +60,13 @@
   async function handleDelete() {
     if (!projectToDelete) return;
 
+    const projectId = projectToDelete.id;
+    showDeleteModal = false;
+    projectToDelete = null;
+
     try {
-      const projectId = projectToDelete.id;
       await projects.delete(projectId);
       toasts.success('پروژه با موفقیت حذف شد');
-      projectToDelete = null;
       if (selectedProject?.id === projectId) {
         selectedProject = null;
         dispatch("select", null);
