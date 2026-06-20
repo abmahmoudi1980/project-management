@@ -4,11 +4,13 @@
   import { timeLogs } from "../stores/timeLogStore";
   import { comments } from "../stores/commentStore.js";
   import { authStore } from "../stores/authStore.js";
+  import { toasts } from "../lib/toastStore.js";
   import TaskForm from "./TaskForm.svelte";
   import TaskDetails from "./TaskDetails.svelte";
   import TimeLogForm from "./TimeLogForm.svelte";
   import CommentList from "./CommentList.svelte";
   import Modal from "./Modal.svelte";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
   import SearchBox from "./SearchBox.svelte";
   import AdvancedTaskSearch from "./AdvancedTaskSearch.svelte";
   import ProjectMembersModal from "./ProjectMembersModal.svelte";
@@ -136,14 +138,19 @@
     try {
       const taskId = taskToDelete.id;
       await tasks.delete(taskId);
-      showDeleteModal = false;
+      toasts.success('وظیفه با موفقیت حذف شد');
       taskToDelete = null;
       if (selectedTask?.id === taskId) {
         selectedTask = null;
       }
     } catch (error) {
-      alert(error.message);
+      toasts.error(error.message);
     }
+  }
+
+  function closeDeleteDialog() {
+    showDeleteModal = false;
+    taskToDelete = null;
   }
 </script>
 
@@ -470,30 +477,15 @@
   </div>
 </div>
 
-<Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; taskToDelete = null; }}>
-  <div class="p-4 sm:p-6">
-    <h3 class="text-lg font-semibold text-slate-900 mb-2">
-      حذف وظیفه
-    </h3>
-    <p class="text-slate-600 mb-4">
-      آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟
-    </p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-end sm:justify-end">
-      <button
-        onclick={() => { showDeleteModal = false; taskToDelete = null; }}
-        class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
-      >
-        لغو
-      </button>
-      <button
-        onclick={handleDelete}
-        class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium"
-      >
-        حذف
-      </button>
-    </div>
-  </div>
-</Modal>
+<ConfirmDialog
+  show={showDeleteModal}
+  title="حذف وظیفه"
+  message="آیا مطمئن هستید که می‌خواهید این وظیفه را حذف کنید؟"
+  confirmText="حذف"
+  variant="danger"
+  on:confirm={handleDelete}
+  on:cancel={closeDeleteDialog}
+/>
 
 {#if showTaskDetails}
   <Modal

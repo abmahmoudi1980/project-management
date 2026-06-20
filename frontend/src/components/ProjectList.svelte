@@ -3,6 +3,8 @@
   import ProjectForm from "./ProjectForm.svelte";
   import ProjectTree from "./ProjectTree.svelte";
   import Modal from "./Modal.svelte";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
+  import { toasts } from "../lib/toastStore.js";
   import { createEventDispatcher, onMount } from "svelte";
 
   let { selectedProject = $bindable(null) } = $props();
@@ -61,7 +63,7 @@
     try {
       const projectId = projectToDelete.id;
       await projects.delete(projectId);
-      showDeleteModal = false;
+      toasts.success('پروژه با موفقیت حذف شد');
       projectToDelete = null;
       if (selectedProject?.id === projectId) {
         selectedProject = null;
@@ -70,8 +72,13 @@
       // Refresh the tree so the deleted node disappears immediately.
       loadTree();
     } catch (error) {
-      alert(error.message);
+      toasts.error(error.message);
     }
+  }
+
+  function closeDeleteDialog() {
+    showDeleteModal = false;
+    projectToDelete = null;
   }
 </script>
 
@@ -113,28 +120,13 @@
   {/snippet}
 </Modal>
 
-  <Modal show={showDeleteModal} fullScreen={false} on:close={() => { showDeleteModal = false; projectToDelete = null; }}>
-    <div class="p-4 sm:p-6">
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">
-        حذف پروژه
-      </h3>
-      <p class="text-slate-600 mb-4">
-        آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-end sm:justify-end">
-        <button
-          onclick={() => { showDeleteModal = false; projectToDelete = null; }}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
-        >
-          لغو
-        </button>
-        <button
-          onclick={handleDelete}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium"
-        >
-          حذف
-        </button>
-      </div>
-    </div>
-  </Modal>
+  <ConfirmDialog
+    show={showDeleteModal}
+    title="حذف پروژه"
+    message="آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟"
+    confirmText="حذف"
+    variant="danger"
+    on:confirm={handleDelete}
+    on:cancel={closeDeleteDialog}
+  />
 

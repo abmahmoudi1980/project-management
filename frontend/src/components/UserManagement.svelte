@@ -1,6 +1,7 @@
 ﻿<script>
   import { onMount } from 'svelte';
   import { api } from '../lib/api.js';
+  import ConfirmDialog from './ConfirmDialog.svelte';
 
   // State
   let users = $state([]);
@@ -303,25 +304,13 @@
 </div>
 
 <!-- Confirmation Dialog -->
-{#if showConfirmDialog}
-  <div class="fixed inset-0 bg-slate-500 bg-opacity-75 flex items-center justify-center z-50 p-4" dir="rtl">
-    <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 max-w-md w-full">
-      <h3 class="text-lg font-medium text-slate-900 mb-4">تأیید عملیات</h3>
-      <p class="text-slate-600 mb-6">{confirmMessage}</p>
-      <div class="flex flex-col sm:flex-row justify-end gap-3">
-        <button
-          onclick={closeConfirmDialog}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
-        >
-          انصراف
-        </button>
-        <button
-          onclick={executeConfirmAction}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700"
-        >
-          تأیید
-        </button>
-      </div>
-    </div>
-  </div>
-{/if}
+<ConfirmDialog
+  show={showConfirmDialog}
+  title="تأیید عملیات"
+  message={confirmMessage}
+  confirmText="تأیید"
+  cancelText="انصراف"
+  variant="primary"
+  on:confirm={executeConfirmAction}
+  on:cancel={closeConfirmDialog}
+/>

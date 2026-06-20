@@ -1,6 +1,8 @@
 ﻿<script>
   import { timeLogs } from "../stores/timeLogStore";
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
+  import { toasts } from "../lib/toastStore.js";
   import moment from "jalali-moment";
 
   let { task } = $props();
@@ -9,6 +11,8 @@
   let durationInput = $state("30m");
   let note = $state("");
   let durationError = $state("");
+  let showDeleteModal = $state(false);
+  let timeLogToDelete = $state(null);
 
   function formatJalaliDate(dateString) {
     if (!dateString) return "";
@@ -68,9 +72,30 @@
   }
 
   async function handleDelete(timeLogId) {
-    if (confirm("آیا مطمئن هستید که می‌خواهید این زمان ثبت شده را حذف کنید؟")) {
+    try {
       await timeLogs.delete(timeLogId);
+      toasts.success('زمان ثبت‌شده با موفقیت حذف شد');
+    } catch (error) {
+      toasts.error(error.message || 'خطا در حذف زمان ثبت‌شده');
     }
+  }
+
+  function confirmDeleteTimeLog(timeLogId) {
+    timeLogToDelete = timeLogId;
+    showDeleteModal = true;
+  }
+
+  async function executeDeleteTimeLog() {
+    if (!timeLogToDelete) return;
+    const id = timeLogToDelete;
+    showDeleteModal = false;
+    timeLogToDelete = null;
+    await handleDelete(id);
+  }
+
+  function cancelDeleteTimeLog() {
+    showDeleteModal = false;
+    timeLogToDelete = null;
   }
 
   function formatMinutes(minutes) {
@@ -138,7 +163,7 @@
             </div>
           </div>
           <button
-            onclick={() => handleDelete(log.id)}
+            onclick={() => confirmDeleteTimeLog(log.id)}
             class="self-start md:self-auto px-3 py-2 min-h-[44px] text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors text-xs font-medium"
           >
             حذف
@@ -148,3 +173,13 @@
     </div>
   {/if}
 </div>
+
+<ConfirmDialog
+  show={showDeleteModal}
+  title="حذف زمان ثبت‌شده"
+  message="آیا مطمئن هستید که می‌خواهید این زمان ثبت‌شده را حذف کنید؟"
+  confirmText="حذف"
+  variant="danger"
+  on:confirm={executeDeleteTimeLog}
+  on:cancel={cancelDeleteTimeLog}
+/>

@@ -1,8 +1,10 @@
 <script>
   import { comments } from "../stores/commentStore.js";
   import { authStore } from "../stores/authStore.js";
+  import { toasts } from "../lib/toastStore.js";
   import moment from "jalali-moment";
   import Modal from "./Modal.svelte";
+  import ConfirmDialog from "./ConfirmDialog.svelte";
 
   let { task, authUser } = $props();
 
@@ -24,7 +26,7 @@
       await comments.create(task.id, { content: newComment });
       newComment = "";
     } catch (error) {
-      alert(error.message);
+      toasts.error(error.message);
     }
   }
 
@@ -41,7 +43,7 @@
       editingCommentId = null;
       editingContent = "";
     } catch (error) {
-      alert(error.message);
+      toasts.error(error.message);
     }
   }
 
@@ -60,11 +62,16 @@
 
     try {
       await comments.delete(commentToDelete.id);
-      showDeleteModal = false;
+      toasts.success('کامنت با موفقیت حذف شد');
       commentToDelete = null;
     } catch (error) {
-      alert(error.message);
+      toasts.error(error.message);
     }
+  }
+
+  function closeDeleteDialog() {
+    showDeleteModal = false;
+    commentToDelete = null;
   }
 
   function isOwnComment(comment) {
@@ -171,27 +178,12 @@
   </div>
 </div>
 
-<Modal show={showDeleteModal} on:close={() => { showDeleteModal = false; commentToDelete = null; }}>
-    <div class="p-6">
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">
-        حذف کامنت
-      </h3>
-      <p class="text-slate-600 mb-4">
-        آیا مطمئن هستید که می‌خواهید این کامنت را حذف کنید؟
-      </p>
-      <div class="flex gap-3 justify-end">
-        <button
-          onclick={() => { showDeleteModal = false; commentToDelete = null; }}
-          class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
-        >
-          لغو
-        </button>
-        <button
-          onclick={handleDelete}
-          class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700"
-        >
-          حذف
-        </button>
-      </div>
-    </div>
-  </Modal>
+<ConfirmDialog
+  show={showDeleteModal}
+  title="حذف کامنت"
+  message="آیا مطمئن هستید که می‌خواهید این کامنت را حذف کنید؟"
+  confirmText="حذف"
+  variant="danger"
+  on:confirm={handleDelete}
+  on:cancel={closeDeleteDialog}
+/>

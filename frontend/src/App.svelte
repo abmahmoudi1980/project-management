@@ -14,6 +14,7 @@
   import UserManagement from "./components/UserManagement.svelte";
   import MobileNav from "./components/MobileNav.svelte";
   import Dashboard from "./components/Dashboard.svelte";
+  import Toast from "./components/Toast.svelte";
 
   let selectedProject = $state(null);
   let currentRoute = $state("login");
@@ -357,3 +358,5 @@
     </main>
   </div>
 {/if}
+
+<Toast />
