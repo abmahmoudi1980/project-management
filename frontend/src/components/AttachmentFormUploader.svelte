@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher } from "svelte";
   
   let { files = [], disabled = false, maxFiles = 5 } = $props();
@@ -162,8 +162,8 @@
   <!-- Upload Area -->
   <div
     class="border-2 border-dashed rounded-lg p-6 text-center transition-colors
-    {dragActive ? 'border-indigo-400 bg-indigo-50' : 'border-slate-300'}
-    {disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-indigo-400 hover:bg-slate-50 cursor-pointer'}"
+    {dragActive ? 'border-brand-400 bg-brand-50' : 'border-slate-300'}
+    {disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-brand-400 hover:bg-slate-50 cursor-pointer'}"
     ondrop={handleDrop}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}

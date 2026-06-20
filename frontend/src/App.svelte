@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount } from "svelte";
   import { get } from "svelte/store";
   import { authStore } from "./stores/authStore.js";
@@ -128,7 +128,7 @@
   <div class="flex items-center justify-center h-screen bg-slate-50">
     <div class="text-center">
       <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"
       ></div>
       <p class="text-slate-600">در حال بارگذاری...</p>
     </div>
@@ -137,11 +137,11 @@
   <div class="min-h-screen bg-slate-50">
     {#if currentRoute === "register"}
       <RegisterForm />
-      <p class="text-center mt-4 text-sm text-gray-600" dir="rtl">
+      <p class="text-center mt-4 text-sm text-slate-600" dir="rtl">
         قبلاً ثبت‌نام کرده‌اید؟
         <button
           onclick={() => navigateTo("login")}
-          class="text-blue-600 hover:text-blue-700 font-medium"
+          class="text-brand-600 hover:text-brand-700 font-medium"
         >
           ورود
         </button>
@@ -154,12 +154,12 @@
       <div class="flex items-center justify-center min-h-screen px-4">
         <div class="w-full max-w-md">
           <LoginForm />
-          <div class="text-center mt-4 text-sm text-gray-600" dir="rtl">
+          <div class="text-center mt-4 text-sm text-slate-600" dir="rtl">
             <p class="mb-2">
               حساب کاربری ندارید؟
               <button
                 onclick={() => navigateTo("register")}
-                class="text-blue-600 hover:text-blue-700 font-medium"
+                class="text-brand-600 hover:text-brand-700 font-medium"
               >
                 ثبت‌نام
               </button>
@@ -167,7 +167,7 @@
             <p>
               <button
                 onclick={() => navigateTo("forgot-password")}
-                class="text-blue-600 hover:text-blue-700 font-medium"
+                class="text-brand-600 hover:text-brand-700 font-medium"
               >
                 رمز عبور را فراموش کرده‌اید؟
               </button>
@@ -257,7 +257,7 @@
               window.location.hash = "#/dashboard";
             }}
             class="w-full text-right px-3 py-2 text-sm rounded {currentRoute === 'dashboard'
-              ? 'bg-blue-50 text-blue-700'
+              ? 'bg-brand-50 text-brand-700'
               : 'text-slate-700 hover:bg-slate-100'}"
           >
             داشبورد
@@ -268,7 +268,7 @@
               window.location.hash = "#/app";
             }}
             class="w-full text-right px-3 py-2 text-sm rounded {currentRoute === 'app' && !showUserManagement
-              ? 'bg-blue-50 text-blue-700'
+              ? 'bg-brand-50 text-brand-700'
               : 'text-slate-700 hover:bg-slate-100'}"
           >
             پروژه‌ها
@@ -280,7 +280,7 @@
                 window.location.hash = "#/users";
               }}
               class="w-full text-right px-3 py-2 text-sm rounded {showUserManagement
-                ? 'bg-blue-50 text-blue-700'
+                ? 'bg-brand-50 text-brand-700'
                 : 'text-slate-700 hover:bg-slate-100'}"
             >
               مدیریت کاربران

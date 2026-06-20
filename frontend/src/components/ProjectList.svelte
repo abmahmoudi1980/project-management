@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { projects } from "../stores/projectStore";
   import ProjectForm from "./ProjectForm.svelte";
   import ProjectTree from "./ProjectTree.svelte";
@@ -97,7 +97,7 @@
   <div class="p-3 sm:p-4 border-t border-slate-200">
     <button
       onclick={openModal}
-      class="w-full px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
+      class="w-full px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors bg-brand-600 text-white hover:bg-brand-700"
     >
       + پروژه جدید
     </button>

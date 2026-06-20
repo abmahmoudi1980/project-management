@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
 
@@ -224,7 +224,7 @@
     onclick={toggleCalendar}
     {placeholder}
     maxlength="10"
-    class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+    class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
     class:border-red-500={error}
     dir="ltr"
     style="text-align: right; font-family: 'Vazirmatn', sans-serif;"
@@ -233,7 +233,7 @@
   {#if showCalendar}
     <div
       bind:this={calendarContainer}
-      class="bg-white border border-gray-300 rounded-lg shadow-lg p-4"
+      class="bg-white border border-slate-300 rounded-lg shadow-lg p-4"
       style={calendarStyle}
     >
       <!-- Calendar Header -->
@@ -241,7 +241,7 @@
         <button
           type="button"
           onclick={nextMonth}
-          class="p-1 hover:bg-gray-100 rounded"
+          class="p-1 hover:bg-slate-100 rounded"
           aria-label="ماه بعد"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,7 +256,7 @@
         <button
           type="button"
           onclick={previousMonth}
-          class="p-1 hover:bg-gray-100 rounded"
+          class="p-1 hover:bg-slate-100 rounded"
           aria-label="ماه قبل"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,7 +268,7 @@
       <!-- Week days header -->
       <div class="grid grid-cols-7 gap-1 mb-2">
         {#each ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'] as day}
-          <div class="text-center text-xs font-semibold text-gray-600 py-1">
+          <div class="text-center text-xs font-semibold text-slate-600 py-1">
             {day}
           </div>
         {/each}
@@ -281,12 +281,12 @@
             <button
               type="button"
               onclick={() => selectDate(day)}
-              class="p-2 text-sm rounded hover:bg-blue-100 transition-colors"
-              class:bg-blue-500={day.isSelected}
+              class="p-2 text-sm rounded hover:bg-brand-100 transition-colors"
+              class:bg-brand-500={day.isSelected}
               class:text-white={day.isSelected}
               class:font-bold={day.isToday}
               class:ring-2={day.isToday}
-              class:ring-blue-300={day.isToday}
+              class:ring-brand-300={day.isToday}
             >
               {day.day}
             </button>
@@ -297,7 +297,7 @@
       </div>
       
       <!-- Today button -->
-      <div class="mt-3 pt-3 border-t border-gray-200">
+      <div class="mt-3 pt-3 border-t border-slate-200">
         <button
           type="button"
           onclick={() => selectDate({
@@ -306,7 +306,7 @@
             isToday: true,
             isSelected: false
           })}
-          class="w-full px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+          class="w-full px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 rounded transition-colors"
         >
           امروز
         </button>

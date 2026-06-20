@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher } from "svelte";
   import { api } from "../lib/api.js";
   import moment from "jalali-moment";
@@ -184,7 +184,7 @@
           <!-- Download Button -->
           <button
             onclick={() => handleDownload(attachment)}
-            class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+            class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
             title="دانلود فایل"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

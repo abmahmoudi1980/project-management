@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { projects } from "../stores/projectStore";
   import { createEventDispatcher, onMount } from "svelte";
 
@@ -150,7 +150,7 @@
       type="text"
       id="title"
       bind:value={title}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
       placeholder="پروژه من"
       required
     />
@@ -168,7 +168,7 @@
       id="identifier"
       bind:value={identifier}
       onblur={validateIdentifier}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
       class:border-red-500={identifierError}
       class:ring-2={identifierError}
       class:ring-red-500={identifierError}
@@ -193,7 +193,7 @@
       id="description"
       bind:value={description}
       rows="3"
-      class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+      class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
       placeholder="توضیحات مختصری درباره پروژه..."
     ></textarea>
   </div>
@@ -212,7 +212,7 @@
         bind:value={parentQuery}
         onfocus={() => (parentDropdownOpen = true)}
         onblur={() => setTimeout(() => (parentDropdownOpen = false), 150)}
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
         placeholder="جستجو در پروژه‌ها..."
         autocomplete="off"
       />
@@ -254,7 +254,7 @@
             <button
               type="button"
               onclick={() => pickParent(p)}
-              class="w-full text-right px-3 py-2 text-sm text-slate-700 hover:bg-indigo-50"
+              class="w-full text-right px-3 py-2 text-sm text-slate-700 hover:bg-brand-50"
             >
               <span class="font-medium">{p.title}</span>
               <span class="text-slate-400 mr-2">({p.identifier})</span>
@@ -273,7 +273,7 @@
       <select
         id="status"
         bind:value={status}
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
       >
         <option value="active">فعال</option>
         <option value="completed">تکمیل شده</option>
@@ -290,7 +290,7 @@
           type="checkbox"
           id="is_public"
           bind:checked={is_public}
-          class="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
+          class="w-5 h-5 text-brand-600 border-slate-300 rounded focus:ring-brand-500 cursor-pointer"
         />
         <label for="is_public" class="ml-2 text-sm text-slate-700 cursor-pointer">
           پروژه عمومی
@@ -308,7 +308,7 @@
       id="homepage"
       bind:value={homepage}
       onblur={validateHomepage}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
       class:border-red-500={homepageError}
       class:ring-2={homepageError}
       class:ring-red-500={homepageError}
@@ -326,7 +326,7 @@
   <button
     type="submit"
     disabled={!title.trim() || !identifier.trim()}
-    class="w-full min-h-[44px] bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg transition-colors font-medium"
+    class="w-full min-h-[44px] bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg transition-colors font-medium"
   >
     ایجاد پروژه
   </button>

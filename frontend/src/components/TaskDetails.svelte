@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { tasks } from "../stores/taskStore.js";
   import { timeLogs } from "../stores/timeLogStore.js";
   import { comments } from "../stores/commentStore.js";
@@ -230,7 +230,7 @@
         type="text"
         id="task-title"
         bind:value={title}
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
         placeholder="عنوان وظیفه"
         required
       />
@@ -242,7 +242,7 @@
         id="description"
         bind:value={description}
         rows="4"
-        class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+        class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
         placeholder="توضیحات وظیفه"
       ></textarea>
     </div>
@@ -253,7 +253,7 @@
         <select
           id="priority"
           bind:value={priority}
-          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="Low">پایین</option>
           <option value="Medium">متوسط</option>
@@ -267,7 +267,7 @@
           type="text"
           id="category"
           bind:value={category}
-          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="بک‌اند، فرانت‌اند، ..."
         />
       </div>
@@ -308,7 +308,7 @@
           onblur={validateEstimatedHours}
           min="0"
           step="0.5"
-          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
           class:border-rose-500={estimatedHoursError}
           placeholder="8.5"
         />
@@ -358,7 +358,7 @@
     <div class="flex gap-3">
       <button
         onclick={handleSave}
-        class="flex-1 min-h-[44px] bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+        class="flex-1 min-h-[44px] bg-brand-600 hover:bg-brand-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
       >
         ذخیره تغییرات
       </button>
@@ -395,7 +395,7 @@
       </div>
       <button
         onclick={enterEditMode}
-        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium text-sm"
+        class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors font-medium text-sm"
       >
         ویرایش
       </button>
@@ -452,7 +452,7 @@
           <div
             class="h-2 rounded-full transition-all {task.done_ratio === 100
               ? 'bg-emerald-500'
-              : 'bg-indigo-500'}"
+              : 'bg-brand-500'}"
             style="width: {task.done_ratio}%"
           ></div>
         </div>

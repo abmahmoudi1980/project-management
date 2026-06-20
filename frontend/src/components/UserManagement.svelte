@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount } from 'svelte';
   import { api } from '../lib/api.js';
 
@@ -112,8 +112,8 @@
 
 <div class="p-6" dir="rtl">
   <div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-900">مدیریت کاربران</h2>
-    <p class="text-sm text-gray-600 mt-1">مشاهده و مدیریت کاربران سیستم</p>
+    <h2 class="text-2xl font-bold text-slate-900">مدیریت کاربران</h2>
+    <p class="text-sm text-slate-600 mt-1">مشاهده و مدیریت کاربران سیستم</p>
   </div>
 
   {#if errorMessage}
@@ -136,49 +136,49 @@
 
   {#if isLoading}
     <div class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span class="mr-3 text-gray-600">در حال بارگذاری...</span>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+      <span class="mr-3 text-slate-600">در حال بارگذاری...</span>
     </div>
   {:else}
     <!-- Desktop Table -->
     <div class="hidden md:block bg-white shadow-md rounded-lg overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
           <tr>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               نام کاربری
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               ایمیل
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               نقش
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               وضعیت
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               تاریخ عضویت
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">
               عملیات
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white divide-y divide-slate-200">
           {#each users as user (user.id)}
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                 {user.username}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                 {user.email}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   class="px-2 py-1 text-xs font-medium rounded {user.role === 'admin'
                     ? 'bg-purple-100 text-purple-800'
-                    : 'bg-gray-100 text-gray-800'}"
+                    : 'bg-slate-100 text-slate-800'}"
                 >
                   {user.role === 'admin' ? 'ادمین' : 'کاربر عادی'}
                 </span>
@@ -192,17 +192,17 @@
                   {user.is_active ? 'فعال' : 'غیرفعال'}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                 {formatDate(user.created_at)}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2 space-x-reverse">
                 <button
                   onclick={() => confirmRoleChange(user.id, user.role)}
-                  class="text-blue-600 hover:text-blue-800 font-medium"
+                  class="text-brand-600 hover:text-brand-800 font-medium"
                 >
                   تغییر نقش
                 </button>
-                <span class="text-gray-300">|</span>
+                <span class="text-slate-300">|</span>
                 <button
                   onclick={() =>
                     confirmActivationToggle(user.id, user.username, user.is_active)}
@@ -225,16 +225,16 @@
         <div class="bg-white rounded-lg shadow-md p-4">
           <div class="flex items-start justify-between mb-3">
             <div>
-              <h3 class="text-base font-semibold text-gray-900">
+              <h3 class="text-base font-semibold text-slate-900">
                 {user.username}
               </h3>
-              <p class="text-sm text-gray-600 mt-0.5">{user.email}</p>
+              <p class="text-sm text-slate-600 mt-0.5">{user.email}</p>
             </div>
             <div class="flex flex-col gap-2">
               <span
                 class="px-2 py-1 text-xs font-medium rounded {user.role === 'admin'
                   ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800'}"
+                  : 'bg-slate-100 text-slate-800'}"
               >
                 {user.role === 'admin' ? 'ادمین' : 'کاربر عادی'}
               </span>
@@ -247,13 +247,13 @@
               </span>
             </div>
           </div>
-          <div class="text-xs text-gray-500 mb-3">
+          <div class="text-xs text-slate-500 mb-3">
             تاریخ عضویت: {formatDate(user.created_at)}
           </div>
           <div class="flex flex-col gap-2">
             <button
               onclick={() => confirmRoleChange(user.id, user.role)}
-              class="w-full px-4 py-2.5 min-h-[44px] bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 transition-colors text-sm"
+              class="w-full px-4 py-2.5 min-h-[44px] bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors text-sm"
             >
               تغییر نقش
             </button>
@@ -271,28 +271,28 @@
     </div>
 
     {#if users.length === 0}
-      <div class="text-center py-12 text-gray-500 px-4">
+      <div class="text-center py-12 text-slate-500 px-4">
         کاربری یافت نشد
       </div>
     {/if}
 
     {#if pagination.total_pages > 1}
       <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div class="text-sm text-gray-600 text-center md:text-right">
+        <div class="text-sm text-slate-600 text-center md:text-right">
           صفحه {pagination.page} از {pagination.total_pages} (کل: {pagination.total} کاربر)
         </div>
         <div class="flex space-x-2 space-x-reverse justify-center md:justify-start">
           <button
             onclick={previousPage}
             disabled={pagination.page === 1}
-            class="px-4 py-2.5 min-h-[44px] min-w-[44px] text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="px-4 py-2.5 min-h-[44px] min-w-[44px] text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             قبلی
           </button>
           <button
             onclick={nextPage}
             disabled={pagination.page === pagination.total_pages}
-            class="px-4 py-2.5 min-h-[44px] min-w-[44px] text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="px-4 py-2.5 min-h-[44px] min-w-[44px] text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             بعدی
           </button>
@@ -304,20 +304,20 @@
 
 <!-- Confirmation Dialog -->
 {#if showConfirmDialog}
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4" dir="rtl">
+  <div class="fixed inset-0 bg-slate-500 bg-opacity-75 flex items-center justify-center z-50 p-4" dir="rtl">
     <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 max-w-md w-full">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">تأیید عملیات</h3>
-      <p class="text-gray-600 mb-6">{confirmMessage}</p>
+      <h3 class="text-lg font-medium text-slate-900 mb-4">تأیید عملیات</h3>
+      <p class="text-slate-600 mb-6">{confirmMessage}</p>
       <div class="flex flex-col sm:flex-row justify-end gap-3">
         <button
           onclick={closeConfirmDialog}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
         >
           انصراف
         </button>
         <button
           onclick={executeConfirmAction}
-          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          class="w-full sm:w-auto px-4 py-3 min-h-[44px] sm:min-h-0 text-sm font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700"
         >
           تأیید
         </button>

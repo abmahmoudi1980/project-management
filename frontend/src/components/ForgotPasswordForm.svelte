@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { api } from '../lib/api.js';
 
   // State
@@ -46,13 +46,13 @@
   }
 </script>
 
-<div class="min-h-screen bg-gray-100 flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
+<div class="min-h-screen bg-slate-100 flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
   <div class="max-w-md w-full space-y-6 sm:space-y-8">
     <div>
-      <h2 class="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
+      <h2 class="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-slate-900">
         بازیابی رمز عبور
       </h2>
-      <p class="mt-2 text-center text-sm text-gray-600">
+      <p class="mt-2 text-center text-sm text-slate-600">
         ایمیل خود را وارد کنید تا لینک بازیابی برای شما ارسال شود
       </p>
     </div>
@@ -71,7 +71,7 @@
       {/if}
 
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">
+        <label for="email" class="block text-sm font-medium text-slate-700">
           ایمیل
         </label>
         <input
@@ -79,7 +79,7 @@
           type="email"
           bind:value={email}
           required
-          class="mt-1 appearance-none rounded-md relative block w-full px-3 py-3 min-h-[44px] border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+          class="mt-1 appearance-none rounded-md relative block w-full px-3 py-3 min-h-[44px] border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-brand-500 focus:border-brand-500 focus:z-10 sm:text-sm"
           placeholder="example@email.com"
         />
       </div>
@@ -88,14 +88,14 @@
         <button
           type="submit"
           disabled={isLoading}
-          class="group relative w-full flex justify-center py-2.5 px-4 min-h-[44px] border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          class="group relative w-full flex justify-center py-2.5 px-4 min-h-[44px] border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:bg-slate-400 disabled:cursor-not-allowed"
         >
           {isLoading ? 'در حال ارسال...' : 'ارسال لینک بازیابی'}
         </button>
       </div>
 
       <div class="text-center">
-        <a href="#/login" class="text-sm text-blue-600 hover:text-blue-500">
+        <a href="#/login" class="text-sm text-brand-600 hover:text-brand-500">
           بازگشت به صفحه ورود
         </a>
       </div>

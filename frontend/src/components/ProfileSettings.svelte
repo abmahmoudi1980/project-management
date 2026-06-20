@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { authStore } from '../stores/authStore.js';
 
   let activeTab = $state('profile');
@@ -104,15 +104,15 @@
   <h2 class="text-2xl font-bold mb-6 text-center">تنظیمات پروفایل</h2>
 
   <!-- Tab Navigation -->
-  <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+  <div class="flex mb-6 bg-slate-100 rounded-lg p-1">
     <button
-      class="flex-1 py-2 px-4 rounded-md text-center transition-colors {activeTab === 'profile' ? 'bg-white shadow-sm' : 'text-gray-600'}"
+      class="flex-1 py-2 px-4 rounded-md text-center transition-colors {activeTab === 'profile' ? 'bg-white shadow-sm' : 'text-slate-600'}"
       onclick={() => { activeTab = 'profile'; error = ''; success = ''; }}
     >
       ویرایش پروفایل
     </button>
     <button
-      class="flex-1 py-2 px-4 rounded-md text-center transition-colors {activeTab === 'password' ? 'bg-white shadow-sm' : 'text-gray-600'}"
+      class="flex-1 py-2 px-4 rounded-md text-center transition-colors {activeTab === 'password' ? 'bg-white shadow-sm' : 'text-slate-600'}"
       onclick={() => { activeTab = 'password'; error = ''; success = ''; }}
     >
       تغییر رمز عبور
@@ -136,28 +136,28 @@
   {#if activeTab === 'profile'}
     <form on:submit|preventDefault={updateProfile} class="space-y-4">
       <div>
-        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="username" class="block text-sm font-medium text-slate-700 mb-1">
           نام کاربری
         </label>
         <input
           id="username"
           type="text"
           bind:value={profileForm.username}
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="نام کاربری خود را وارد کنید"
           required
         />
       </div>
 
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">
           ایمیل
         </label>
         <input
           id="email"
           type="email"
           bind:value={profileForm.email}
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="ایمیل خود را وارد کنید"
           required
         />
@@ -166,7 +166,7 @@
       <button
         type="submit"
         disabled={isLoading}
-        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        class="w-full bg-brand-600 text-white py-2 px-4 rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
       >
         {#if isLoading}
           در حال بروزرسانی...
@@ -181,42 +181,42 @@
   {#if activeTab === 'password'}
     <form on:submit|preventDefault={changePassword} class="space-y-4">
       <div>
-        <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="currentPassword" class="block text-sm font-medium text-slate-700 mb-1">
           رمز عبور فعلی
         </label>
         <input
           id="currentPassword"
           type="password"
           bind:value={passwordForm.currentPassword}
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="رمز عبور فعلی خود را وارد کنید"
           required
         />
       </div>
 
       <div>
-        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="newPassword" class="block text-sm font-medium text-slate-700 mb-1">
           رمز عبور جدید
         </label>
         <input
           id="newPassword"
           type="password"
           bind:value={passwordForm.newPassword}
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="رمز عبور جدید را وارد کنید"
           required
         />
       </div>
 
       <div>
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="confirmPassword" class="block text-sm font-medium text-slate-700 mb-1">
           تکرار رمز عبور جدید
         </label>
         <input
           id="confirmPassword"
           type="password"
           bind:value={passwordForm.confirmPassword}
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="رمز عبور جدید را تکرار کنید"
           required
         />
@@ -225,7 +225,7 @@
       <button
         type="submit"
         disabled={isLoading}
-        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        class="w-full bg-brand-600 text-white py-2 px-4 rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
       >
         {#if isLoading}
           در حال تغییر رمز عبور...

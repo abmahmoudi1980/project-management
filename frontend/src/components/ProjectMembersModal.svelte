@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount } from 'svelte';
   import { getProjectMembers, addProjectMember, removeProjectMember, getEligibleProjectUsers, getProjectRoles } from '../lib/api/projectMembers.js';
 
@@ -117,10 +117,10 @@
   function getRoleBadgeColor(roleName) {
     switch (roleName) {
       case 'owner': return 'bg-purple-100 text-purple-700';
-      case 'manager': return 'bg-blue-100 text-blue-700';
+      case 'manager': return 'bg-brand-100 text-brand-700';
       case 'contributor': return 'bg-green-100 text-green-700';
-      case 'viewer': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-indigo-100 text-indigo-700';
+      case 'viewer': return 'bg-slate-100 text-slate-700';
+      default: return 'bg-brand-100 text-brand-700';
     }
   }
 
@@ -165,8 +165,8 @@
     <!-- Header with member count -->
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-semibold text-gray-900">مدیریت اعضای پروژه</h3>
-        <p class="text-sm text-gray-500 mt-1">{members.length} عضو در این پروژه</p>
+        <h3 class="text-lg font-semibold text-slate-900">مدیریت اعضای پروژه</h3>
+        <p class="text-sm text-slate-500 mt-1">{members.length} عضو در این پروژه</p>
       </div>
     </div>
 
@@ -184,16 +184,16 @@
     {/if}
 
     <!-- Add Member Form -->
-    <div class="bg-gray-50 rounded-xl p-4">
-      <h4 class="text-sm font-medium text-gray-700 mb-4">افزودن عضو جدید</h4>
+    <div class="bg-slate-50 rounded-xl p-4">
+      <h4 class="text-sm font-medium text-slate-700 mb-4">افزودن عضو جدید</h4>
       <form onsubmit={handleAddMember} class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="user-select" class="block text-sm font-medium text-gray-700 mb-2">کاربر</label>
+            <label for="user-select" class="block text-sm font-medium text-slate-700 mb-2">کاربر</label>
             <select
               id="user-select"
               bind:value={selectedUserId}
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
               disabled={loading || eligibleUsers.length === 0}
             >
               <option value="">انتخاب کاربر...</option>
@@ -202,16 +202,16 @@
               {/each}
             </select>
             {#if eligibleUsers.length === 0}
-              <p class="text-xs text-gray-500 mt-1">هیچ کاربر واجد شرایطی برای افزودن وجود ندارد</p>
+              <p class="text-xs text-slate-500 mt-1">هیچ کاربر واجد شرایطی برای افزودن وجود ندارد</p>
             {/if}
           </div>
 
           <div>
-            <label for="role-select" class="block text-sm font-medium text-gray-700 mb-2">نقش</label>
+            <label for="role-select" class="block text-sm font-medium text-slate-700 mb-2">نقش</label>
             <select
               id="role-select"
               bind:value={selectedRoleId}
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
               disabled={loading || roles.length === 0}
             >
               <option value="">انتخاب نقش...</option>
@@ -225,7 +225,7 @@
         <button
           type="submit"
           disabled={loading || !selectedUserId || !selectedRoleId}
-          class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          class="w-full md:w-auto px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? 'در حال افزودن...' : 'افزودن عضو'}
         </button>
@@ -234,24 +234,24 @@
 
     <!-- Members List -->
     <div>
-      <h4 class="text-sm font-medium text-gray-700 mb-3">اعضای فعلی</h4>
+      <h4 class="text-sm font-medium text-slate-700 mb-3">اعضای فعلی</h4>
       <div class="space-y-2 max-h-80 overflow-y-auto">
         {#if loading && members.length === 0}
           <div class="flex justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
           </div>
         {:else if members.length === 0}
-          <p class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg">هنوز عضوی به این پروژه اضافه نشده است.</p>
+          <p class="text-slate-500 text-center py-8 bg-slate-50 rounded-lg">هنوز عضوی به این پروژه اضافه نشده است.</p>
         {:else}
           {#each members as member}
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-medium">
                   {member.username?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p class="font-medium text-gray-900">{member.username}</p>
-                  <p class="text-sm text-gray-500">{member.email}</p>
+                  <p class="font-medium text-slate-900">{member.username}</p>
+                  <p class="text-sm text-slate-500">{member.email}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2">

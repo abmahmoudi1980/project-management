@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher, onMount } from "svelte";
 
   let { projects = [], selectedId = null, onDelete = null } = $props();
@@ -57,7 +57,7 @@
     <div
       class="w-full text-right sm:text-left flex items-start gap-1 py-2.5 sm:py-2 min-h-[44px] rounded-lg transition-all cursor-pointer border-r-4 sm:border-l-4 sm:border-r-0
         {isSelected
-        ? 'bg-indigo-50 text-indigo-700 border-indigo-600'
+        ? 'bg-brand-50 text-brand-700 border-brand-600'
         : 'text-slate-700 hover:bg-slate-50 border-transparent'}"
       style="padding-inline-start: {0.5 + depth * 0.75}rem; padding-inline-end: 2.5rem;"
       onclick={() => select(project)}
@@ -100,7 +100,7 @@
             {project.identifier}
           </p>
         {/if}
-        <p class="text-xs {isSelected ? 'text-indigo-600' : 'text-slate-500'}">
+        <p class="text-xs {isSelected ? 'text-brand-600' : 'text-slate-500'}">
           {project.status}
         </p>
       </div>

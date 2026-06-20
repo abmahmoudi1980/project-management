@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount } from "svelte";
   import { api } from "../lib/api.js";
   import AttachmentUploader from "./AttachmentUploader.svelte";
@@ -133,7 +133,7 @@
     {#if isLoading}
       <div class="flex items-center justify-center py-8">
         <div class="flex items-center gap-3 text-slate-500">
-          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-600"></div>
           <span class="text-sm">در حال بارگذاری...</span>
         </div>
       </div>

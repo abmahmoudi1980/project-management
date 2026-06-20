@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import JalaliDatePicker from './JalaliDatePicker.svelte';
   import { dateToJalaliString } from '../lib/utils.js';
   import { hasActiveFilters, getActiveFilterCount } from '../lib/filterUtils.js';
@@ -143,12 +143,12 @@
     onclick={openPanel}
     class="px-4 py-2 text-sm font-medium rounded-lg border transition-colors
       {isFiltersActive
-        ? 'bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100'
+        ? 'bg-brand-50 border-brand-300 text-brand-700 hover:bg-brand-100'
         : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}"
   >
     <span>🔍 جستجوی پیشرفته</span>
     {#if isFiltersActive}
-      <span class="ml-2 inline-block bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+      <span class="ml-2 inline-block bg-brand-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
         {activeFilterCount}
       </span>
     {/if}
@@ -238,8 +238,8 @@
 
       <button
         onclick={applyFilters}
-        class="px-6 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg
-          hover:bg-indigo-700 transition-colors"
+        class="px-6 py-2 text-sm font-medium bg-brand-600 text-white rounded-lg
+          hover:bg-brand-700 transition-colors"
       >
         اعمال فیلترها
       </button>

@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { tasks } from "../stores/taskStore";
   import { api } from "../lib/api.js";
   import { createEventDispatcher } from "svelte";
@@ -142,7 +142,7 @@
   onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}
   class="space-y-4 p-4 border rounded-lg bg-white"
 >
-  <h3 class="text-lg font-semibold text-gray-800">ایجاد وظیفه جدید</h3>
+  <h3 class="text-lg font-semibold text-slate-800">ایجاد وظیفه جدید</h3>
 
   {#if error}
     <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
@@ -157,14 +157,14 @@
   {/if}
 
   <div>
-    <label for="task-title" class="block text-sm font-medium text-gray-700 mb-1"
+    <label for="task-title" class="block text-sm font-medium text-slate-700 mb-1"
       >عنوان</label
     >
     <input
       type="text"
       id="task-title"
       bind:value={title}
-      class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
       placeholder="عنوان وظیفه"
       required
     />
@@ -173,26 +173,26 @@
   <div>
     <label
       for="description"
-      class="block text-sm font-medium text-gray-700 mb-1">توضیحات</label
+      class="block text-sm font-medium text-slate-700 mb-1">توضیحات</label
     >
     <textarea
       id="description"
       bind:value={description}
       rows="3"
-      class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
       placeholder="توضیحات وظیفه (اختیاری)"
     ></textarea>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label for="priority" class="block text-sm font-medium text-gray-700 mb-1"
+      <label for="priority" class="block text-sm font-medium text-slate-700 mb-1"
         >اولویت</label
       >
       <select
         id="priority"
         bind:value={priority}
-        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
       >
         <option value="Low">پایین</option>
         <option value="Medium">متوسط</option>
@@ -201,14 +201,14 @@
     </div>
 
     <div>
-      <label for="category" class="block text-sm font-medium text-gray-700 mb-1"
+      <label for="category" class="block text-sm font-medium text-slate-700 mb-1"
         >دسته‌بندی</label
       >
       <input
         type="text"
         id="category"
         bind:value={category}
-        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
         placeholder="بک‌اند، فرانت‌اند، ..."
       />
     </div>
@@ -218,7 +218,7 @@
     <div>
       <label
         for="start_date"
-        class="block text-sm font-medium text-gray-700 mb-1">تاریخ شروع</label
+        class="block text-sm font-medium text-slate-700 mb-1">تاریخ شروع</label
       >
       <JalaliDatePicker
         bind:value={start_date}
@@ -229,7 +229,7 @@
     </div>
 
     <div>
-      <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1"
+      <label for="due_date" class="block text-sm font-medium text-slate-700 mb-1"
         >تاریخ مهلت</label
       >
       <JalaliDatePicker
@@ -248,7 +248,7 @@
     <div>
       <label
         for="estimated_hours"
-        class="block text-sm font-medium text-gray-700 mb-1"
+        class="block text-sm font-medium text-slate-700 mb-1"
         >ساعات تخمینی</label
       >
       <input
@@ -258,7 +258,7 @@
         onblur={validateEstimatedHours}
         min="0"
         step="0.5"
-        class="w-full px-3 py-3 min-h-[44px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
         class:border-red-500={estimatedHoursError}
         placeholder="8.5"
       />
@@ -270,7 +270,7 @@
     <div>
       <label
         for="done_ratio"
-        class="block text-sm font-medium text-gray-700 mb-1"
+        class="block text-sm font-medium text-slate-700 mb-1"
       >
         پیشرفت (%) - {done_ratio}%
       </label>
@@ -282,7 +282,7 @@
         min="0"
         max="100"
         step="5"
-        class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer"
         class:border-red-500={doneRatioError}
       />
       {#if doneRatioError}
@@ -293,7 +293,7 @@
 
   <!-- Attachments Section -->
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">فایل‌های پیوست (اختیاری)</label>
+    <label class="block text-sm font-medium text-slate-700 mb-2">فایل‌های پیوست (اختیاری)</label>
     <AttachmentFormUploader
       bind:files={attachmentFiles}
       maxFiles={5}
@@ -306,7 +306,7 @@
   <button
     type="submit"
     disabled={!title.trim()}
-    class="w-full min-h-[44px] bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+    class="w-full min-h-[44px] bg-brand-500 hover:bg-brand-600 disabled:bg-slate-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
   >
     ایجاد وظیفه
   </button>

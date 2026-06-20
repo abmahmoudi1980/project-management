@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount, untrack } from "svelte";
   import { tasks } from "../stores/taskStore";
   import { timeLogs } from "../stores/timeLogStore";
@@ -40,28 +40,15 @@
   });
 
   onMount(() => {
-    console.log('TaskList mounted, project:', project);
     if (project) {
       tasks.load(project.id, true);
       previousProjectId = project.id;
     }
 
-    // Create IntersectionObserver once
     intersectionObserver = new IntersectionObserver(
       (entries) => {
-        console.log('IntersectionObserver triggered:', {
-          isIntersecting: entries[0].isIntersecting,
-          hasMore: $tasks.hasMore,
-          loadingMore: $tasks.loadingMore,
-          currentTasksLength: $tasks.tasks.length
-        });
-        if (entries[0].isIntersecting) {
-          if ($tasks.hasMore && !$tasks.loadingMore) {
-            console.log('Calling tasks.loadMore()');
-            tasks.loadMore();
-          } else {
-            console.log('Not loading more - hasMore:', $tasks.hasMore, 'loadingMore:', $tasks.loadingMore);
-          }
+        if (entries[0].isIntersecting && $tasks.hasMore && !$tasks.loadingMore) {
+          tasks.loadMore();
         }
       },
       {
@@ -69,10 +56,8 @@
         threshold: 0.1
       }
     );
-    console.log('IntersectionObserver created');
 
     return () => {
-      console.log('TaskList unmounting');
       tasks.reset();
       if (intersectionObserver) {
         intersectionObserver.disconnect();
@@ -81,20 +66,8 @@
     };
   });
 
-  // Watch for hasMore/loadingMore changes
-  $effect(() => {
-    console.log('Store state changed:', {
-      hasMore: $tasks.hasMore,
-      loadingMore: $tasks.loadingMore,
-      total: $tasks.total,
-      tasksLength: $tasks.tasks.length
-    });
-  });
-
-  // Observe sentinel when it's available (runs only once when sentinelRef is set)
   $effect(() => {
     if (sentinelRef && intersectionObserver) {
-      console.log('Observing sentinel element');
       intersectionObserver.observe(sentinelRef);
     }
   });
@@ -189,7 +162,7 @@
     <div class="flex items-center gap-2">
       <button
         onclick={() => showMembersModal = true}
-        class="px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
+        class="px-4 py-3 min-h-[44px] text-sm font-medium rounded-lg transition-colors bg-brand-600 text-white hover:bg-brand-700"
       >
         + مدیریت اعضا
       </button>
@@ -239,7 +212,7 @@
             class="flex-shrink-0 w-5 h-5 min-w-[35px] min-h-[35px] rounded-full border-2 transition-all self-start md:self-auto
               {task.completed
               ? 'bg-emerald-500 border-emerald-500'
-              : 'border-slate-300 hover:border-indigo-400'}"
+              : 'border-slate-300 hover:border-brand-400'}"
           >
             {#if task.completed}
               <svg
@@ -273,7 +246,7 @@
             <div class="flex flex-wrap items-center gap-1.5 md:gap-3 mt-2 text-xs text-slate-500">
               {#if task.category}
                 <span
-                  class="inline-flex items-center px-2 py-0.5 md:px-2.5 rounded bg-blue-50 text-blue-700 font-medium"
+                  class="inline-flex items-center px-2 py-0.5 md:px-2.5 rounded bg-brand-50 text-brand-700 font-medium"
                 >
                   {task.category}
                 </span>
@@ -310,7 +283,7 @@
                     class="h-1.5 md:h-2 rounded-full transition-all {task.done_ratio ===
                     100
                       ? 'bg-emerald-500'
-                      : 'bg-indigo-500'}"
+                      : 'bg-brand-500'}"
                     style="width: {task.done_ratio}%"
                   ></div>
                 </div>
@@ -418,8 +391,8 @@
 
           <!-- Total Time -->
           <div class="flex-shrink-0 text-right self-start md:self-auto">
-            <div class="text-xs md:text-sm font-semibold text-slate-700">0 ساعت 0 دقیقه</div>
-            <div class="text-xs text-slate-400">ثبت شده</div>
+            <div class="text-xs md:text-sm font-semibold text-slate-400">—</div>
+            <div class="text-xs text-slate-400">زمان</div>
           </div>
         </div>
 

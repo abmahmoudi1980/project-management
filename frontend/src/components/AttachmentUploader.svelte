@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher } from "svelte";
   import { api } from "../lib/api.js";
 
@@ -175,8 +175,8 @@
   <!-- Upload Area -->
   <div
     class="border-2 border-dashed rounded-lg p-6 text-center transition-colors
-    {isDragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-300'}
-    {disabled || isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-indigo-400 hover:bg-slate-50'}"
+    {isDragOver ? 'border-brand-500 bg-brand-50' : 'border-slate-300'}
+    {disabled || isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-brand-400 hover:bg-slate-50'}"
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
@@ -267,7 +267,7 @@
               <div
                 class="h-2 rounded-full transition-all duration-300
                 {progress.status === 'completed' ? 'bg-emerald-500' : 
-                 progress.status === 'error' ? 'bg-rose-500' : 'bg-indigo-500'}"
+                 progress.status === 'error' ? 'bg-rose-500' : 'bg-brand-500'}"
                 style="width: {progress.progress}%"
               ></div>
             </div>

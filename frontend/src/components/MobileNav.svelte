@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { createEventDispatcher } from "svelte";
   import { fade, fly } from "svelte/transition";
   import ProjectList from "./ProjectList.svelte";
@@ -41,13 +41,13 @@
   >
     <div class="flex flex-col h-full">
       <!-- Header -->
-      <div class="px-6 py-5 border-b border-slate-200 bg-gradient-to-l from-indigo-600 to-purple-600">
+      <div class="px-6 py-5 border-b border-slate-200 bg-gradient-to-l from-brand-600 to-purple-600">
         <h1 class="text-xl font-semibold text-white">جریان کار</h1>
-        <p class="text-xs text-indigo-100 mt-0.5">مدیریت پروژه و وظایف</p>
+        <p class="text-xs text-brand-100 mt-0.5">مدیریت پروژه و وظایف</p>
         
         <button
           onclick={closeDrawer}
-          class="absolute top-5 left-4 text-white hover:text-indigo-200 transition-colors"
+          class="absolute top-5 left-4 text-white hover:text-brand-200 transition-colors"
           aria-label="Close menu"
         >
           <svg
@@ -69,9 +69,9 @@
       <!-- User Info -->
       <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
         <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center">
             <svg
-              class="w-5 h-5 text-indigo-600"
+              class="w-5 h-5 text-brand-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -99,7 +99,7 @@
               window.location.hash = "#/dashboard";
               closeDrawer();
             }}
-            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-brand-50 hover:text-brand-600 transition-all"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />

@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import JalaliDatePicker from './JalaliDatePicker.svelte';
   import { jalaliStringToDate, dateToJalaliString } from '../lib/utils.js';
   import { hasActiveFilters, getActiveFilterCount } from '../lib/filterUtils.js';
@@ -125,7 +125,7 @@
         bind:value={filters.text}
         placeholder="جستجو در عنوان و توضیح..."
         class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm
-          placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500
+          placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500
           focus:border-transparent transition-colors"
       />
     </div>
