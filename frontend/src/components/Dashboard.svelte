@@ -5,6 +5,8 @@
   import ProjectCard from './ProjectCard.svelte';
   import TaskListItem from './TaskListItem.svelte';
   import MeetingCard from './MeetingCard.svelte';
+  import Skeleton from './ui/Skeleton.svelte';
+  import SkeletonCard from './ui/SkeletonCard.svelte';
 
   let dashboardData = $state(null);
   let loading = $state(true);
@@ -75,11 +77,47 @@
   </div>
 
   {#if loading && !dashboardData}
-    <div class="flex justify-center items-center h-64">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+    <!-- Skeleton: stat cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" aria-busy="true" aria-label="در حال بارگذاری داشبورد">
+      {#each Array(4) as _}
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <Skeleton width="w-10" height="h-10" rounded="rounded-lg" />
+            <Skeleton width="w-12" height="h-4" />
+          </div>
+          <Skeleton width="w-1/2" height="h-7" />
+          <Skeleton width="w-3/4" height="h-3" />
+        </div>
+      {/each}
+    </div>
+
+    <!-- Skeleton: project cards + sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-4">
+        <Skeleton width="w-1/4" height="h-6" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {#each Array(4) as _}
+            <SkeletonCard lines={3} showHeader={false} showFooter={true} />
+          {/each}
+        </div>
+      </div>
+      <div class="space-y-6">
+        <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+          <Skeleton width="w-1/3" height="h-5" />
+          {#each Array(4) as _}
+            <div class="flex items-center gap-3">
+              <Skeleton width="w-4" height="h-4" rounded="rounded" />
+              <div class="flex-1 space-y-1">
+                <Skeleton width="w-3/4" height="h-3" />
+                <Skeleton width="w-1/3" height="h-2" />
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
     </div>
   {:else if error}
-    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-8">
+    <div class="bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl mb-8" role="alert">
       {error}
     </div>
   {/if}

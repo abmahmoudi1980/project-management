@@ -1,6 +1,7 @@
 <script>
   import { api } from "../lib/api.js";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
+  import Skeleton from "./ui/Skeleton.svelte";
 
   let { projectId, onSelect = null } = $props();
 
@@ -31,12 +32,7 @@
     }
   }
 
-  onMount(() => {
-    load();
-  });
-
   $effect(() => {
-    // Reload when projectId changes (parent navigated to a different project).
     if (projectId) load();
   });
 
@@ -57,11 +53,21 @@
   </header>
 
   {#if state === "loading"}
-    <div class="text-sm text-slate-500 py-3">در حال بارگذاری...</div>
+    <div class="space-y-3" aria-busy="true" aria-label="در حال بارگذاری زیرمجموعه‌ها">
+      {#each Array(3) as _}
+        <div class="flex items-center gap-3 py-2">
+          <div class="flex-1 space-y-1.5">
+            <Skeleton width="w-1/2" height="h-4" />
+            <Skeleton width="w-1/4" height="h-3" />
+          </div>
+          <Skeleton width="w-16" height="h-5" rounded="rounded-full" />
+        </div>
+      {/each}
+    </div>
   {:else if state === "notfound"}
-    <div class="text-sm text-rose-600 py-3">پروژه یافت نشد.</div>
+    <div class="text-sm text-rose-600 py-3" role="alert">پروژه یافت نشد.</div>
   {:else if state === "error"}
-    <div class="text-sm text-rose-600 py-3">{errorMessage}</div>
+    <div class="text-sm text-rose-600 py-3" role="alert">{errorMessage}</div>
   {:else if state === "loaded" && count === 0}
     <div class="text-sm text-slate-500 py-3">
       هنوز زیرمجموعه‌ای ایجاد نشده است.
@@ -83,7 +89,7 @@
             </div>
             <div class="flex items-center gap-2 text-xs text-slate-500">
               <span class="px-2 py-0.5 rounded-full bg-slate-100">{child.status}</span>
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </div>

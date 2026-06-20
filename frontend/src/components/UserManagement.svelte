@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { api } from '../lib/api.js';
   import ConfirmDialog from './ConfirmDialog.svelte';
+  import Skeleton from './ui/Skeleton.svelte';
 
   // State
   let users = $state([]);
@@ -136,9 +137,17 @@
   {/if}
 
   {#if isLoading}
-    <div class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
-      <span class="mr-3 text-slate-600">در حال بارگذاری...</span>
+    <div class="space-y-3" aria-busy="true" aria-label="در حال بارگذاری کاربران">
+      {#each Array(6) as _, i}
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 flex items-center gap-4">
+          <Skeleton width="w-10" height="h-10" rounded="rounded-full" />
+          <div class="flex-1 space-y-2">
+            <Skeleton width="w-1/4" height="h-4" />
+            <Skeleton width="w-1/3" height="h-3" />
+          </div>
+          <Skeleton width="w-20" height="h-6" rounded="rounded-full" />
+        </div>
+      {/each}
     </div>
   {:else}
     <!-- Desktop Table -->

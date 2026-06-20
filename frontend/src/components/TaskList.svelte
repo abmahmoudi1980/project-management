@@ -14,6 +14,7 @@
   import SearchBox from "./SearchBox.svelte";
   import AdvancedTaskSearch from "./AdvancedTaskSearch.svelte";
   import ProjectMembersModal from "./ProjectMembersModal.svelte";
+  import Skeleton from "./ui/Skeleton.svelte";
   import { evaluateAllFilters } from "../lib/filterUtils.js";
   import { createEventDispatcher } from "svelte";
   import moment from "jalali-moment";
@@ -124,7 +125,15 @@
   }
 
   async function handleTaskToggle(task) {
-    await tasks.toggleComplete(task.id);
+    const previousCompleted = task.completed;
+    const newCompleted = !previousCompleted;
+    tasks.patchTask(task.id, { completed: newCompleted });
+    try {
+      await tasks.toggleComplete(task.id);
+    } catch (error) {
+      tasks.patchTask(task.id, { completed: previousCompleted });
+      toasts.error(error.message || 'خطا در تغییر وضعیت وظیفه');
+    }
   }
 
   function confirmDelete(task) {
@@ -200,7 +209,20 @@
 
   <!-- Task List -->
   <div class="space-y-3">
-    {#if filteredTasks.length === 0 && $tasks.tasks.length > 0}
+    {#if $tasks.loadingMore && $tasks.tasks.length === 0}
+      <div class="space-y-3" aria-busy="true" aria-label="در حال بارگذاری وظایف">
+        {#each Array(5) as _}
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex items-center gap-3 md:gap-4">
+            <Skeleton width="w-5" height="h-5" rounded="rounded-full" />
+            <div class="flex-1 space-y-2">
+              <Skeleton width="w-2/3" height="h-4" />
+              <Skeleton width="w-1/3" height="h-3" />
+            </div>
+            <Skeleton width="w-16" height="h-5" rounded="rounded-full" />
+          </div>
+        {/each}
+      </div>
+    {:else if filteredTasks.length === 0 && $tasks.tasks.length > 0}
       <div class="text-center py-8">
         <p class="text-slate-500 mb-4">هیچ وظیفه‌ای یافت نشد</p>
       </div>

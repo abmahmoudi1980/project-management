@@ -123,6 +123,12 @@ function createTaskStore() {
       }));
       return task;
     },
+    patchTask: (id, patch) => {
+      update(state => ({
+        ...state,
+        tasks: state.tasks.map(t => t.id === id ? { ...t, ...patch } : t)
+      }));
+    },
     delete: async (id) => {
       await api.tasks.delete(id);
       update(state => ({
