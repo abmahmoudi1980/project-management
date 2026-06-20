@@ -222,6 +222,8 @@
               {task.completed
               ? 'bg-emerald-500 border-emerald-500'
               : 'border-slate-300 hover:border-brand-400'}"
+            aria-pressed={task.completed}
+            aria-label={task.completed ? `لغو تکمیل ${task.title}` : `تکمیل ${task.title}`}
           >
             {#if task.completed}
               <svg
@@ -229,6 +231,7 @@
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   stroke-linecap="round"
@@ -317,13 +320,15 @@
             <button
               onclick={() => showTaskDetails = task}
               class="p-2 hover:bg-slate-100 rounded-lg transition-colors min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0"
-              title="View task details"
+              title="مشاهده جزئیات وظیفه"
+              aria-label="مشاهده جزئیات وظیفه"
             >
               <svg
                 class="w-5 h-5 md:w-4 md:h-4 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   stroke-linecap="round"
@@ -342,13 +347,15 @@
             <button
               onclick={() => handleTaskSelect(task)}
               class="p-2 hover:bg-slate-100 rounded-lg transition-colors min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0"
-              title="Log time"
+              title="ثبت زمان"
+              aria-label="ثبت زمان"
             >
               <svg
                 class="w-5 h-5 md:w-4 md:h-4 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   stroke-linecap="round"
@@ -361,7 +368,8 @@
             <button
               onclick={() => toggleComments(task)}
               class="p-2 hover:bg-slate-100 rounded-lg transition-colors min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0"
-              title="Comments"
+              title="کامنت‌ها"
+              aria-label={showCommentsForTask === task.id ? 'بستن کامنت‌ها' : 'نمایش کامنت‌ها'}
             >
               <svg
                 class="w-5 h-5 md:w-4 md:h-4 text-slate-600"
@@ -371,6 +379,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
@@ -380,13 +389,15 @@
             <button
               onclick={() => confirmDelete(task)}
               class="p-2 hover:bg-rose-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0"
-              title="Delete task"
+              title="حذف وظیفه"
+              aria-label="حذف وظیفه"
             >
               <svg
                 class="w-5 h-5 md:w-4 md:h-4 text-slate-600 hover:text-rose-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   stroke-linecap="round"

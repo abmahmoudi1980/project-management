@@ -125,8 +125,15 @@
   }
 </script>
 
+<a
+  href="#main-content"
+  class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:bg-brand-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
+>
+  پرش به محتوای اصلی
+</a>
+
 {#if $authStore.isLoading}
-  <div class="flex items-center justify-center h-screen bg-slate-50">
+  <div class="flex items-center justify-center h-screen bg-slate-50" role="status" aria-live="polite">
     <div class="text-center">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"
@@ -135,7 +142,7 @@
     </div>
   </div>
 {:else if !$authStore.isAuthenticated}
-  <div class="min-h-screen bg-slate-50">
+  <main id="main-content" class="min-h-screen bg-slate-50">
     {#if currentRoute === "register"}
       <RegisterForm />
       <p class="text-center mt-4 text-sm text-slate-600" dir="rtl">
@@ -177,12 +184,13 @@
         </div>
       </div>
     {/if}
-  </div>
+  </main>
 {:else}
   <div class="flex flex-col md:flex-row h-screen bg-slate-50 overflow-hidden">
     <!-- Mobile Header -->
     <header
       class="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40"
+      aria-label="سربرگ موبایل"
     >
       <div class="flex items-center gap-3">
         <button
@@ -227,6 +235,7 @@
     <!-- Desktop Sidebar -->
     <aside
       class="hidden md:flex w-64 bg-white border-r border-slate-200 flex-col flex-shrink-0"
+      aria-label="ناوبری اصلی"
     >
       <div class="px-6 py-5 border-b border-slate-200">
         <h1 class="text-xl font-semibold text-slate-900">جریان کار</h1>
@@ -298,7 +307,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto">
+    <main id="main-content" class="flex-1 overflow-y-auto" aria-label="محتوای اصلی">
       {#if currentRoute === "dashboard"}
         <Dashboard />
       {:else if showUserManagement}

@@ -22,11 +22,12 @@
 </script>
 
 <div class="flex items-center p-4 hover:bg-slate-50 transition-colors {isCompleted ? 'opacity-50 grayscale' : ''}">
-  <input 
-    type="checkbox" 
+  <input
+    type="checkbox"
     class="w-5 h-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
     checked={isCompleted}
     onchange={handleComplete}
+    aria-label={isCompleted ? `لغو تکمیل ${task.title}` : `تکمیل ${task.title}`}
   />
   
   <div class="mr-4 flex-grow">
