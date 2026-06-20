@@ -1,6 +1,10 @@
 ﻿<script>
   import { projects } from "../stores/projectStore";
+  import { toasts } from "../lib/toastStore.js";
   import { createEventDispatcher, onMount } from "svelte";
+  import Button from "./ui/Button.svelte";
+  import Input from "./ui/Input.svelte";
+  import Textarea from "./ui/Textarea.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -13,6 +17,7 @@
   let parent_id = $state("");
   let parentQuery = $state("");
   let parentDropdownOpen = $state(false);
+  let isSubmitting = $state(false);
   let error = $state("");
   let identifierError = $state("");
   let homepageError = $state("");
@@ -93,12 +98,11 @@
       return;
     }
 
-    const isIdentifierValid = validateIdentifier();
-    const isHomepageValid = validateHomepage();
-
-    if (!isIdentifierValid || !isHomepageValid) {
+    if (!validateIdentifier() || !validateHomepage()) {
       return;
     }
+
+    isSubmitting = true;
 
     try {
       await projects.create({
@@ -110,6 +114,8 @@
         is_public,
         parent_id: parent_id || null,
       });
+
+      toasts.success('پروژه با موفقیت ایجاد شد');
 
       // Reset form
       title = "";
@@ -128,6 +134,8 @@
       dispatch("created");
     } catch (err) {
       error = err.message || "ایجاد پروژه با خطا مواجه شد";
+    } finally {
+      isSubmitting = false;
     }
   }
 </script>
@@ -137,66 +145,37 @@
   class="space-y-5"
 >
   {#if error}
-    <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+    <div class="p-3 bg-danger-50 text-danger-700 rounded-lg text-sm" role="alert">
       {error}
     </div>
   {/if}
 
-  <div>
-    <label for="title" class="block text-sm font-medium text-slate-700 mb-1.5"
-      >عنوان <span class="text-red-500">*</span></label
-    >
-    <input
-      type="text"
-      id="title"
-      bind:value={title}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-      placeholder="پروژه من"
-      required
-    />
-  </div>
+  <Input
+    id="title"
+    label="عنوان"
+    required
+    bind:value={title}
+    placeholder="پروژه من"
+  />
 
-  <div>
-    <label
-      for="identifier"
-      class="block text-sm font-medium text-slate-700 mb-1.5"
-    >
-      شناسه <span class="text-red-500">*</span>
-    </label>
-    <input
-      type="text"
-      id="identifier"
-      bind:value={identifier}
-      onblur={validateIdentifier}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-      class:border-red-500={identifierError}
-      class:ring-2={identifierError}
-      class:ring-red-500={identifierError}
-      placeholder="my-project"
-      required
-    />
-    {#if identifierError}
-      <p class="text-red-600 text-xs mt-1.5">{identifierError}</p>
-    {:else}
-      <p class="text-slate-500 text-xs mt-1.5">
-        در آدرس‌ها و APIها استفاده می‌شود. فقط حروف، اعداد، خط تیره و زیرخط.
-      </p>
-    {/if}
-  </div>
+  <Input
+    id="identifier"
+    label="شناسه"
+    required
+    bind:value={identifier}
+    onblur={validateIdentifier}
+    placeholder="my-project"
+    error={identifierError}
+    helper={identifierError ? undefined : 'در آدرس‌ها و APIها استفاده می‌شود. فقط حروف، اعداد، خط تیره و زیرخط.'}
+  />
 
-  <div>
-    <label
-      for="description"
-      class="block text-sm font-medium text-slate-700 mb-1.5">توضیحات</label
-    >
-    <textarea
-      id="description"
-      bind:value={description}
-      rows="3"
-      class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
-      placeholder="توضیحات مختصری درباره پروژه..."
-    ></textarea>
-  </div>
+  <Textarea
+    id="description"
+    label="توضیحات"
+    bind:value={description}
+    rows={3}
+    placeholder="توضیحات مختصری درباره پروژه..."
+  />
 
   <div class="relative">
     <label
@@ -299,35 +278,18 @@
     </div>
   </div>
 
-  <div>
-    <label for="homepage" class="block text-sm font-medium text-slate-700 mb-1.5"
-      >آدرس صفحه اصلی</label
-    >
-    <input
-      type="url"
-      id="homepage"
-      bind:value={homepage}
-      onblur={validateHomepage}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-      class:border-red-500={homepageError}
-      class:ring-2={homepageError}
-      class:ring-red-500={homepageError}
-      placeholder="https://github.com/username/project"
-    />
-    {#if homepageError}
-      <p class="text-red-600 text-xs mt-1.5">{homepageError}</p>
-    {:else}
-      <p class="text-slate-500 text-xs mt-1.5">
-        آدرس اختیاری به صفحه اصلی یا مخزن پروژه
-      </p>
-    {/if}
-  </div>
+  <Input
+    id="homepage"
+    type="url"
+    label="آدرس صفحه اصلی"
+    bind:value={homepage}
+    onblur={validateHomepage}
+    placeholder="https://github.com/username/project"
+    error={homepageError}
+    helper={homepageError ? undefined : 'آدرس اختیاری به صفحه اصلی یا مخزن پروژه'}
+  />
 
-  <button
-    type="submit"
-    disabled={!title.trim() || !identifier.trim()}
-    class="w-full min-h-[44px] bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg transition-colors font-medium"
-  >
+  <Button type="submit" disabled={!title.trim() || !identifier.trim()} loading={isSubmitting} fullWidth>
     ایجاد پروژه
-  </button>
+  </Button>
 </form>

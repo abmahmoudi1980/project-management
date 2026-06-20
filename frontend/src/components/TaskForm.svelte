@@ -1,9 +1,13 @@
 ﻿<script>
   import { tasks } from "../stores/taskStore";
   import { api } from "../lib/api.js";
+  import { toasts } from "../lib/toastStore.js";
   import { createEventDispatcher } from "svelte";
   import JalaliDatePicker from "./JalaliDatePicker.svelte";
   import AttachmentFormUploader from "./AttachmentFormUploader.svelte";
+  import Button from "./ui/Button.svelte";
+  import Input from "./ui/Input.svelte";
+  import Textarea from "./ui/Textarea.svelte";
 
   let { project } = $props();
   const dispatch = createEventDispatcher();
@@ -17,13 +21,13 @@
   let estimated_hours = $state("");
   let done_ratio = $state(0);
   let attachmentFiles = $state([]);
+  let isSubmitting = $state(false);
   let error = $state("");
   let dateError = $state("");
   let doneRatioError = $state("");
   let estimatedHoursError = $state("");
   let attachmentError = $state("");
 
-  // Validate date range
   function validateDates() {
     if (start_date && due_date && new Date(due_date) < new Date(start_date)) {
       dateError = "تاریخ مهلت باید بعد از تاریخ شروع یا برابر با آن باشد";
@@ -33,7 +37,6 @@
     return true;
   }
 
-  // Validate done_ratio
   function validateDoneRatio() {
     const ratio = parseInt(done_ratio);
     if (isNaN(ratio) || ratio < 0 || ratio > 100) {
@@ -44,13 +47,11 @@
     return true;
   }
 
-  // Validate estimated_hours
   function validateEstimatedHours() {
     if (estimated_hours !== "" && estimated_hours !== null) {
       const hours = parseFloat(estimated_hours);
       if (isNaN(hours) || hours < 0) {
-        estimatedHoursError =
-          "ساعات تخمینی باید بزرگتر یا مساوی 0 باشد";
+        estimatedHoursError = "ساعات تخمینی باید بزرگتر یا مساوی 0 باشد";
         return false;
       }
     }
@@ -67,16 +68,13 @@
       return;
     }
 
-    const isDatesValid = validateDates();
-    const isDoneRatioValid = validateDoneRatio();
-    const isEstimatedHoursValid = validateEstimatedHours();
-
-    if (!isDatesValid || !isDoneRatioValid || !isEstimatedHoursValid) {
+    if (!validateDates() || !validateDoneRatio() || !validateEstimatedHours()) {
       return;
     }
 
+    isSubmitting = true;
+
     try {
-      // Create the task first
       const newTask = await tasks.create(project.id, {
         title: title.trim(),
         description: description.trim(),
@@ -88,16 +86,16 @@
         done_ratio: parseInt(done_ratio),
       });
 
-      // Upload attachments if any
       if (attachmentFiles.length > 0) {
         try {
           await api.attachments.upload(newTask.id, attachmentFiles);
         } catch (attachmentErr) {
           console.error('Attachment upload error:', attachmentErr);
           attachmentError = "وظیفه ایجاد شد اما آپلود فایل‌ها با خطا مواجه شد: " + (attachmentErr.message || "خطای نامشخص");
-          // Don't return here - task was created successfully
         }
       }
+
+      toasts.success('وظیفه با موفقیت ایجاد شد');
 
       // Reset form
       title = "";
@@ -118,10 +116,11 @@
       dispatch("created");
     } catch (err) {
       error = err.message || "ایجاد وظیفه با خطا مواجه شد";
+    } finally {
+      isSubmitting = false;
     }
   }
 
-  // Attachment event handlers
   function handleFilesAdded(event) {
     const newFiles = event.detail.files;
     attachmentFiles = [...attachmentFiles, ...newFiles];
@@ -140,59 +139,45 @@
 
 <form
   onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}
-  class="space-y-4 p-4 border rounded-lg bg-white"
+  class="space-y-4"
 >
   <h3 class="text-lg font-semibold text-slate-800">ایجاد وظیفه جدید</h3>
 
   {#if error}
-    <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+    <div class="p-3 bg-danger-50 text-danger-700 rounded-lg text-sm" role="alert">
       {error}
     </div>
   {/if}
 
   {#if attachmentError}
-    <div class="p-3 bg-amber-100 text-amber-700 rounded-lg text-sm">
+    <div class="p-3 bg-warning-50 text-warning-700 rounded-lg text-sm" role="alert">
       {attachmentError}
     </div>
   {/if}
 
-  <div>
-    <label for="task-title" class="block text-sm font-medium text-slate-700 mb-1"
-      >عنوان</label
-    >
-    <input
-      type="text"
-      id="task-title"
-      bind:value={title}
-      class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-      placeholder="عنوان وظیفه"
-      required
-    />
-  </div>
+  <Input
+    id="task-title"
+    label="عنوان"
+    bind:value={title}
+    placeholder="عنوان وظیفه"
+    required
+  />
 
-  <div>
-    <label
-      for="description"
-      class="block text-sm font-medium text-slate-700 mb-1">توضیحات</label
-    >
-    <textarea
-      id="description"
-      bind:value={description}
-      rows="3"
-      class="w-full px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-      placeholder="توضیحات وظیفه (اختیاری)"
-    ></textarea>
-  </div>
+  <Textarea
+    id="description"
+    label="توضیحات"
+    bind:value={description}
+    rows={3}
+    placeholder="توضیحات وظیفه (اختیاری)"
+  />
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label for="priority" class="block text-sm font-medium text-slate-700 mb-1"
-        >اولویت</label
-      >
+      <label for="priority" class="block text-sm font-medium text-slate-700 mb-1.5">اولویت</label>
       <select
         id="priority"
         bind:value={priority}
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+        class="w-full px-3 py-2.5 text-sm min-h-[44px] border border-slate-300 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
       >
         <option value="Low">پایین</option>
         <option value="Medium">متوسط</option>
@@ -200,26 +185,17 @@
       </select>
     </div>
 
-    <div>
-      <label for="category" class="block text-sm font-medium text-slate-700 mb-1"
-        >دسته‌بندی</label
-      >
-      <input
-        type="text"
-        id="category"
-        bind:value={category}
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-        placeholder="بک‌اند، فرانت‌اند، ..."
-      />
-    </div>
+    <Input
+      id="category"
+      label="دسته‌بندی"
+      bind:value={category}
+      placeholder="بک‌اند، فرانت‌اند، ..."
+    />
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label
-        for="start_date"
-        class="block text-sm font-medium text-slate-700 mb-1">تاریخ شروع</label
-      >
+      <label for="start_date" class="block text-sm font-medium text-slate-700 mb-1.5">تاریخ شروع</label>
       <JalaliDatePicker
         bind:value={start_date}
         onchange={validateDates}
@@ -229,9 +205,7 @@
     </div>
 
     <div>
-      <label for="due_date" class="block text-sm font-medium text-slate-700 mb-1"
-        >تاریخ مهلت</label
-      >
+      <label for="due_date" class="block text-sm font-medium text-slate-700 mb-1.5">تاریخ مهلت</label>
       <JalaliDatePicker
         bind:value={due_date}
         onchange={validateDates}
@@ -240,38 +214,22 @@
       />
     </div>
   </div>
-  {#if dateError}
-    <p class="text-red-500 text-xs -mt-2">{dateError}</p>
-  {/if}
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label
-        for="estimated_hours"
-        class="block text-sm font-medium text-slate-700 mb-1"
-        >ساعات تخمینی</label
-      >
-      <input
-        type="number"
-        id="estimated_hours"
-        bind:value={estimated_hours}
-        onblur={validateEstimatedHours}
-        min="0"
-        step="0.5"
-        class="w-full px-3 py-3 min-h-[44px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
-        class:border-red-500={estimatedHoursError}
-        placeholder="8.5"
-      />
-      {#if estimatedHoursError}
-        <p class="text-red-500 text-xs mt-1">{estimatedHoursError}</p>
-      {/if}
-    </div>
+    <Input
+      id="estimated_hours"
+      type="number"
+      label="ساعات تخمینی"
+      bind:value={estimated_hours}
+      onblur={validateEstimatedHours}
+      min="0"
+      step="0.5"
+      placeholder="8.5"
+      error={estimatedHoursError}
+    />
 
     <div>
-      <label
-        for="done_ratio"
-        class="block text-sm font-medium text-slate-700 mb-1"
-      >
+      <label for="done_ratio" class="block text-sm font-medium text-slate-700 mb-1.5">
         پیشرفت (%) - {done_ratio}%
       </label>
       <input
@@ -282,16 +240,15 @@
         min="0"
         max="100"
         step="5"
-        class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-        class:border-red-500={doneRatioError}
+        class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer
+          {doneRatioError ? 'ring-2 ring-danger-500' : ''}"
       />
       {#if doneRatioError}
-        <p class="text-red-500 text-xs mt-1">{doneRatioError}</p>
+        <p class="text-xs text-danger-600 mt-1" role="alert">{doneRatioError}</p>
       {/if}
     </div>
   </div>
 
-  <!-- Attachments Section -->
   <div>
     <label class="block text-sm font-medium text-slate-700 mb-2">فایل‌های پیوست (اختیاری)</label>
     <AttachmentFormUploader
@@ -303,11 +260,7 @@
     />
   </div>
 
-  <button
-    type="submit"
-    disabled={!title.trim()}
-    class="w-full min-h-[44px] bg-brand-500 hover:bg-brand-600 disabled:bg-slate-300 text-white px-4 py-3 rounded-lg transition-colors font-medium"
-  >
+  <Button type="submit" disabled={!title.trim()} loading={isSubmitting} fullWidth>
     ایجاد وظیفه
-  </button>
+  </Button>
 </form>
